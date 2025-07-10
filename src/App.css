@@ -1,0 +1,190 @@
+@import 'tailwindcss';
+
+@utility bordered {
+  @apply border border-gray-200 rounded;
+}
+
+@font-face {
+  font-family: 'CascadiaMono';
+  src: url('assets/fonts/CascadiaMono-Regular.otf');
+}
+
+@font-face {
+  font-family: 'CascadiaMono-SemiLight';
+  src: url('assets/fonts/CascadiaMono-SemiLight.otf');
+}
+
+@font-face {
+  font-family: 'CascadiaMono-Light';
+  src: url('assets/fonts/CascadiaMono-Light.otf');
+}
+
+@theme {
+  --font-sans: "CascadiaMono-SemiLight", "sans-serif";
+  --font-cascadia-light: "CascadiaMono-Light", "sans-serif";
+  --font-cascadia: "CascadiaMono-SemiLight", "sans-serif";
+  --font-cascadia-bold: "CascadiaMono", "sans-serif";
+}
+
+#charkeeper_app_html {
+  overflow: hidden;
+}
+
+#charkeeper_app_body {
+  overflow-x: hidden;
+}
+
+#charkeeper_app_html,
+#charkeeper_app_body {
+  overscroll-behavior-y: contain; /* Предотвращает перетягивание на iOS */
+  height: -webkit-fill-available;
+  min-height: 100%;
+}
+
+#charkeeper_app_body::-webkit-scrollbar {
+  display: none; /* Скрыть скроллбар в Webkit (например, Safari, Chrome) */
+}
+
+.modal {
+  @apply relative p-4 bg-white rounded;
+
+  max-width: 90%;
+  max-height: 90%;
+}
+
+.btn-primary {
+  @apply rounded border bg-blue-50 text-blue-600 border-blue-600;
+}
+
+.btn-warning {
+  @apply rounded border bg-red-50 text-red-400 border-red-400;
+}
+
+.btn {
+  @apply py-2 px-4 font-medium cursor-pointer;
+}
+
+.btn-small {
+  @apply py-1 px-1 cursor-pointer;
+}
+
+.btn-big {
+  @apply py-4 px-6 cursor-pointer text-xl;
+}
+
+.white-box {
+  @apply bg-white bordered;
+}
+
+.table thead tr td {
+  @apply uppercase pb-1 text-xs;
+}
+
+.table tbody tr {
+  @apply border-b border-gray-200;
+}
+
+.table tbody tr:nth-of-type(2n) {
+  @apply bg-gray-50;
+}
+
+.table tbody tr:last-of-type {
+  @apply border-0;
+}
+
+.table.first-column-full-width tbody tr td:nth-of-type(n+2) {
+  @apply px-2;
+
+  width: 1%;
+  white-space: nowrap;
+}
+
+.toggle {
+  @apply w-6 h-6 border border-blue-400 bg-white rounded flex justify-center items-center cursor-pointer;
+}
+
+.toggle.checked {
+  @apply bg-blue-400 text-white;
+}
+
+.form-field .form-value {
+  @apply bordered px-3 leading-8 bg-white;
+
+  color: '#666';
+}
+
+.form-field .form-label {
+  @apply text-sm font-cascadia-light text-gray-400;
+}
+
+.form-field .form-text {
+  @apply bordered py-2 px-4;
+}
+
+.form-field select {
+  @apply py-2 px-4 rounded;
+}
+
+.form-field .form-value::placeholder {
+  @apply text-gray-200 opacity-100;
+}
+
+.form-field .form-value.is-open {
+  @apply rounded-b-none;
+}
+
+.form-field .form-dropdown {
+  @apply absolute w-full bg-white border-r border-l border-gray-200 z-10 overflow-y-scroll shadow;
+
+  max-height: 7.5rem;
+}
+
+.form-field .form-dropdown li {
+  @apply border-b border-gray-200 m-0 py-2 px-4;
+}
+
+.form-field .form-dropdown li:hover {
+  @apply bg-blue-400 text-white;
+}
+
+#character-navigation {
+  @apply flex w-full overflow-x-scroll bg-white border-b border-gray-200 px-2;
+
+  scrollbar-width: none;
+}
+
+#character-navigation::-webkit-scrollbar { 
+  display: none; /* Safari and Chrome */
+}
+
+#character-navigation p {
+  @apply text-xs/6 font-cascadia mx-2 py-2 text-gray-400 cursor-pointer text-nowrap;
+}
+
+#character-navigation p.active {
+  @apply text-black border-b-2 border-blue-400;
+}
+
+#character-navigation p.disabled {
+  @apply text-gray-200;
+}
+
+.alert-box {
+  @apply fixed top-4 right-4 z-50;
+}
+
+.alert-text {
+  @apply relative py-2 px-4 mb-2 rounded text-sm;
+}
+
+.alert-text.alert {
+  @apply bg-red-400 text-white;
+}
+
+.alert-text.notice {
+  @apply bg-green-400 text-white;
+}
+
+.uneditable-field {
+  display: none;
+}
