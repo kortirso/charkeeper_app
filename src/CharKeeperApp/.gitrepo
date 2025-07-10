@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/ingydotnet/git-subrepo#readme
+;
+[subrepo]
+	remote = git@github.com:kortirso/charkeeper_solid_app.git
+	branch = main
+	commit = 9470f8a7378fcaf680873d9b8286acda33a5a4b7
+	parent = 1f181b635625312782d8e7911f5df21b75714d06
+	method = merge
+	cmdver = 0.4.9
