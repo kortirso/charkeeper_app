@@ -171,6 +171,11 @@
   @apply dark:bg-dusty dark:text-snow;
 }
 
+.form-field .form-dropdown li.selected {
+  @apply border-red-400;
+  @apply dark:bg-fuzzy-red;
+}
+
 #character-navigation {
   @apply flex overflow-x-scroll bg-white border-b border-gray-200 px-2 dark:bg-neutral-800 dark:border-black;
 
@@ -182,7 +187,7 @@
 }
 
 #character-navigation p {
-  @apply text-xs/6 mx-2 py-2 text-gray-400 cursor-pointer text-nowrap dark:text-gray-300;
+  @apply text-xs/6 font-cascadia-light mx-2 py-2 text-gray-400 cursor-pointer text-nowrap dark:text-gray-300;
 }
 
 #character-navigation p.active {
@@ -211,4 +216,25 @@
 
 .uneditable-field {
   display: none;
+}
+
+.damage-caption {
+  @apply flex-1 flex flex-col items-center;
+}
+
+.damage-caption p:nth-of-type(1) {
+  @apply flex-1 text-center flex items-center uppercase dark:text-snow py-4 px-2 text-sm md:text-base;
+}
+
+.damage-caption p:nth-of-type(2) {
+  @apply text-xs dark:text-snow;
+}
+
+.damage-threshold {
+  @apply flex items-center pb-4;
+}
+
+.damage-threshold p {
+  @apply text-center border border-blue-400 bg-white rounded w-10 py-1 font-cascadia-light text-lg;
+  @apply dark:border-fuzzy-red dark:text-dusty;
 }
