@@ -12,7 +12,15 @@
     },
     "settingsPage": {
       "logout": "Logout",
-      "colorSchema": "Color schema"
+      "colorSchema": "Color schema",
+      "version": "Version",
+      "title": "Settings",
+      "changeLocale": "Locale",
+      "feedback": "Feedback",
+      "profile": "Profile",
+      "username": "Username",
+      "socials": "Community links",
+      "notifications": "Notifications"
     },
     "characterNavigation": {
       "allFilter": "All",
@@ -31,13 +39,63 @@
       "avatar": "Avatar",
       "abilities": "Abilities",
       "professions": "Mastery",
-      "spells": "Spells"
+      "spells": "Spells",
+      "companion": "Companion"
+    },
+    "homebrewPage": {
+      "title": "Homebrew",
+      "daggerheart": {
+        "races": "Ancestries",
+        "feats": "Features",
+        "newRace": "Add new ancestry",
+        "raceName": "Ancestry's name",
+        "newFeat": "Add new feature",
+        "featTitle": "Title",
+        "featDescription": "Description",
+        "origin": "Origin",
+        "originValue": "Origin value",
+        "limit": "Usage limit",
+        "limitRefresh": "Limit refresh",
+        "kind": "Kind",
+        "noFeats": "No features for ancestry",
+        "items": "Items",
+        "itemName": "Item name",
+        "itemKind": "Item kind",
+        "newItem": "Add new item",
+        "classes": "Classes",
+        "newClass": "Add new class",
+        "className": "Class name",
+        "evasion": "Starting evasion",
+        "maxHealth": "Starting hit points",
+        "domains": "Domains"
+      }
     }
   },
   "daggerheart": {
     "terms": {
       "traits": "Traits",
-      "thresholds": "Damage thresholds"
+      "thresholds": "Damage thresholds",
+      "feats": {
+        "origins": {
+          "ancestry": "Ancestry",
+          "class": "Class"
+        },
+        "kinds": {
+          "static": "Static text",
+          "text": "Text area"
+        },
+        "limitRefresh": {
+          "shortRest": "Short rest",
+          "longRest": "Long rest",
+          "session": "Session"
+        }
+      },
+      "items": {
+        "kinds": {
+          "item": "Item",
+          "consumable": "Consumable"
+        }
+      }
     },
     "static": {
       "proficiency": "Proficiency",
@@ -47,9 +105,9 @@
     "health": {
       "armorScore": "Armor Score",
       "armorSlots": "Armor Slots",
-      "minor": "Minor",
-      "major": "Major",
-      "severe": "Severe",
+      "minor": "Minor damage",
+      "major": "Major damage",
+      "severe": "Severe damage",
       "minorDamage": "Mark 1 HP",
       "majorDamage": "Mark 2 HP",
       "severeDamage": "Mark 3 HP",
@@ -58,8 +116,13 @@
       "hope": "Hope"
     },
     "rest": {
-      "shortRestDescription": "At short rest player can move domain cards between its loadout and vault for free, then choose twice from the list of downtime moves: 1) Clear 1d4+{{tier}} Hit Points for yourself or an ally, 2) Clear 1d4+{{tier}} Stress, 3) Clear 1d4+{{tier}} Armor Slots from your or an ally's armor, 4) Describe how you prepare yourself for the path ahead, then gain a Hope. If you choose to Prepare with one or more members of your party, you each gain 2 Hope.",
-      "longRestDescription": "At long rest player can move domain cards between its loadout and vault for free, then choose twice from the list of downtime moves: 1) Clear all Hit Points for yourself or an ally, 2) Clear all Stress, 3) Clear all Armor Slots from your or an ally's armor, 4) Describe how you prepare for the next day's adventure, then gain a Hope. If you choose to Prepare with one or more members of your party, you each gain 2 Hope."
+      "restDescription": "At rest player can move domain cards between its loadout and vault for free, then choose twice from the list of downtime moves.",
+      "clear_health": "Clear 1d4+{{tier}} or all Hit Points for yourself",
+      "clear_stress": "Clear 1d4+{{tier}} or all Stress",
+      "clear_armor_slots": "Clear 1d4+{{tier}} or all Armor Slots from your armor",
+      "gain_hope": "Gain a Hope",
+      "gain_double_hope": "Gain 2 Hope",
+      "makeRolls": "Make auto rolls"
     },
     "gold": {
       "coins": "Coins",
@@ -98,6 +161,27 @@
       "armor_score": "Armor",
       "attack": "Attack",
       "proficiency": "Proficiency"
+    },
+    "beast": {
+      "transformation": "Transformation to beast",
+      "naturalForm": "Natural form"
+    },
+    "companion": {
+      "notAvailable": "Companion is not available",
+      "name": "Companion's name",
+      "evasion": "Evasion",
+      "damage": "Damage",
+      "distance": "Distance",
+      "leveling": {
+        "intelligent": "Intelligent",
+        "light": "Light in the Dark",
+        "comfort": "Creature comfort",
+        "armored": "Armored",
+        "vicious": "Vicious",
+        "resilient": "Resilient",
+        "bonded": "Bonded",
+        "aware": "Aware"
+      }
     }
   },
   "pathfinder2": {
@@ -143,7 +227,9 @@
     "cost": "Cost",
     "addItems": "Add items",
     "equipedItems": "Equiped",
+    "equipedItemsDescription": "Items in your hands, equiped armor, ammo for weapon, consumables",
     "backpackItems": "Backpacked",
+    "backpackItemsDescription": "Items in backpack, can't be quickly used",
     "itemNote": "Item note",
     "weaponsList": "Weapon",
     "primaryWeapon": "Primary weapon",
@@ -156,7 +242,8 @@
     "ammoList": "Ammo",
     "focusList": "Focus",
     "toolsList": "Artisan's tools",
-    "musicList": "Musical instruments"
+    "musicList": "Musical instruments",
+    "consumables": "Consumables"
   },
   "rest": {
     "shortRest": "Short rest",
@@ -166,6 +253,7 @@
 
 
 
+  "create": "Create",
   "back": "Back",
   "save": "Save",
   "find": "Find",
@@ -182,18 +270,6 @@
     "fileSizeLimit": "File size should be less than 1 MB",
     "invalidSubclassesList": "You need to select subclasses for all classes",
     "feedbackIsAdded": "Feedback is added, thank you very much for using CharKeeper!"
-  },
-  "settingsPage": {
-    "title": "Settings",
-    "changeLocale": "Locale",
-    "feedback": "Feedback",
-    "profile": "Profile",
-    "username": "Username",
-    "socials": "Community links",
-    "notifications": "Notifications"
-  },
-  "homebrewPage": {
-    "title": "Homebrew"
   },
   "charactersPage": {
     "title": "Characters list",
@@ -220,7 +296,11 @@
       "legacy": "Legacy",
       "size": "Size",
       "mainClass": "Main class",
-      "alignment": "Alignment"
+      "alignment": "Alignment",
+      "sizes": {
+        "small": "Small",
+        "medium": "Medium"
+      }
     },
     "pathfinder2": {
       "race": "Race",
@@ -230,12 +310,12 @@
       "mainAbility": "Main ability"
     },
     "daggerheart": {
-      "heritage": "Heritage",
+      "ancestry": "Ancestry",
       "community": "Community",
       "mainClass": "Main class",
       "subclass": "Subclass",
-      "customHeritage": "Mixed heritage",
-      "heritageName": "Heritage name",
+      "customAncestry": "Mixed ancestry",
+      "ancestryName": "Ancestry's name",
       "mainFeature": "Main feature",
       "secondaryFeature": "Secondary feature"
     }
@@ -253,27 +333,22 @@
     "thresholds": "Damage thresholds",
     "onlyPreparedSpells": "Only prepared",
     "onlyAvailableSpells": "Only available",
-    "allSpells": "All",
     "no_magic": "Character does not have magic abilities",
     "changeLevels": "Change class levels",
     "changeClasses": "Change character classes",
     "knownSpells": "Learning spells",
     "items": "Add equipment",
-    "staticSpell": "Static spell",
     "staticSpellPerDay": "per day",
     "staticSpellLevel": "as level",
     "staticSpellAttackBonus": "attack bonus",
     "staticSpellSaveDC": "save DC",
     "damage": "Damage",
     "heal": "Heal",
-    "learn": "Learn",
-    "forget": "Forget",
     "damageConditions": "Damage resistances",
     "vulnerability": "Vulner",
     "resistance": "Resist",
     "immunity": "Immune", 
     "ammoList": "Ammo",
-    "confirmChooseOnceFeature": "Confirm",
     "itemNote": "Item note",
     "spellNote": "Spell note",
     "deathSavingThrows": "Death saving throws",
@@ -283,9 +358,7 @@
     "avatar": "Avatar",
     "bonuses": "Bonuses",
     "newBonus": "New bonus",
-    "newBonusComment": "Comment",
-    "beastTransformation": "Transformation to beast",
-    "naturalForm": "Natural form"
+    "newBonusComment": "Comment"
   },
   "professionsPage": {
     "feats": "Feats",
@@ -389,48 +462,6 @@
       "shield": "Shield"
     },
     "selectedFeatures": {
-      "metamagic_careful_spell": "Careful spell",
-      "metamagic_distant_spell": "Distant spell",
-      "metamagic_empowered_spell": "Empowered spell",
-      "metamagic_extended_spell": "Extended spell",
-      "metamagic_heightened_spell": "Heightened spell",
-      "metamagic_quickened_spell": "Quickened spell",
-      "metamagic_subtle_spell": "Subtle spell",
-      "metamagic_twinned_spell": "Twinned spell",
-      "draconic_ancestry_black": "Black dragon",
-      "draconic_ancestry_blue": "Blue dragon",
-      "draconic_ancestry_brass": "Brass dragon",
-      "draconic_ancestry_bronze": "Bronze dragon",
-      "draconic_ancestry_copper": "Copper dragon",
-      "draconic_ancestry_gold": "Gold dragon",
-      "draconic_ancestry_green": "Green dragon",
-      "draconic_ancestry_red": "Red dragon",
-      "draconic_ancestry_silver": "Silver dragon",
-      "draconic_ancestry_white": "White dragon",
-      "dragon_ancestor_black": "Black dragon",
-      "dragon_ancestor_blue": "Blue dragon",
-      "dragon_ancestor_brass": "Brass dragon",
-      "dragon_ancestor_bronze": "Bronze dragon",
-      "dragon_ancestor_copper": "Copper dragon",
-      "dragon_ancestor_gold": "Gold dragon",
-      "dragon_ancestor_green": "Green dragon",
-      "dragon_ancestor_red": "Red dragon",
-      "dragon_ancestor_silver": "Silver dragon",
-      "dragon_ancestor_white": "White dragon",
-      "arctic": "Arctic",
-      "coast": "Coast",
-      "desert": "Desert",
-      "forest": "Forest",
-      "grassland": "Grassland",
-      "mountain": "Mountain",
-      "swamp": "Swamp",
-      "underdark": "Underdark",
-      "fighting_style_archery": "Archery",
-      "fighting_style_defense": "Defense",
-      "fighting_style_dueling": "Dueling",
-      "fighting_style_great_weapon_fighting": "Great weapon fighting",
-      "fighting_style_protection": "Protection",
-      "fighting_style_two_weapon_fighting": "Two weapon fighting",
       "int": "Intellect",
       "wis": "Wisdom",
       "cha": "Charisma"
@@ -480,7 +511,8 @@
       "sorcerer": "Sorcerer",
       "warlock": "Warlock",
       "wizard": "Wizard",
-      "artificer": "Artificer"
+      "artificer": "Artificer",
+      "static": "Natural spells"
     },
     "subclasses": {
       "barbarian": {

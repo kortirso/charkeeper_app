@@ -12,7 +12,15 @@
     },
     "settingsPage": {
       "logout": "Выход",
-      "colorSchema": "Цветовая палитра"
+      "colorSchema": "Цветовая палитра",
+      "version": "Версия",
+      "title": "Настройки",
+      "changeLocale": "Язык",
+      "feedback": "Отзыв",
+      "profile": "Профиль",
+      "username": "Имя пользователя",
+      "socials": "Общество",
+      "notifications": "Уведомления"
     },
     "characterNavigation": {
       "allFilter": "Все",
@@ -31,13 +39,63 @@
       "avatar": "Аватар",
       "abilities": "Способности",
       "professions": "Владения",
-      "spells": "Заклинания"
+      "spells": "Заклинания",
+      "companion": "Питомец"
+    },
+    "homebrewPage": {
+      "title": "Homebrew",
+      "daggerheart": {
+        "races": "Расы",
+        "feats": "Способности",
+        "newRace": "Добавить новую расу",
+        "raceName": "Название расы",
+        "newFeat": "Добавить новую способность",
+        "featTitle": "Название",
+        "featDescription": "Описание",
+        "origin": "Тип принадлежности",
+        "originValue": "Значение принадлежности",
+        "limit": "Лимит использований",
+        "limitRefresh": "Сброс лимита",
+        "kind": "Тип",
+        "noFeats": "Нет способностей для расы",
+        "items": "Предметы",
+        "itemName": "Название предмета",
+        "itemKind": "Тип предмета",
+        "newItem": "Добавить новый предмет",
+        "classes": "Классы",
+        "newClass": "Добавить новый класс",
+        "className": "Название класса",
+        "evasion": "Начальное уклонение",
+        "maxHealth": "Начальное здоровье",
+        "domains": "Домены"
+      }
     }
   },
   "daggerheart": {
     "terms": {
       "traits": "Способности",
-      "thresholds": "Пороги урона"
+      "thresholds": "Пороги урона",
+      "feats": {
+        "origins": {
+          "ancestry": "Раса",
+          "class": "Класс"
+        },
+        "kinds": {
+          "static": "Вывод описания",
+          "text": "С вводом данных"
+        },
+        "limitRefresh": {
+          "shortRest": "Короткий отдых",
+          "longRest": "Продолжительный отдых",
+          "session": "После сессии"
+        }
+      },
+      "items": {
+        "kinds": {
+          "item": "Предмет",
+          "consumable": "Расходный материал"
+        }
+      }
     },
     "static": {
       "proficiency": "Мастерство",
@@ -47,9 +105,9 @@
     "health": {
       "armorScore": "Очки Доспеха",
       "armorSlots": "Слоты Доспеха",
-      "minor": "Малый",
-      "major": "Большой",
-      "severe": "Серьёзный",
+      "minor": "Малый урон",
+      "major": "Большой урон",
+      "severe": "Серьёзный урон",
       "minorDamage": "Отметить 1 ХП",
       "majorDamage": "Отметить 2 ХП",
       "severeDamage": "Отметить 3 ХП",
@@ -58,8 +116,13 @@
       "hope": "Надежда"
     },
     "rest": {
-      "shortRestDescription": "Во время короткого отдыха игрок может свободно перемещать карты домена между инвентарём и хранилищем, затем дважды выбрать из списка ходов отдыха: 1) Очистить 1d4+{{tier}} ХП для себя или союзника, 2) Очистить 1d4+{{tier}} стресса, 3) Очистить 1d4+{{tier}} слотов доспеха для себя или союзника, 4) Описать, как вы готовитесь к предстоящему пути, затем получить Надежду. Если вы решите Подготовиться с одним или несколькими членами вашей группы, каждый из вас получит 2 Надежды.",
-      "longRestDescription": "Во время длительного отдыха игрок может свободно перемещать карты домена между инвентарём и хранилищем, затем дважды выбрать из списка ходов отдыха: 1) Очистить все очки здоровья для себя или союзника, 2) Очистить весь стресс, 3) Очистить все слоты доспеха для себя или союзника, 4) Описать, как вы готовитесь к приключению следующего дня, затем получить Надежду. Если вы выбираете Подготовиться с одним или несколькими членами вашей группы, каждый из вас получает 2 Надежды."
+      "restDescription": "Во время отдыха игрок может свободно перемещать карты домена между инвентарём и хранилищем, затем дважды выбрать из списка ходов отдыха.",
+      "clear_health": "Очистить 1d4+{{tier}} или все ХП для себя",
+      "clear_stress": "Очистить 1d4+{{tier}} или все стресса",
+      "clear_armor_slots": "Очистить 1d4+{{tier}} или все слотов доспеха для себя",
+      "gain_hope": "Получить Надежду",
+      "gain_double_hope": "Получить 2 Надежды",
+      "makeRolls": "Автоматические броски"
     },
     "gold": {
       "coins": "Монеты",
@@ -98,6 +161,27 @@
       "armor_score": "Доспех",
       "attack": "Атака",
       "proficiency": "Мастерство"
+    },
+    "beast": {
+      "transformation": "Превращение в зверя",
+      "naturalForm": "Естественная форма"
+    },
+    "companion": {
+      "notAvailable": "Питомцы не доступны для этого персонажа",
+      "name": "Имя питомца",
+      "evasion": "Уклонение",
+      "damage": "Урон",
+      "distance": "Дистанция",
+      "leveling": {
+        "intelligent": "Intelligent",
+        "light": "Light in the Dark",
+        "comfort": "Creature comfort",
+        "armored": "Armored",
+        "vicious": "Vicious",
+        "resilient": "Resilient",
+        "bonded": "Bonded",
+        "aware": "Aware"
+      }
     }
   },
   "pathfinder2": {
@@ -143,7 +227,9 @@
     "cost": "Цена",
     "addItems": "Добавить предметы",
     "equipedItems": "Экипировано",
+    "equipedItemsDescription": "Предметы в руках, экипированный доспех, боеприпасы, расходные материалы",
     "backpackItems": "В рюкзаке",
+    "backpackItemsDescription": "Предметы в рюкзаке, не могут быть быстро использованы",
     "itemNote": "Заметка",
     "weaponsList": "Оружие",
     "primaryWeapon": "Основное оружие",
@@ -156,7 +242,8 @@
     "ammoList": "Боеприпасы",
     "focusList": "Фокусировка",
     "toolsList": "Инструменты",
-    "musicList": "Музыкальные инструменты"
+    "musicList": "Музыкальные инструменты",
+    "consumables": "Расходные материалы"
   },
   "rest": {
     "shortRest": "Короткий отдых",
@@ -166,7 +253,7 @@
 
 
 
-
+  "create": "Создать",
   "back": "Назад",
   "save": "Сохранить",
   "find": "Найти",
@@ -183,18 +270,6 @@
     "fileSizeLimit": "Размер файла должен быть меньше 1 МБ",
     "invalidSubclassesList": "Необходимо выбрать все подклассы для классов",
     "feedbackIsAdded": "Отзыв отправлен, большое спасибо за использование ЧарКипера!"
-  },
-  "settingsPage": {
-    "title": "Настройки",
-    "changeLocale": "Язык",
-    "feedback": "Отзыв",
-    "profile": "Профиль",
-    "username": "Имя пользователя",
-    "socials": "Общество",
-    "notifications": "Уведомления"
-  },
-  "homebrewPage": {
-    "title": "Homebrew"
   },
   "charactersPage": {
     "title": "Персонажи",
@@ -221,7 +296,11 @@
       "legacy": "Наследие",
       "size": "Размер",
       "mainClass": "Основной класс",
-      "alignment": "Мировоззрение"
+      "alignment": "Мировоззрение",
+      "sizes": {
+        "small": "Маленький",
+        "medium": "Средний"
+      }
     },
     "pathfinder2": {
       "race": "Раса",
@@ -231,12 +310,12 @@
       "mainAbility": "Основная характеристика"
     },
     "daggerheart": {
-      "heritage": "Раса",
+      "ancestry": "Раса",
       "community": "Общество",
       "mainClass": "Основной класс",
       "subclass": "Подкласс",
-      "customHeritage": "Мультираса",
-      "heritageName": "Название расы",
+      "customAncestry": "Мультираса",
+      "ancestryName": "Название расы",
       "mainFeature": "Главная способность",
       "secondaryFeature": "Дополнительная способность"
     }
@@ -254,23 +333,17 @@
     "thresholds": "Пороги урона",
     "onlyPreparedSpells": "Подготовленные",
     "onlyAvailableSpells": "Доступные",
-    "allSpells": "Все",
     "no_magic": "Персонаж не обладает магическими способностями",
     "changeLevels": "Изменить уровни классов",
     "changeClasses": "Изменить классы персонажа",
     "knownSpells": "Изучение заклинаний",
     "items": "Добавить снаряжение",
-    "itemsList": "Предметы",
-    "weaponsList": "Оружие",
-    "staticSpell": "Постоянное",
     "staticSpellPerDay": "раз в день",
     "staticSpellLevel": "как на уровне",
     "staticSpellAttackBonus": "бонус атаки",
     "staticSpellSaveDC": "УС",
     "damage": "Урон",
     "heal": "Лечение",
-    "learn": "Изучить",
-    "forget": "Забыть",
     "damageConditions": "Сопротивление урону",
     "vulnerability": "Уязвм",
     "resistance": "Сопрт",
@@ -278,7 +351,6 @@
     "shortRest": "Короткий отдых",
     "longRest": "Длинный отдых",
     "sessionRest": "Между сессиями",
-    "confirmChooseOnceFeature": "Подтвердить",
     "itemNote": "Заметка о предмете",
     "spellNote": "Заметка о заклинании",
     "deathSavingThrows": "Спасброски от смерти",
@@ -286,9 +358,7 @@
     "deathFailure": "Провалы",
     "dyingConditionValue": "Состояние при смерти",
     "newBonus": "Новый бонус",
-    "newBonusComment": "Комментарий",
-    "beastTransformation": "Превращение в зверя",
-    "naturalForm": "Естественная форма"
+    "newBonusComment": "Комментарий"
   },
   "professionsPage": {
     "feats": "Черты",
@@ -392,48 +462,6 @@
       "shield": "Щит"
     },
     "selectedFeatures": {
-      "metamagic_careful_spell": "Аккуратное заклинание",
-      "metamagic_distant_spell": "Далёкое заклинание",
-      "metamagic_empowered_spell": "Усиленное заклинание",
-      "metamagic_extended_spell": "Продлённое заклинание",
-      "metamagic_heightened_spell": "Непреодолимое заклинание",
-      "metamagic_quickened_spell": "Ускоренное заклинание",
-      "metamagic_subtle_spell": "Неуловимое заклинание",
-      "metamagic_twinned_spell": "Удвоенное заклинание",
-      "draconic_ancestry_black": "Чёрный дракон",
-      "draconic_ancestry_blue": "Синий дракон",
-      "draconic_ancestry_brass": "Латунный дракон",
-      "draconic_ancestry_bronze": "Бронзовый дракон",
-      "draconic_ancestry_copper": "Медный дракон",
-      "draconic_ancestry_gold": "Золотой дракон",
-      "draconic_ancestry_green": "Зелёный дракон",
-      "draconic_ancestry_red": "Красный дракон",
-      "draconic_ancestry_silver": "Серебряный дракон",
-      "draconic_ancestry_white": "Белый дракон",
-      "dragon_ancestor_black": "Чёрный дракон",
-      "dragon_ancestor_blue": "Синий дракон",
-      "dragon_ancestor_brass": "Латунный дракон",
-      "dragon_ancestor_bronze": "Бронзовый дракон",
-      "dragon_ancestor_copper": "Медный дракон",
-      "dragon_ancestor_gold": "Золотой дракон",
-      "dragon_ancestor_green": "Зелёный дракон",
-      "dragon_ancestor_red": "Красный дракон",
-      "dragon_ancestor_silver": "Серебряный дракон",
-      "dragon_ancestor_white": "Белый дракон",
-      "arctic": "Тундра",
-      "coast": "Побережье",
-      "desert": "Пустыня",
-      "forest": "Лес",
-      "grassland": "Луг",
-      "mountain": "Гора",
-      "swamp": "Болото",
-      "underdark": "Подземье",
-      "fighting_style_archery": "Стрельба",
-      "fighting_style_defense": "Оборона",
-      "fighting_style_dueling": "Дуэлянт",
-      "fighting_style_great_weapon_fighting": "Сражение большим оружием",
-      "fighting_style_protection": "Защита",
-      "fighting_style_two_weapon_fighting": "Сражение двумя оружиями",
       "int": "Интеллект",
       "wis": "Мудрость",
       "cha": "Обаяние"
@@ -483,7 +511,8 @@
       "sorcerer": "Чародей",
       "warlock": "Колдун",
       "wizard": "Волшебник",
-      "artificer": "Изобретатель"
+      "artificer": "Изобретатель",
+      "static": "Врождённые"
     },
     "subclasses": {
       "barbarian": {

@@ -13,7 +13,7 @@ import { fetchCharactersRequest } from '../../requests/fetchCharactersRequest';
 import { fetchCharacterRequest } from '../../requests/fetchCharacterRequest';
 import { createCharacterRequest } from '../../requests/createCharacterRequest';
 import { removeCharacterRequest } from '../../requests/removeCharacterRequest';
-
+import { fetchHomebrewsRequest } from '../../requests/fetchHomebrewsRequest';
 import { translate } from '../../helpers';
 
 const DAGGERHEART_DEFAULT_FORM = {
@@ -53,6 +53,7 @@ export const CharactersTab = () => {
   const [characterPathfinder2Form, setCharacterPathfinder2Form] = createStore(PATHFINDER2_DEFAULT_FORM);
   const [characterDaggerheartForm, setCharacterDaggerheartForm] = createStore(DAGGERHEART_DEFAULT_FORM);
   const [customHeritage, setCustomHeritage] = createSignal(false);
+  const [homebrews, setHomebrews] = createSignal(undefined);
 
   const { Modal, openModal, closeModal } = createModal();
   const [appState, { navigate }] = useAppState();
@@ -63,12 +64,17 @@ export const CharactersTab = () => {
 
   createEffect(() => {
     if (characters() !== undefined) return;
+    if (homebrews() !== undefined) return;
 
     const fetchCharacters = async () => await fetchCharactersRequest(appState.accessToken);
+    const fetchHomebrews = async () => await fetchHomebrewsRequest(appState.accessToken);
 
-    Promise.all([fetchCharacters()]).then(
-      ([charactersData]) => {
-        setCharacters(charactersData.characters);
+    Promise.all([fetchCharacters(), fetchHomebrews()]).then(
+      ([charactersData, homebrewsData]) => {
+        batch(() => {
+          setCharacters(charactersData.characters);
+          setHomebrews(homebrewsData);
+        });
       }
     );
   });
@@ -77,6 +83,12 @@ export const CharactersTab = () => {
     const characterData = await fetchCharacterRequest(appState.accessToken, adminCharacterId());
     if (characterData.errors == undefined) setCharacters(characters().concat(characterData.character));
   }
+
+  const daggerheartHeritages = createMemo(() => {
+    if (homebrews() === undefined) return [];
+
+    return { ...daggerheartConfig.heritages, ...homebrews().daggerheart.heritages };
+  });
 
   const mainAbilityOptions = createMemo(() => {
     if (characterPathfinder2Form.main_class === undefined) return {};
@@ -89,7 +101,7 @@ export const CharactersTab = () => {
     }
     const allOptions = subclassOptions.concat(classOptions);
 
-    return Object.fromEntries(Object.entries(dict().dnd.abilities).filter(([key,]) => allOptions.includes(key)));
+    return Object.fromEntries(Object.entries(dnd2024Config.abilities).map(([key, values]) => [key, values.name[locale()]]).filter(([key,]) => allOptions.includes(key)));
   });
 
   const heritageFeatures = createMemo(() => {
@@ -256,7 +268,7 @@ export const CharactersTab = () => {
       </Switch>
       <Switch>
         <Match when={currentTab() === 'characters'}>
-          <div class="relative flex-1 overflow-y-scroll">
+          <div class="flex-1 overflow-y-scroll">
             <Show when={characters() !== undefined}>
               <For each={filteredCharacters()}>
                 {(character) =>
@@ -303,7 +315,7 @@ export const CharactersTab = () => {
                         avatar={character.avatar}
                         name={character.name}
                         provider='Daggerheart'
-                        firstText={`${t('charactersPage.level')} ${character.level} | ${character.heritage ? daggerheartConfig.heritages[character.heritage].name[locale()] : character.heritage_name}`}
+                        firstText={`${t('charactersPage.level')} ${character.level} | ${character.heritage ? daggerheartHeritages()[character.heritage].name[locale()] : character.heritage_name}`}
                         secondText={Object.keys(character.classes).map((item) => daggerheartConfig.classes[item].name[locale()]).join(' * ')}
                         onClick={() => navigate('character', { id: character.id })}
                         onDeleteCharacter={(e) => deleteCharacter(e, character.id)}
@@ -314,7 +326,7 @@ export const CharactersTab = () => {
               </For>
             </Show>
             <Show when={appState.isAdmin}>
-              <div class="absolute bottom-0 left-0 w-full flex p-2">
+              <div class="w-full flex p-2">
                 <Button
                   default
                   size="small"
@@ -410,7 +422,7 @@ export const CharactersTab = () => {
                       <Select
                         containerClassList="mb-2"
                         labelText={t('newCharacterPage.dnd2024.size')}
-                        items={dnd2024Config.species[characterDnd2024Form.species].sizes.reduce((acc, item) => { acc[item] = t(`dnd2024.sizes.${item}`); return acc; }, {})}
+                        items={dnd2024Config.species[characterDnd2024Form.species].sizes.reduce((acc, item) => { acc[item] = t(`newCharacterPage.dnd2024.sizes.${item}`); return acc; }, {})}
                         selectedValue={characterDnd2024Form.size}
                         onSelect={(value) => setCharacterDnd2024Form({ ...characterDnd2024Form, size: value })}
                       />
@@ -493,7 +505,7 @@ export const CharactersTab = () => {
                       onInput={(value) => setCharacterDaggerheartForm({ ...characterDaggerheartForm, name: value })}
                     />
                     <Checkbox
-                      labelText={t('newCharacterPage.daggerheart.customHeritage')}
+                      labelText={t('newCharacterPage.daggerheart.customAncestry')}
                       labelPosition="right"
                       labelClassList="ml-2"
                       checked={customHeritage()}
@@ -505,8 +517,8 @@ export const CharactersTab = () => {
                       fallback={
                         <Select
                           containerClassList="mb-2"
-                          labelText={t('newCharacterPage.daggerheart.heritage')}
-                          items={translate(daggerheartConfig.heritages, locale())}
+                          labelText={t('newCharacterPage.daggerheart.ancestry')}
+                          items={translate(daggerheartHeritages(), locale())}
                           selectedValue={characterDaggerheartForm.heritage}
                           onSelect={(value) => setCharacterDaggerheartForm({ ...characterDaggerheartForm, heritage: value })}
                         />
@@ -514,7 +526,7 @@ export const CharactersTab = () => {
                     >
                       <Input
                         containerClassList="mb-2"
-                        labelText={t('newCharacterPage.daggerheart.heritageName')}
+                        labelText={t('newCharacterPage.daggerheart.ancestryName')}
                         value={characterDaggerheartForm.heritage_name}
                         onInput={(value) => setCharacterDaggerheartForm({ ...characterDaggerheartForm, heritage_name: value })}
                       />
