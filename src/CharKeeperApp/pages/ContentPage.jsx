@@ -1,6 +1,9 @@
 import { Switch, Match } from 'solid-js';
 
-import { CharacterTab, PasswordsTab, FeedbackTab, UsernameTab, NotificationsTab, HomebrewContentTab } from '../pages';
+import {
+  CharacterTab, PasswordsTab, FeedbackTab, UsernameTab, NotificationsTab, HomebrewContentTab, CharacterView, CampaignTab,
+  CampaignJoinTab
+} from '../pages';
 
 import { useAppState } from '../context';
 
@@ -12,6 +15,9 @@ export const ContentPage = (props) => {
       <Switch fallback={<></>}>
         <Match when={appState.activePage === 'character'}>
           <CharacterTab onNavigate={props.onNavigate} />
+        </Match>
+        <Match when={appState.activePage === 'characterView'}>
+          <CharacterView onNavigate={props.onNavigate} />
         </Match>
         <Match when={appState.activePage === 'passwords'}>
           <PasswordsTab onNavigate={props.onNavigate} />
@@ -27,6 +33,12 @@ export const ContentPage = (props) => {
         </Match>
         <Match when={appState.activePage === 'homebrew'}>
           <HomebrewContentTab onNavigate={props.onNavigate} />
+        </Match>
+        <Match when={appState.activePage === 'campaign'}>
+          <CampaignTab onNavigate={props.onNavigate} />
+        </Match>
+        <Match when={appState.activePage === 'campaignJoin'}>
+          <CampaignJoinTab onNavigate={props.onNavigate} />
         </Match>
       </Switch>
     </div>

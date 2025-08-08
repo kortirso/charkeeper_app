@@ -3,6 +3,7 @@ import { createStore } from 'solid-js/store';
 import * as i18n from '@solid-primitives/i18n';
 
 import { Input, TextArea, Select, Button } from '../../../../components';
+import config from '../../../../data/daggerheart.json';
 import { useAppLocale } from '../../../../context';
 import { translate } from '../../../../helpers';
 
@@ -14,7 +15,8 @@ export const NewDaggerheartFeatForm = (props) => {
     origin_value: '',
     kind: '',
     limit: null,
-    limit_refresh: null
+    limit_refresh: null,
+    subclass_mastery: 1
   });
 
   const [locale, dict] = useAppLocale();
@@ -22,20 +24,29 @@ export const NewDaggerheartFeatForm = (props) => {
   const t = i18n.translator(dict);
 
   const daggerheartHeritages = createMemo(() => {
-    if (props.homebrews === undefined) return [];
+    const result = translate(config.heritages, locale());
+    if (props.homebrews === undefined) return result;
 
-    return props.homebrews.daggerheart.heritages;
+    return { ...result, ...props.homebrews.races.reduce((acc, item) => { acc[item.id] = item.name; return acc; }, {}) };
   });
 
   const daggerheartClasses = createMemo(() => {
+    const result = translate(config.classes, locale());
+    if (props.homebrews === undefined) return result;
+
+    return { ...result, ...props.homebrews.classes.reduce((acc, item) => { acc[item.id] = item.name; return acc; }, {}) };
+  });
+
+  const daggerheartSubclasses = createMemo(() => {
     if (props.homebrews === undefined) return [];
 
-    return props.homebrews.daggerheart.classes;
+    return props.homebrews.subclasses.reduce((acc, item) => { acc[item.id] = item.name; return acc; }, {});
   });
 
   const originValues = createMemo(() => {
     if (featForm.origin === 'ancestry') return daggerheartHeritages();
     if (featForm.origin === 'class') return daggerheartClasses();
+    if (featForm.origin === 'subclass') return daggerheartSubclasses();
     
     return [];
   });
@@ -66,9 +77,18 @@ export const NewDaggerheartFeatForm = (props) => {
         <Select
           containerClassList="mb-2"
           labelText={t('pages.homebrewPage.daggerheart.originValue')}
-          items={translate(originValues(), locale())}
+          items={originValues()}
           selectedValue={featForm.origin_value}
           onSelect={(value) => setFeatForm({ ...featForm, origin_value: value })}
+        />
+      </Show>
+      <Show when={featForm.origin === 'subclass'}>
+        <Select
+          containerClassList="mb-2"
+          labelText={t('pages.homebrewPage.daggerheart.subclassMastery')}
+          items={{ 1: 'Foundation', 2: 'Specialization', 3: 'Mastery' }}
+          selectedValue={featForm.subclass_mastery}
+          onSelect={(value) => setFeatForm({ ...featForm, subclass_mastery: value })}
         />
       </Show>
       <Select
