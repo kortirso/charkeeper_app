@@ -48,12 +48,11 @@
 }
 
 body {
-  @apply flex flex-col bg-transparent;
+  @apply flex flex-col bg-transparent h-screen;
+}
 
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
-  height: 100vh;
-  max-height: calc(100vh - env(safe-area-inset-bottom));
+body.dark-theme {
+  @apply bg-neutral-800;
 }
 
 #root {
@@ -71,8 +70,6 @@ body {
 #charkeeper_app_html,
 #charkeeper_app_body {
   overscroll-behavior-y: contain; /* Предотвращает перетягивание на iOS */
-  /*height: -webkit-fill-available;*/
-  /*min-height: 100%;*/
 }
 
 #charkeeper_app_body::-webkit-scrollbar {
