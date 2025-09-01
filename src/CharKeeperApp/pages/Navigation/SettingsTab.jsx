@@ -49,7 +49,7 @@ export const SettingsTab = () => {
           {renderSettingsLink(t('pages.settingsPage.feedback'), 'feedback')}
           <div class="flex py-3 px-4 gap-4">
             <p class="dark:text-snow">{t('pages.settingsPage.socials')}</p>
-            <a href="https://discord.gg/fJVjhuef" target="_blank" rel="noopener noreferrer" class="opacity-75 hover:opacity-100">
+            <a href="https://discord.gg/CmT8RgyECQ" target="_blank" rel="noopener noreferrer" class="opacity-75 hover:opacity-100">
               <Discord />
             </a>
             <a href="https://vk.com/char_keeper" target="_blank" rel="noopener noreferrer" class="opacity-75 hover:opacity-100">
@@ -66,7 +66,7 @@ export const SettingsTab = () => {
             {t('pages.settingsPage.logout')}
           </p>
         </div>
-        <p class="py-3 px-4 dark:text-snow">{t('pages.settingsPage.version')} 0.2.18, 2025.08.20</p>
+        <p class="py-3 px-4 dark:text-snow">{t('pages.settingsPage.version')} 0.2.20, 2025.09.01</p>
       </div>
     </>
   );
