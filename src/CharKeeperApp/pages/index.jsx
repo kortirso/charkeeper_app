@@ -6,6 +6,7 @@ export * from './Navigation/CharactersTab';
 export * from './Navigation/HomebrewTab';
 export * from './Navigation/SettingsTab';
 export * from './Navigation/CampaignsTab';
+export * from './Navigation/BotTab';
 
 export * from './Content/CharacterTab';
 export * from './Content/CharacterView';
@@ -22,6 +23,7 @@ export * from './Content/Homebrew/Feats';
 export * from './Content/Homebrew/Items';
 export * from './Content/Homebrew/Classes';
 export * from './Content/Homebrew/Subclasses';
+export * from './Content/Homebrew/Modules';
 
 export * from './Content/Character/Dnd5';
 export * from './Content/Character/Dnd5/Abilities';
