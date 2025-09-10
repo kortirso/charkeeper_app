@@ -34,7 +34,7 @@
       "icons/icon.ico"
     ],
     "android": {
-      "versionCode": 2023
+      "versionCode": 3000
     }
   }
 }
