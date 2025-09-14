@@ -86,6 +86,12 @@ export const CharactersTab = () => {
     return { ...daggerheartConfig.heritages, ...homebrews().daggerheart.races };
   });
 
+  const daggerheartCommunities = createMemo(() => {
+    if (homebrews() === undefined) return {};
+
+    return { ...daggerheartConfig.communities, ...homebrews().daggerheart.communities };
+  });
+
   const daggerheartClasses = createMemo(() => {
     if (homebrews() === undefined) return {};
 
@@ -215,7 +221,7 @@ export const CharactersTab = () => {
 
     const result = await createCharacterRequest(appState.accessToken, platform(), { character: characterFormData });
     
-    if (result.errors === undefined) {
+    if (result.errors_list === undefined) {
       batch(() => {
         setCharacters([result.character, ...characters()]);
         setPlatform(undefined);
@@ -241,7 +247,7 @@ export const CharactersTab = () => {
       });
     } else {
       batch(() => {
-        renderAlerts(result.errors);
+        renderAlerts(result.errors_list);
         setLoading(false);
       })
     }
@@ -259,13 +265,13 @@ export const CharactersTab = () => {
   const confirmCharacterDeleting = async () => {
     const result = await removeCharacterRequest(appState.accessToken, deletingCharacterId());
 
-    if (result.errors === undefined) {
+    if (result.errors_list === undefined) {
       batch(() => {
         setCharacters(characters().filter((item) => item.id !== deletingCharacterId()));
         closeModal();
       });
       navigate(null, {});
-    } else renderAlerts(result.errors);
+    } else renderAlerts(result.errors_list);
   }
 
   return (
@@ -525,7 +531,7 @@ export const CharactersTab = () => {
                     <Select
                       containerClassList="mb-2"
                       labelText={t('newCharacterPage.daggerheart.community')}
-                      items={translate(daggerheartConfig.communities, locale())}
+                      items={translate(daggerheartCommunities(), locale())}
                       selectedValue={characterDaggerheartForm.community}
                       onSelect={(value) => setCharacterDaggerheartForm({ ...characterDaggerheartForm, community: value })}
                     />

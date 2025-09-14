@@ -31,7 +31,7 @@ export const SettingsTab = () => {
   const logout = async () => {
     const result = await logoutRequest(appState.accessToken);
 
-    if (result.errors === undefined) setAccessToken(null);
+    if (result.errors_list === undefined) setAccessToken(null);
   }
 
   // 453x750
@@ -71,7 +71,7 @@ export const SettingsTab = () => {
             {t('pages.settingsPage.logout')}
           </p>
         </div>
-        <p class="py-3 px-4 dark:text-snow">{t('pages.settingsPage.version')} 0.3.0, 2025.09.10</p>
+        <p class="py-3 px-4 dark:text-snow">{t('pages.settingsPage.version')} 0.3.1, 2025.09.14</p>
       </div>
     </>
   );

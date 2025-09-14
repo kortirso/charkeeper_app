@@ -29,7 +29,7 @@ export const HomebrewModules = (props) => {
 
   return (
     <div class="p-2">
-      <p class="mb-4 dark:text-snow">{t('pages.homebrewPage.modulesHelp')}</p>
+      <p class="mb-2 dark:text-snow">{t('pages.homebrewPage.modulesHelp')}</p>
       <Show when={books() !== undefined}>
         <For each={books()}>
           {(book) =>
@@ -45,6 +45,24 @@ export const HomebrewModules = (props) => {
                     <For each={props.homebrews.races.filter((item) => book.items.races.includes(item.id))}>
                       {(race) =>
                         <p class="flex-1">{race.name}</p>
+                      }
+                    </For>
+                    <p class="mt-8 mb-2">{t(`pages.homebrewPage.${props.provider}.includedCommunities`)}</p>
+                    <For each={props.homebrews.communities.filter((item) => book.items.communities.includes(item.id))}>
+                      {(community) =>
+                        <p class="flex-1">{community.name}</p>
+                      }
+                    </For>
+                    <p class="mt-8 mb-2">{t(`pages.homebrewPage.${props.provider}.includedSubclasses`)}</p>
+                    <For each={props.homebrews.subclasses.filter((item) => book.items.subclasses.includes(item.id))}>
+                      {(subclass) =>
+                        <p class="flex-1">{subclass.name}</p>
+                      }
+                    </For>
+                    <p class="mt-8 mb-2">{t(`pages.homebrewPage.${props.provider}.includedItems`)}</p>
+                    <For each={props.homebrews.items.filter((item) => book.items.items.includes(item.id))}>
+                      {(item) =>
+                        <p class="flex-1">{item.name.en}</p>
                       }
                     </For>
                   </Match>
