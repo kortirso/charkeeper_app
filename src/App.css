@@ -49,6 +49,9 @@
 
 body {
   @apply flex flex-col bg-transparent h-screen;
+
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 body.dark-theme {

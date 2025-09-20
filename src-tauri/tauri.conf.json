@@ -35,6 +35,9 @@
     ],
     "android": {
       "versionCode": 3001
+    },
+    "iOS": {
+      "bundleVersion": "3001"
     }
   }
 }
