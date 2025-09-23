@@ -127,7 +127,8 @@
         "origins": {
           "ancestry": "Ancestry",
           "class": "Class",
-          "subclass": "Subclass"
+          "subclass": "Subclass",
+          "community": "Community"
         },
         "kinds": {
           "static": "Static text",
@@ -284,14 +285,28 @@
     "newNoteValue": "Note text"
   },
   "equipment": {
+    "in": {
+      "hands": {
+        "title": "In hands",
+        "description": "Items in your hands"
+      },
+      "equipment": {
+        "title": "On body",
+        "description": "Equiped armor, ammo for weapon, consumables"
+      },
+      "backpack": {
+        "title": "In backpack",
+        "description": "Items in backpack, can't be quickly used"
+      },
+      "storage": {
+        "title": "Storage",
+        "description": "Outer storage of your items"
+      }
+    },
     "quantity": "Qty",
     "weight": "Weight",
     "cost": "Cost",
     "addItems": "Add items",
-    "equipedItems": "Equiped",
-    "equipedItemsDescription": "Items in your hands, equiped armor, ammo for weapon, consumables",
-    "backpackItems": "Backpacked",
-    "backpackItemsDescription": "Items in backpack, can't be quickly used",
     "itemNote": "Item note",
     "weaponsList": "Weapon",
     "primaryWeapon": "Primary weapon",
@@ -309,6 +324,7 @@
     "primaryWeaponMagic": "Primary weapon magic"
   },
   "rest": {
+    "oneAtShortRest": "Short - 1, long - full",
     "shortRest": "Short rest",
     "longRest": "Long rest",
     "sessionRest": "Session rest"
