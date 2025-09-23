@@ -1,7 +1,13 @@
-# Tauri + Solid
+## Build
 
-This template should help get you started developing with Tauri and Solid in Vite.
+```bash
+yarn tauri build --bundles dmg # MacOS
+yarn tauri android build --aab # Android
+yarn tauri ios build --export-method app-store-connect # iOS
+```
 
-## Recommended IDE Setup
+## Distribute
 
-- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+```bash
+xcrun altool --upload-app --type ios --file "src-tauri/gen/apple/build/arm64/Charkeeper.ipa" --apiKey ... --apiIssuer ...
+```
