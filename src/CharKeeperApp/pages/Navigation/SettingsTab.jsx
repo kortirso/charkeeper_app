@@ -29,9 +29,10 @@ export const SettingsTab = () => {
   );
 
   const logout = async () => {
-    const result = await logoutRequest(appState.accessToken);
+    await logoutRequest(appState.accessToken);
 
-    if (result.errors_list === undefined) setAccessToken(null);
+    setAccessToken(null);
+    window.location.href = '/';
   }
 
   // 453x750
@@ -44,6 +45,7 @@ export const SettingsTab = () => {
       <div class="p-4 flex-1 flex flex-col overflow-y-scroll">
         <div class="flex-1">
           {renderSettingsLink(t('pages.settingsPage.profile'), 'profile')}
+          {renderSettingsLink(t('pages.settingsPage.profileDeleting'), 'profileDeleting')}
           {renderSettingsLink(t('pages.settingsPage.changePassword'), 'passwords')}
           {renderSettingsLink(t('pages.settingsPage.notifications'), 'notifications')}
           {renderSettingsLink(t('pages.settingsPage.feedback'), 'feedback')}
@@ -71,7 +73,7 @@ export const SettingsTab = () => {
             {t('pages.settingsPage.logout')}
           </p>
         </div>
-        <p class="py-3 px-4 dark:text-snow">{t('pages.settingsPage.version')} 0.3.3, 2025.09.23</p>
+        <p class="py-3 px-4 dark:text-snow">{t('pages.settingsPage.version')} 0.3.4, 2025.09.25</p>
       </div>
     </>
   );
