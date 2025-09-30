@@ -1,9 +1,10 @@
-import { createSignal, createEffect, For, Show, createMemo, batch, Switch, Match } from 'solid-js';
+import { createSignal, createEffect, For, Show, createMemo, batch } from 'solid-js';
 import * as i18n from '@solid-primitives/i18n';
 
 import { SpellsTable } from './SpellsTable';
 import { StaticSpellsTable } from './StaticSpellsTable';
 import { StatsBlock, ErrorWrapper, Button, Toggle, Checkbox, Select } from '../../../../components';
+import config from '../../../../data/dnd2024.json';
 import { useAppState, useAppLocale } from '../../../../context';
 import { Plus, Minus } from '../../../../assets';
 import { fetchSpellsRequest } from '../../../../requests/fetchSpellsRequest';
@@ -32,9 +33,10 @@ export const Dnd5Spells = (props) => {
   const [spellsSelectingMode, setSpellsSelectingMode] = createSignal(false);
   const [availableSpellFilter, setAvailableSpellFilter] = createSignal(true);
   const [preparedSpellFilter, setPreparedSpellFilter] = createSignal(true);
+  const [spellAbility, setSpellAbility] = createSignal(null);
 
   const [appState] = useAppState();
-  const [, dict] = useAppLocale();
+  const [locale, dict] = useAppLocale();
 
   const t = i18n.translator(dict);
 
@@ -78,6 +80,7 @@ export const Dnd5Spells = (props) => {
   });
 
   const filteredSpellsList = createMemo(() => {
+    if (spells() === undefined) return [];
     if (lastActiveCharacterId() !== character().id) return [];
     if (spellClassesList().length === 0) return [];
 
@@ -95,6 +98,7 @@ export const Dnd5Spells = (props) => {
   const filteredCharacterSpells = createMemo(() => {
     if (lastActiveCharacterId() !== character().id) return [];
     if (spellClassesList().length === 0) return [];
+    if (characterSpells() === undefined) return [];
 
     return characterSpells().filter((item) => {
       if (item.prepared_by !== activeSpellClass()) return false;
@@ -107,6 +111,7 @@ export const Dnd5Spells = (props) => {
   const knownSpellIds = createMemo(() => {
     if (lastActiveCharacterId() !== character().id) return [];
     if (spellClassesList().length === 0) return [];
+    if (characterSpells() === undefined) return [];
 
     return characterSpells().map(({ spell_id }) => spell_id);
   });
@@ -135,7 +140,7 @@ export const Dnd5Spells = (props) => {
       appState.accessToken,
       props.character.provider,
       props.character.id,
-      { spell_id: spellId, target_spell_class: targetSpellClass }
+      { spell_id: spellId, target_spell_class: targetSpellClass, spell_ability: spellAbility() }
     );
     if (result.errors_list === undefined) setCharacterSpells(characterSpells().concat(result.spell));
   }
@@ -194,17 +199,26 @@ export const Dnd5Spells = (props) => {
         fallback={
           <>
             <div class="flex justify-between items-center mb-2">
-              <Checkbox
-                labelText={t('character.onlyAvailableSpells')}
-                labelPosition="right"
-                labelClassList="ml-2"
-                checked={availableSpellFilter()}
-                onToggle={() => setAvailableSpellFilter(!availableSpellFilter())}
-              />
+              <div>
+                <Checkbox
+                  labelText={t('character.onlyAvailableSpells')}
+                  labelPosition="right"
+                  labelClassList="ml-2"
+                  checked={availableSpellFilter()}
+                  onToggle={() => setAvailableSpellFilter(!availableSpellFilter())}
+                />
+                <Select
+                  containerClassList="flex-1"
+                  labelText={t('character.customSpellAbility')}
+                  items={{ 'null': 'No value', 'int': 'Intellect', 'wis': 'Wisdom', 'cha': 'Charisma' }}
+                  selectedValue={spellAbility()}
+                  onSelect={(value) => setSpellAbility(value === 'null' ? null : value)}
+                />
+              </div>
               <Show when={spellClassesList().length > 1}>
                 <Select
                   classList="w-40"
-                  items={spellClassesList().reduce((acc, item) => { acc[item] = t(`dnd5.classes.${item}`); return acc; }, {})}
+                  items={spellClassesList().reduce((acc, item) => { acc[item] = config.classes[item]['name'][locale()]; return acc; }, {})}
                   selectedValue={activeSpellClass()}
                   onSelect={(value) => setActiveSpellClass(value)}
                 />
@@ -225,13 +239,13 @@ export const Dnd5Spells = (props) => {
                                 fallback={
                                   <Show when={knownSpellIds().includes(spell.id)}>
                                     <p class="text-xs mt-1">
-                                      {t(`dnd5.classes.${characterSpells().find((item) => item.spell_id === spell.id).prepared_by}`)}
+                                      {config.classes[characterSpells().find((item) => item.spell_id === spell.id).prepared_by]['name'][locale()]}
                                     </p>
                                   </Show>
                                 }
                               >
                                 <p class="text-xs text-wrap">
-                                  {spell.available_for.map((item) => dict().dnd5.classes[item]).join(' * ')}
+                                  {spell.available_for.map((item) => config.classes[item]['name'][locale()]).join(' * ')}
                                 </p>
                               </Show>
                             </td>
@@ -261,36 +275,31 @@ export const Dnd5Spells = (props) => {
           </>
         }
       >
-        <Switch fallback={<></>}>
-          <Match when={spellClassesList().length === 0 && Object.keys(character().static_spells).length === 0}>
-            <div class="p-4 flex blockable dark:text-snow">
-              <p>{t('character.no_magic')}</p>
-            </div>
-          </Match>
-          <Match when={spells() !== undefined}>
-            <div class="flex justify-between items-center mb-2">
-              <Show when={activeSpellClass() !== 'static'} fallback={<span />}>
-                <Checkbox
-                  labelText={t('character.onlyPreparedSpells')}
-                  labelPosition="right"
-                  labelClassList="ml-2"
-                  checked={preparedSpellFilter()}
-                  onToggle={() => setPreparedSpellFilter(!preparedSpellFilter())}
-                />
-              </Show>
-              <Show when={spellClassesList().length > 1}>
-                <Select
-                  classList="w-52"
-                  items={spellClassesList().reduce((acc, item) => { acc[item] = t(`dnd5.classes.${item}`); return acc; }, {})}
-                  selectedValue={activeSpellClass()}
-                  onSelect={(value) => setActiveSpellClass(value)}
-                />
-              </Show>
-            </div>
-            <Show
-              when={activeSpellClass() !== 'static'}
-              fallback={<StaticSpellsTable spells={staticCharacterSpells()} />}
-            >
+        <Show when={spells() !== undefined}>
+          <div class="flex justify-between items-center mb-2">
+            <Show when={activeSpellClass() !== 'static'} fallback={<span />}>
+              <Checkbox
+                labelText={t('character.onlyPreparedSpells')}
+                labelPosition="right"
+                labelClassList="ml-2"
+                checked={preparedSpellFilter()}
+                onToggle={() => setPreparedSpellFilter(!preparedSpellFilter())}
+              />
+            </Show>
+            <Show when={spellClassesList().length > 1}>
+              <Select
+                classList="w-52"
+                items={spellClassesList().reduce((acc, item) => { acc[item] = (item === 'static' ? { 'en': 'Static', 'ru': 'Врожденные' }[locale()] : config.classes[item]['name'][locale()]); return acc; }, {})}
+                selectedValue={activeSpellClass()}
+                onSelect={(value) => setActiveSpellClass(value)}
+              />
+            </Show>
+          </div>
+          <Show
+            when={activeSpellClass() !== 'static'}
+            fallback={<StaticSpellsTable spells={staticCharacterSpells()} />}
+          >
+            <Show when={character().spell_classes[activeSpellClass()].multiclass_spell_level > 0}>
               <Show when={lastActiveCharacterId() === character().id}>
                 <StatsBlock
                   items={[
@@ -327,34 +336,36 @@ export const Dnd5Spells = (props) => {
                   </div>
                 </div>
               </Show>
-              <Button default textable classList="mb-2" onClick={() => setSpellsSelectingMode(true)}>
-                {t('character.knownSpells')}
-              </Button>
-              <SpellsTable
-                level="0"
-                spells={filteredCharacterSpells().filter((item) => item.level === 0)}
-                canPrepareSpells={canPrepareSpells()}
-                onEnableSpell={enableSpell}
-                onDisableSpell={disableSpell}
-              />
-              <For each={Object.entries(character().spells_slots)}>
-                {([level, slotsAmount]) =>
-                  <SpellsTable
-                    level={level}
-                    spells={filteredCharacterSpells().filter((item) => item.level === parseInt(level))}
-                    spentSpellSlots={spentSpellSlots()}
-                    canPrepareSpells={canPrepareSpells()}
-                    slotsAmount={slotsAmount}
-                    onEnableSpell={enableSpell}
-                    onDisableSpell={disableSpell}
-                    onSpendSpellSlot={spendSpellSlot}
-                    onFreeSpellSlot={freeSpellSlot}
-                  />
-                }
-              </For>
             </Show>
-          </Match>
-        </Switch>
+            <Button default textable classList="mb-2" onClick={() => setSpellsSelectingMode(true)}>
+              {t('character.knownSpells')}
+            </Button>
+            <SpellsTable
+              level="0"
+              character={character()}
+              spells={filteredCharacterSpells().filter((item) => item.level === 0)}
+              canPrepareSpells={canPrepareSpells()}
+              onEnableSpell={enableSpell}
+              onDisableSpell={disableSpell}
+            />
+            <For each={Object.entries(character().spells_slots)}>
+              {([level, slotsAmount]) =>
+                <SpellsTable
+                  level={level}
+                  character={character()}
+                  spells={filteredCharacterSpells().filter((item) => item.level === parseInt(level))}
+                  spentSpellSlots={spentSpellSlots()}
+                  canPrepareSpells={canPrepareSpells()}
+                  slotsAmount={slotsAmount}
+                  onEnableSpell={enableSpell}
+                  onDisableSpell={disableSpell}
+                  onSpendSpellSlot={spendSpellSlot}
+                  onFreeSpellSlot={freeSpellSlot}
+                />
+              }
+            </For>
+          </Show>
+        </Show>
       </Show>
     </ErrorWrapper>
   );

@@ -5,7 +5,8 @@ import { IconButton } from '../../../components';
 import { Dots, Avatar } from '../../../assets';
 import pathfinder2Config from '../../../data/pathfinder2.json';
 import dnd2024Config from '../../../data/dnd2024.json';
-import { useAppState, useAppLocale, useAppAlert } from '../../../context';
+import dnd5Config from '../../../data/dnd5.json';
+import { useAppLocale, useAppAlert } from '../../../context';
 import { clickOutside, copyToClipboard } from '../../../helpers';
 
 const AVAILABLE_JSON = ['daggerheart'];
@@ -15,7 +16,6 @@ export const CharactersListItem = (props) => {
 
   const [isOpen, setIsOpen] = createSignal(false);
 
-  const [appState] = useAppState();
   const [{ renderNotice }] = useAppAlert();
   const [locale, dict] = useAppLocale();
 
@@ -42,14 +42,14 @@ export const CharactersListItem = (props) => {
   const copy = (event) => {
     event.stopPropagation();
 
-    copyToClipboard(`https://charkeeper.org/characters/${appState.activePageParams.id}.json`);
+    copyToClipboard(`https://charkeeper.org/characters/${character().id}.json`);
     renderNotice(t('alerts.copied'));
     setIsOpen(false);
   }
 
   const firstText = createMemo(() => {
     if (character().provider === 'dnd5') {
-      return `${t('charactersPage.level')} ${character().level} | ${character().subrace ? t(`dnd5.subraces.${character().race}.${character().subrace}`) : t(`dnd5.races.${character().race}`)}`;
+      return `${t('charactersPage.level')} ${character().level} | ${character().legacy ? dnd5Config.races[character().race].subraces[character().subrace].name[locale()] : dnd5Config.races[character().race].name[locale()]}`;
     }
     if (character().provider === 'dnd2024') {
       return `${t('charactersPage.level')} ${character().level} | ${character().legacy ? dnd2024Config.species[character().species].legacies[character().legacy].name[locale()] : dnd2024Config.species[character().species].name[locale()]}`;
@@ -64,7 +64,7 @@ export const CharactersListItem = (props) => {
 
   const secondText = createMemo(() => {
     if (character().provider === 'dnd5') {
-      return Object.keys(character().classes).map((item) => t(`dnd5.classes.${item}`)).join(' * ');
+      return Object.keys(character().classes).map((item) => dnd5Config.classes[item].name[locale()]).join(' * ');
     }
     if (character().provider === 'dnd2024') {
       return Object.keys(character().classes).map((item) => dnd2024Config.classes[item].name[locale()]).join(' * ');
