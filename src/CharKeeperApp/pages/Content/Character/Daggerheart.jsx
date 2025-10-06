@@ -4,7 +4,8 @@ import { createWindowSize } from '@solid-primitives/resize-observer';
 
 import {
   DaggerheartTraits, DaggerheartStatic, DaggerheartHealth, DaggerheartCombat, DaggerheartBeastform, DaggerheartCompanion,
-  DaggerheartDomainCards, DaggerheartRest, DaggerheartLeveling, DaggerheartExperience, DaggerheartGold
+  DaggerheartDomainCards, DaggerheartRest, DaggerheartLeveling, DaggerheartExperience, DaggerheartGold, DaggerheartTransform,
+  DaggerheartStances
 } from '../../../pages';
 import { CharacterNavigation, Equipment, Bonuses, Notes, Avatar, ContentWrapper, Feats } from '../../../components';
 import { useAppLocale } from '../../../context';
@@ -45,6 +46,7 @@ export const Daggerheart = (props) => {
   const subclassFilter = (item) => item.origin === 'subclass';
   const beastformFilter = (item) => item.origin === 'beastform';
   const personalFilter = (item) => item.origin === 'character';
+  const transformationFilter = (item) => item.origin === 'transformation';
 
   const featFilters = createMemo(() => {
     const result = [
@@ -55,7 +57,8 @@ export const Daggerheart = (props) => {
       { title: 'personal', callback: personalFilter }
     ];
 
-    if (character().beastforms.length > 0) result.push({ title: 'beastform', callback: beastformFilter });
+    if (character().beastform !== null) result.push({ title: 'beastform', callback: beastformFilter });
+    if (character().transformation !== null) result.push({ title: 'transformation', callback: transformationFilter });
     return result;
   });
 
@@ -78,6 +81,12 @@ export const Daggerheart = (props) => {
               </div>
               <div class="mt-4">
                 <DaggerheartBeastform character={character()} onReplaceCharacter={props.onReplaceCharacter} />
+              </div>
+              <div class="mt-4">
+                <DaggerheartTransform character={character()} onReplaceCharacter={props.onReplaceCharacter} />
+              </div>
+              <div class="mt-4">
+                <DaggerheartStances character={character()} onReplaceCharacter={props.onReplaceCharacter} />
               </div>
               <div class="mt-4">
                 <Feats character={character()} filters={featFilters()} onReplaceCharacter={props.onReplaceCharacter} />
@@ -166,6 +175,12 @@ export const Daggerheart = (props) => {
         </div>
         <div class="mt-4">
           <DaggerheartBeastform character={character()} onReplaceCharacter={props.onReplaceCharacter} />
+        </div>
+        <div class="mt-4">
+          <DaggerheartTransform character={character()} onReplaceCharacter={props.onReplaceCharacter} />
+        </div>
+        <div class="mt-4">
+          <DaggerheartStances character={character()} onReplaceCharacter={props.onReplaceCharacter} />
         </div>
         <div class="mt-4">
           <Feats character={character()} filters={featFilters()} onReplaceCharacter={props.onReplaceCharacter} />
