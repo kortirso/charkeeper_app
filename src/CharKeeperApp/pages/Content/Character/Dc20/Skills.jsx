@@ -1,19 +1,19 @@
-import { createSignal, createEffect, For, Show, batch, Switch, Match } from 'solid-js';
+import { createSignal, createEffect, For, Show, batch } from 'solid-js';
 
-import { ErrorWrapper, Checkbox, Levelbox, EditWrapper, Dice, createDiceRoll } from '../../../../components';
-import config from '../../../../data/dnd2024.json';
+import { ErrorWrapper, Checkbox, Levelbox, EditWrapper } from '../../../../components';
+import config from '../../../../data/dc20.json';
 import { useAppState, useAppLocale, useAppAlert } from '../../../../context';
 import { updateCharacterRequest } from '../../../../requests/updateCharacterRequest';
+
 import { modifier } from '../../../../helpers';
 
-export const Dnd5Skills = (props) => {
+export const Dc20Skills = (props) => {
   const character = () => props.character;
 
   const [lastActiveCharacterId, setLastActiveCharacterId] = createSignal(undefined);
   const [editMode, setEditMode] = createSignal(false);
   const [skillsData, setSkillsData] = createSignal(character().skills);
 
-  const { DiceRoll, openDiceRoll } = createDiceRoll();
   const [appState] = useAppState();
   const [{ renderAlerts }] = useAppAlert();
   const [locale] = useAppLocale();
@@ -31,7 +31,7 @@ export const Dnd5Skills = (props) => {
     const result = skillsData().slice().map((item) => {
       if (item.slug !== slug) return item;
 
-      return { ...item, selected: !item.selected } 
+      return { ...item, expertise: !item.expertise } 
     });
     setSkillsData(result);
   }
@@ -40,7 +40,9 @@ export const Dnd5Skills = (props) => {
     const result = skillsData().slice().map((item) => {
       if (item.slug !== slug) return item;
 
-      const newValue = item.level === 2 ? 0 : (item.level === undefined ? 1 : (item.level + 1));
+      const maxLevel = Math.round(character().level / 5) + 1 + (item.expertise ? 1 : 0);
+
+      const newValue = item.level === maxLevel ? 0 : (item.level === undefined ? 1 : (item.level + 1));
       return { ...item, level: newValue } 
     });
     setSkillsData(result);
@@ -54,15 +56,10 @@ export const Dnd5Skills = (props) => {
   }
 
   const updateCharacter = async () => {
-    let selectedSkills;
-    if (character().provider === 'dnd2024') {
-      selectedSkills = skillsData().reduce((acc, item) => { acc[item.slug] = item.level; return acc }, {})
-    } else {
-      selectedSkills = skillsData().filter((item) => item.selected).map((item) => item.slug)
-    }
+    const skillLevels = skillsData().reduce((acc, item) => { acc[item.slug] = item.level; return acc }, {});
 
     const result = await updateCharacterRequest(
-      appState.accessToken, character().provider, character().id, { character: { selected_skills: selectedSkills } }
+      appState.accessToken, character().provider, character().id, { character: { skill_levels: skillLevels } }
     );
 
     if (result.errors_list === undefined) {
@@ -74,7 +71,7 @@ export const Dnd5Skills = (props) => {
   }
 
   return (
-    <ErrorWrapper payload={{ character_id: character().id, key: 'Dnd5Skills' }}>
+    <ErrorWrapper payload={{ character_id: character().id, key: 'Dc20Skills' }}>
       <EditWrapper
         editMode={editMode()}
         onSetEditMode={setEditMode}
@@ -82,7 +79,7 @@ export const Dnd5Skills = (props) => {
         onSaveChanges={updateCharacter}
       >
         <div class="blockable p-4 mb-2">
-          <For each={Object.keys(config.abilities)}>
+          <For each={['prime'].concat(Object.keys(config.abilities))}>
             {(slug) =>
               <For each={(editMode() ? skillsData() : character().skills).filter((item) => item.ability === slug)}>
                 {(skill) =>
@@ -90,37 +87,25 @@ export const Dnd5Skills = (props) => {
                     <Show
                       when={editMode()}
                       fallback={
-                        <p class="dark:text-snow mr-4">{skill.level ? skill.level : (skill.selected ? 1 : 0)}</p>
+                        <p class="dark:text-snow mr-4">{skill.level ? skill.level : (skill.expertise ? 1 : 0)}</p>
                       }
                     >
-                      <Switch>
-                        <Match when={character().provider === 'dnd5'}>
-                          <Checkbox
-                            classList="mr-2"
-                            checked={skill.selected}
-                            onToggle={() => toggleSkill(skill.slug)}
-                          />
-                        </Match>
-                        <Match when={character().provider === 'dnd2024'}>
-                          <Levelbox
-                            classList="mr-2"
-                            value={skill.level}
-                            onToggle={() => updateSkill(skill.slug)}
-                          />
-                        </Match>
-                      </Switch>
-                  </Show>
-                    <p class="uppercase dark:text-snow mr-4">{skill.ability}</p>
+                      <Checkbox
+                        classList="mr-2"
+                        checked={skill.expertise}
+                        onToggle={() => toggleSkill(skill.slug)}
+                      />
+                      <Levelbox
+                        classList="mr-2"
+                        value={skill.level}
+                        onToggle={() => updateSkill(skill.slug)}
+                      />
+                    </Show>
+                    <p class="uppercase dark:text-snow mr-4">{skill.ability === 'prime' ? 'prm' : skill.ability}</p>
                     <p class={`flex-1 flex items-center dark:text-snow ${skill.level > 0 ? 'font-normal!' : ''}`}>
                       {config.skills[skill.slug].name[locale()]}
                     </p>
-                    <Dice
-                      width="28"
-                      height="28"
-                      text={modifier(skill.modifier)}
-                      textClassList=""
-                      onClick={() => openDiceRoll(`/check skill ${skill.slug}`, skill.modifier)}
-                    />
+                    <span class="dark:text-snow">{modifier(skill.modifier)}</span>
                   </div>
                 }
               </For>
@@ -128,7 +113,6 @@ export const Dnd5Skills = (props) => {
           </For>
         </div>
       </EditWrapper>
-      <DiceRoll provider="dnd" characterId={character().id} />
     </ErrorWrapper>
   );
 }

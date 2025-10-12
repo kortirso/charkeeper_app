@@ -28,6 +28,7 @@
     },
     "characterNavigation": {
       "allFilter": "All",
+      "dc20": "DC20",
       "dnd5": "D&D 5",
       "dnd2024": "D&D 2024",
       "pathfinder2": "Pathfinder 2",
@@ -105,11 +106,6 @@
         "damageBonus": "Damage bonus",
         "burden": "Burden",
         "modules": "Modules",
-        "includedAncestries": "Ancestries",
-        "includedCommunities": "Communities",
-        "includedTransformations": "Transformations",
-        "includedSubclasses": "Subclasses",
-        "includedItems": "Items",
         "itemOrigin": "Attach item to",
         "itemOriginValue": "Attachable object",
         "transformations": "Transformations",
@@ -274,9 +270,6 @@
     "rest": {
       "shortRestDescription": "At the end of a short rest, a character may spend one or more Hit Dice. Each die spent allows the character to roll the corresponding die, add the character's Constitution modifier to it, and regain the resulting number of hit points.",
       "longRestDescription": "At the end of a long rest, the character regains all expended hit points, plus half of the maximum Hit Dice and all expended spell slots."
-    },
-    "savings": {
-      "title": "Saving throws"
     },
     "bonuses": {
       "title": "Bonuses",
