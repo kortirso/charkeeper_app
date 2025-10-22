@@ -2,13 +2,15 @@ import { createSignal, createMemo, Switch, Match } from 'solid-js';
 import { createWindowSize } from '@solid-primitives/resize-observer';
 
 import {
-  Dc20Abilities, Dc20Skills
+  Dc20Abilities, Dc20Skills, Dc20Saves, Dc20CombatStatic
 } from '../../../pages';
-import { CharacterNavigation, Notes, Avatar, ContentWrapper } from '../../../components';
+import { CharacterNavigation, Notes, Avatar, ContentWrapper, createDiceRoll } from '../../../components';
 
 export const Dc20 = (props) => {
   const size = createWindowSize();
   const character = () => props.character;
+
+  const { DiceRoll, openDiceRoll } = createDiceRoll();
 
   const [activeMobileTab, setActiveMobileTab] = createSignal('abilities');
   const [activeTab, setActiveTab] = createSignal('combat');
@@ -19,17 +21,35 @@ export const Dc20 = (props) => {
     return (
       <>
         <CharacterNavigation
-          tabsList={['abilities', 'notes', 'avatar']}
+          tabsList={['abilities', 'combat', 'notes', 'avatar']}
           activeTab={activeMobileTab()}
           setActiveTab={setActiveMobileTab}
+          currentGuideStep={character().guide_step}
+          markedTabs={{}}
         />
         <div class="p-2 flex-1 overflow-y-auto">
           <Switch>
             <Match when={activeMobileTab() === 'abilities'}>
-              <Dc20Abilities character={character()} onReplaceCharacter={props.onReplaceCharacter} />
+              <Dc20Abilities
+                character={character()}
+                openDiceRoll={openDiceRoll}
+                onReplaceCharacter={props.onReplaceCharacter}
+                onReloadCharacter={props.onReloadCharacter}
+              />
               <div class="mt-4">
-                <Dc20Skills character={character()} onReplaceCharacter={props.onReplaceCharacter} />
+                <Dc20Saves character={character()} openDiceRoll={openDiceRoll} />
               </div>
+              <div class="mt-4">
+                <Dc20Skills
+                  character={character()}
+                  openDiceRoll={openDiceRoll}
+                  onReplaceCharacter={props.onReplaceCharacter}
+                  onReloadCharacter={props.onReloadCharacter}
+                />
+              </div>
+            </Match>
+            <Match when={activeMobileTab() === 'combat'}>
+              <Dc20CombatStatic character={character()} openDiceRoll={openDiceRoll} />
             </Match>
             <Match when={activeMobileTab() === 'notes'}>
               <Notes />
@@ -48,12 +68,22 @@ export const Dc20 = (props) => {
 
     return (
       <>
-        <Dc20Abilities character={character()} onReplaceCharacter={props.onReplaceCharacter} />
-        <div class="flex flex-col emd:flex-row emd:gap-4 emd:mt-4">
-          <div class="mt-4 emd:mt-0 flex-1">
-            <Dc20Skills character={character()} onReplaceCharacter={props.onReplaceCharacter} />
-          </div>
-          <div class="mt-4 emd:mt-0 flex-1" />
+        <Dc20Abilities
+          character={character()}
+          openDiceRoll={openDiceRoll}
+          onReplaceCharacter={props.onReplaceCharacter}
+          onReloadCharacter={props.onReloadCharacter}
+        />
+        <div class="mt-4">
+          <Dc20Saves character={character()} openDiceRoll={openDiceRoll} />
+        </div>
+        <div class="mt-4">
+          <Dc20Skills
+            character={character()}
+            openDiceRoll={openDiceRoll}
+            onReplaceCharacter={props.onReplaceCharacter}
+            onReloadCharacter={props.onReloadCharacter}
+          />
         </div>
       </>
     );
@@ -65,12 +95,17 @@ export const Dc20 = (props) => {
     return (
       <>
         <CharacterNavigation
-          tabsList={['notes', 'avatar']}
+          tabsList={['combat', 'notes', 'avatar']}
           activeTab={activeTab()}
           setActiveTab={setActiveTab}
+          currentGuideStep={character().guide_step}
+          markedTabs={{}}
         />
         <div class="p-2 flex-1">
           <Switch>
+            <Match when={activeTab() === 'combat'}>
+              <Dc20CombatStatic character={character()} openDiceRoll={openDiceRoll} />
+            </Match>
             <Match when={activeTab() === 'notes'}>
               <Notes />
             </Match>
@@ -84,6 +119,9 @@ export const Dc20 = (props) => {
   });
 
   return (
-    <ContentWrapper mobileView={mobileView()} leftView={leftView()} rightView={rightView()} />
+    <>
+      <ContentWrapper mobileView={mobileView()} leftView={leftView()} rightView={rightView()} />
+      <DiceRoll provider="dc20" characterId={character().id} />
+    </>
   );
 }
