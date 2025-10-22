@@ -245,7 +245,7 @@ body.dark-theme {
 .damage-threshold {
   @apply flex items-center pb-4 relative;
 
-  padding-right: 13.5px;
+  padding-right: 12.5px;
 }
 
 .damage-threshold::before {
@@ -260,7 +260,7 @@ body.dark-theme {
 }
 
 .damage-threshold p {
-  @apply text-center border border-blue-400 bg-white rounded w-10 py-1 font-normal! text-lg;
+  @apply text-center border border-blue-400 bg-white rounded w-10 py-1 font-normal! text-lg border-r-0 relative z-10;
   @apply dark:border-fuzzy-red dark:text-dusty;
 }
 
