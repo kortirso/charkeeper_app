@@ -38,6 +38,14 @@
     },
     "iOS": {
       "bundleVersion": "10"
+    },
+    "category": "Utilities",
+    "copyright": "Bogdanov © 2025",
+    "macOS": {
+      "files": {
+        "embedded.provisionprofile": "./CharKeeper.mobileprovision"
+      },
+      "entitlements": "./entitlements.plist"
     }
   }
 }
