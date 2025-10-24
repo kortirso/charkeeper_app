@@ -1,10 +1,12 @@
 import { createSignal, createMemo, Switch, Match } from 'solid-js';
+import * as i18n from '@solid-primitives/i18n';
 import { createWindowSize } from '@solid-primitives/resize-observer';
 
 import {
-  Dc20Abilities, Dc20Skills, Dc20Saves, Dc20CombatStatic
+  Dc20Abilities, Dc20Skills, Dc20Saves, Dc20CombatStatic, Dc20Combat
 } from '../../../pages';
-import { CharacterNavigation, Notes, Avatar, ContentWrapper, createDiceRoll } from '../../../components';
+import { CharacterNavigation, Notes, Avatar, ContentWrapper, createDiceRoll, Conditions, Equipment } from '../../../components';
+import { useAppLocale } from '../../../context';
 
 export const Dc20 = (props) => {
   const size = createWindowSize();
@@ -15,17 +17,25 @@ export const Dc20 = (props) => {
   const [activeMobileTab, setActiveMobileTab] = createSignal('abilities');
   const [activeTab, setActiveTab] = createSignal('combat');
 
+  const [, dict] = useAppLocale();
+
+  const t = i18n.translator(dict);
+
+  const weaponFilter = (item) => item.kind.includes('weapon');
+  const armorFilter = (item) => item.kind.includes('armor');
+  const shieldFilter = (item) => item.kind.includes('shield');
+
   const mobileView = createMemo(() => {
     if (size.width >= 1152) return <></>;
 
     return (
       <>
         <CharacterNavigation
-          tabsList={['abilities', 'combat', 'notes', 'avatar']}
+          tabsList={['abilities', 'combat', 'equipment', 'notes', 'avatar']}
           activeTab={activeMobileTab()}
           setActiveTab={setActiveMobileTab}
           currentGuideStep={character().guide_step}
-          markedTabs={{}}
+          markedTabs={{ '3': 'equipment' }}
         />
         <div class="p-2 flex-1 overflow-y-auto">
           <Switch>
@@ -40,6 +50,9 @@ export const Dc20 = (props) => {
                 <Dc20Saves character={character()} openDiceRoll={openDiceRoll} />
               </div>
               <div class="mt-4">
+                <Conditions character={character()} />
+              </div>
+              <div class="mt-4">
                 <Dc20Skills
                   character={character()}
                   openDiceRoll={openDiceRoll}
@@ -50,6 +63,25 @@ export const Dc20 = (props) => {
             </Match>
             <Match when={activeMobileTab() === 'combat'}>
               <Dc20CombatStatic character={character()} openDiceRoll={openDiceRoll} />
+              <div class="mt-4">
+                <Dc20Combat
+                  character={character()}
+                  openDiceRoll={openDiceRoll}
+                  onReplaceCharacter={props.onReplaceCharacter}
+                />
+              </div>
+            </Match>
+            <Match when={activeMobileTab() === 'equipment'}>
+              <Equipment
+                character={character()}
+                itemFilters={[
+                  { title: t('equipment.weaponsList'), callback: weaponFilter },
+                  { title: t('equipment.armorList'), callback: armorFilter },
+                  { title: t('equipment.shieldList'), callback: shieldFilter }
+                ]}
+                onReplaceCharacter={props.onReplaceCharacter}
+                onReloadCharacter={props.onReloadCharacter}
+              />
             </Match>
             <Match when={activeMobileTab() === 'notes'}>
               <Notes />
@@ -78,6 +110,9 @@ export const Dc20 = (props) => {
           <Dc20Saves character={character()} openDiceRoll={openDiceRoll} />
         </div>
         <div class="mt-4">
+          <Conditions character={character()} />
+        </div>
+        <div class="mt-4">
           <Dc20Skills
             character={character()}
             openDiceRoll={openDiceRoll}
@@ -95,16 +130,35 @@ export const Dc20 = (props) => {
     return (
       <>
         <CharacterNavigation
-          tabsList={['combat', 'notes', 'avatar']}
+          tabsList={['combat', 'equipment', 'notes', 'avatar']}
           activeTab={activeTab()}
           setActiveTab={setActiveTab}
           currentGuideStep={character().guide_step}
-          markedTabs={{}}
+          markedTabs={{ '3': 'equipment' }}
         />
         <div class="p-2 flex-1">
           <Switch>
             <Match when={activeTab() === 'combat'}>
               <Dc20CombatStatic character={character()} openDiceRoll={openDiceRoll} />
+              <div class="mt-4">
+                <Dc20Combat
+                  character={character()}
+                  openDiceRoll={openDiceRoll}
+                  onReplaceCharacter={props.onReplaceCharacter}
+                />
+              </div>
+            </Match>
+            <Match when={activeTab() === 'equipment'}>
+              <Equipment
+                character={character()}
+                itemFilters={[
+                  { title: t('equipment.weaponsList'), callback: weaponFilter },
+                  { title: t('equipment.armorList'), callback: armorFilter },
+                  { title: t('equipment.shieldList'), callback: shieldFilter }
+                ]}
+                onReplaceCharacter={props.onReplaceCharacter}
+                onReloadCharacter={props.onReloadCharacter}
+              />
             </Match>
             <Match when={activeTab() === 'notes'}>
               <Notes />

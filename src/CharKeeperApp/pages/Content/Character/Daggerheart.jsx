@@ -8,7 +8,7 @@ import {
   DaggerheartStances
 } from '../../../pages';
 import {
-  CharacterNavigation, Equipment, Bonuses, Notes, Avatar, ContentWrapper, Feats, createDiceRoll
+  CharacterNavigation, Equipment, Bonuses, Notes, Avatar, ContentWrapper, Feats, createDiceRoll, Conditions
 } from '../../../components';
 import { useAppLocale } from '../../../context';
 
@@ -116,6 +116,9 @@ export const Daggerheart = (props) => {
               </div>
               <div class="mt-4">
                 <DaggerheartStances character={character()} onReplaceCharacter={props.onReplaceCharacter} />
+              </div>
+              <div class="mt-4">
+                <Conditions character={character()} />
               </div>
               <div class="mt-4">
                 <Feats
@@ -241,6 +244,9 @@ export const Daggerheart = (props) => {
         </div>
         <div class="mt-4">
           <DaggerheartStances character={character()} onReplaceCharacter={props.onReplaceCharacter} />
+        </div>
+        <div class="mt-4">
+          <Conditions character={character()} />
         </div>
         <div class="mt-4">
           <Feats

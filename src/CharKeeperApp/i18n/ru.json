@@ -326,6 +326,7 @@
     "primaryWeapon": "Основное оружие",
     "secondaryWeapon": "Запасное оружие",
     "armorList": "Броня",
+    "shieldList": "Щиты",
     "gold": "Золото",
     "silver": "Серебро",
     "copper": "Медь",
@@ -359,7 +360,6 @@
     "error": "Произошла ошибка рендеринга данных, отчет с ошибкой отправлен разработчику!",
     "restIsFinished": "Отдых проведён",
     "itemIsAdded": "Предмет добавлен",
-    "domainCardIsAdded": "Карта домена добавлена в хранилище",
     "characterIsUpdated": "Персонаж обновлён",
     "fileSizeLimit": "Размер файла должен быть меньше 1 МБ",
     "invalidSubclassesList": "Необходимо выбрать все подклассы для классов",
@@ -423,25 +423,15 @@
   "itemsPage": {
     "title": "Предметы"
   },
-  "spellbookPage": {
-    "level": "уровень"
-  },
   "spellsPage": {
     "title": "Заклинания"
   },
   "character": {
     "thresholds": "Пороги урона",
-    "onlyPreparedSpells": "Подготовленные",
-    "onlyAvailableSpells": "Доступные",
     "customSpellAbility": "Изучить с магической характеристикой",
     "changeLevels": "Изменить уровни классов",
     "changeClasses": "Изменить классы персонажа",
-    "knownSpells": "Изучение заклинаний",
     "items": "Добавить снаряжение",
-    "staticSpellPerDay": "раз в день",
-    "staticSpellLevel": "как на уровне",
-    "staticSpellAttackBonus": "бонус атаки",
-    "staticSpellSaveDC": "УС",
     "damage": "Урон",
     "heal": "Лечение",
     "damageConditions": "Сопротивление урону",
@@ -452,7 +442,6 @@
     "longRest": "Длинный отдых",
     "sessionRest": "Между сессиями",
     "itemNote": "Заметка о предмете",
-    "spellNote": "Заметка о заклинании",
     "deathSavingThrows": "Спасброски от смерти",
     "deathSuccess": "Успехи",
     "deathFailure": "Провалы",
@@ -475,8 +464,6 @@
     "music": "Музыкальные инструменты"
   },
   "terms": {
-    "spellAttack": "Бонус атаки",
-    "saveDC": "Спасброски",
     "armorClass": "Класс брони",
     "initiative": "Инициатива",
     "perception": "Восприятие",
@@ -488,9 +475,6 @@
     },
     "attackAction": "Атаки за действие",
     "attackBonusAction": "Атаки за бонус действие",
-    "cantrips": "Заговоры",
-    "known": "Известные",
-    "prepared": "Приготовленные",
     "proficiencyBonus": "Бонус мастерства",
     "hitDices": "Кости хитов"
   },
