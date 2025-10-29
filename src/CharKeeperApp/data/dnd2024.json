@@ -112,7 +112,12 @@
     },
     "druid": {
       "name": { "en": "Druid", "ru": "Друид" },
-      "subclasses": {}
+      "subclasses": {
+        "circle_of_the_land": { "name": { "en": "Circle of the Land", "ru": "Круг земли" } },
+        "circle_of_the_moon": { "name": { "en": "Circle of the Moon", "ru": "Круг луны" } },
+        "circle_of_the_sea": { "name": { "en": "Circle of the Sea", "ru": "Круг моря" } },
+        "circle_of_the_stars": { "name": { "en": "Circle of the Stars", "ru": "Круг звёзд" } }
+      }
     },
     "fighter": {
       "name": { "en": "Fighter", "ru": "Воин" },
@@ -132,7 +137,12 @@
     },
     "paladin": {
       "name": { "en": "Paladin", "ru": "Паладин" },
-      "subclasses": {}
+      "subclasses": {
+        "oath_of_devotion": { "name": { "en": "Oath of Devotion", "ru": "Клятва преданности" } },
+        "oath_of_glory": { "name": { "en": "Oath of Glory", "ru": "Клятва славы" } },
+        "oath_of_the_ancients": { "name": { "en": "Oath of the Ancients", "ru": "Клятва Древних" } },
+        "oath_of_vengeance": { "name": { "en": "Oath of Vengeance", "ru": "Клятва мести" } }
+      }
     },
     "ranger": {
       "name": { "en": "Ranger", "ru": "Следопыт" },
