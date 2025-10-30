@@ -108,8 +108,7 @@
         "transformations": "Transformations",
         "mechanics": "Available mechanics",
         "domainLevel": "Domain level"
-      },
-      "personalFeats": "Personal feats can be created through homebrew"
+      }
     },
     "campaignsPage": {
       "title": "Campaigns",
@@ -283,11 +282,6 @@
     }
   },
   "combat": {
-    "table": {
-      "bonus": "Bonus",
-      "damage": "Damage",
-      "distance": "Dist"
-    },
     "list": {
       "equipment": "Ready to use",
       "backpack": "Backpack"
@@ -469,16 +463,8 @@
       "max": "Max health",
       "temp": "Temp health"
     },
-    "attackAction": "Action attacks",
-    "attackBonusAction": "Bonus action attacks",
     "proficiencyBonus": "Proficiency",
     "hitDices": "Hit dices"
-  },
-  "weaponDamageType": {
-    "2hands": "Two handed",
-    "bludge": "Bludge",
-    "pierce": "Pierce",
-    "slash": "Slash"
   },
   "damage": {
     "bludge": "Bludgeoning",
@@ -494,17 +480,6 @@
     "psychic": "Psychic",
     "radiant": "Radiant",
     "thunder": "Thunder"
-  },
-  "attack": {
-    "tooltips": {
-      "2handed": "Two handed",
-      "dual": "Dual wild",
-      "heavy": "Heavy",
-      "reload": "Reload",
-      "flurry_of_blows": "Flurry of Blows",
-      "monk": "Monk",
-      "martial_arts": "Martial arts"
-    }
   },
   "dnd": {
     "alignments": {

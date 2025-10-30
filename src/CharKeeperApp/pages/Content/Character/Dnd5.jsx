@@ -4,10 +4,10 @@ import { createWindowSize } from '@solid-primitives/resize-observer';
 
 import {
   Dnd5Abilities, Dnd5Combat, Dnd5Rest, Dnd5ClassLevels, Dnd5Professions, Dnd5Spells, DndGold, Dnd5Skills, Dnd5SavingThrows,
-  Dnd5Proficiency, Dnd2024WildShapes
+  Dnd5Proficiency, Dnd2024WildShapes, BeastFeatures
 } from '../../../pages';
 import {
-  CharacterNavigation, Equipment, Notes, Avatar, ContentWrapper, Feats, Bonuses, createDiceRoll, Conditions
+  CharacterNavigation, Equipment, Notes, Avatar, ContentWrapper, Feats, Bonuses, createDiceRoll, Conditions, Combat
 } from '../../../components';
 import { useAppState, useAppLocale } from '../../../context';
 import { updateCharacterRequest } from '../../../requests/updateCharacterRequest';
@@ -90,7 +90,7 @@ export const Dnd5 = (props) => {
           activeTab={activeMobileTab()}
           setActiveTab={setActiveMobileTab}
         />
-        <div class="p-2 flex-1 overflow-y-auto">
+        <div class="p-2 pb-16 flex-1 overflow-y-auto">
           <Switch>
             <Match when={activeMobileTab() === 'abilities'}>
               <Dnd5Abilities character={character()} openDiceRoll={openDiceRoll} onReplaceCharacter={props.onReplaceCharacter} />
@@ -103,7 +103,11 @@ export const Dnd5 = (props) => {
               <div class="mt-4">
                 <Conditions character={character()} />
               </div>
+<<<<<<< HEAD
+              <Show when={character().provider === 'dnd2024'}>
+=======
               <Show when={character().provider === 'dnd2024' && Object.keys(character().classes).includes('druid')}>
+>>>>>>> refs/subrepo/app/javascript/applications/CharKeeperApp/fetch
                 <div class="mt-4">
                   <Dnd2024WildShapes character={character()} onReplaceCharacter={props.onReplaceCharacter} />
                 </div>
@@ -128,6 +132,15 @@ export const Dnd5 = (props) => {
                 onRefreshCharacter={refreshCharacter}
                 onReplaceCharacter={props.onReplaceCharacter}
               />
+              <div class="mt-4">
+                <Show when={character().beastform === null} fallback={<BeastFeatures character={character()} />}>
+                  <Combat
+                    character={character()}
+                    openDiceRoll={openDiceRoll}
+                    onReplaceCharacter={props.onReplaceCharacter}
+                  />
+                </Show>
+              </div>
             </Match>
             <Match when={activeMobileTab() === 'rest'}>
               <Dnd5Rest character={character()} onReplaceCharacter={props.onReplaceCharacter} />
@@ -219,7 +232,7 @@ export const Dnd5 = (props) => {
           activeTab={activeTab()}
           setActiveTab={setActiveTab}
         />
-        <div class="p-2 flex-1">
+        <div class="p-2 pb-16 flex-1">
           <Switch>
             <Match when={activeTab() === 'combat'}>
               <Dnd5Combat
@@ -229,6 +242,15 @@ export const Dnd5 = (props) => {
                 onRefreshCharacter={refreshCharacter}
                 onReplaceCharacter={props.onReplaceCharacter}
               />
+              <div class="mt-4">
+                <Show when={character().beastform === null} fallback={<BeastFeatures character={character()} />}>
+                  <Combat
+                    character={character()}
+                    openDiceRoll={openDiceRoll}
+                    onReplaceCharacter={props.onReplaceCharacter}
+                  />
+                </Show>
+              </div>
               <div class="mt-4">
                 <Feats
                   character={character()}

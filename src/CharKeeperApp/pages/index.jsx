@@ -41,6 +41,7 @@ export * from './Content/Character/Dnd5/Spells';
 export * from './Content/Character/Dnd5/SpellsTable';
 export * from './Content/Character/Dnd5/Proficiency';
 export * from './Content/Character/Dnd5/WildShapes';
+export * from './Content/Character/Dnd5/BeastFeatures';
 
 export * from './Content/Character/Pathfinder2';
 export * from './Content/Character/Pathfinder2/Abilities';
@@ -57,7 +58,6 @@ export * from './Content/Character/Daggerheart/Traits';
 export * from './Content/Character/Daggerheart/Experience';
 export * from './Content/Character/Daggerheart/Static';
 export * from './Content/Character/Daggerheart/Health';
-export * from './Content/Character/Daggerheart/Combat';
 export * from './Content/Character/Daggerheart/Leveling';
 export * from './Content/Character/Daggerheart/Gold';
 export * from './Content/Character/Daggerheart/DomainCards';
@@ -73,7 +73,6 @@ export * from './Content/Character/Dc20/Abilities';
 export * from './Content/Character/Dc20/Saves';
 export * from './Content/Character/Dc20/Skills';
 export * from './Content/Character/Dc20/CombatStatic';
-export * from './Content/Character/Dc20/Combat';
 
 export * from './Content/Homebrew/Daggerheart/Race';
 export * from './Content/Homebrew/Daggerheart/Community';
