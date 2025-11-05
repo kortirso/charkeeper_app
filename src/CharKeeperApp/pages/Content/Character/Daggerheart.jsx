@@ -71,13 +71,19 @@ export const Daggerheart = (props) => {
       { title: 'community', callback: communityFilter },
       { title: 'class', callback: classFilter },
       { title: 'subclass', callback: subclassFilter },
-      { title: 'domainCards', callback: domainCardFilter },
-      { title: 'personal', callback: personalFilter }
+      { title: 'domainCards', callback: domainCardFilter }
     ];
 
     if (character().beastform !== null) result.push({ title: 'beastform', callback: beastformFilter });
     if (character().transformation !== null) result.push({ title: 'transformation', callback: transformationFilter });
+    result.push({ title: 'personal', callback: personalFilter });
     return result;
+  });
+
+  const characterTabs = createMemo(() => {
+    const result = ['combat', 'equipment', 'domainCards', 'bonuses', 'rest', 'classLevels'];
+    if (character().can_have_companion) result.push('companion');
+    return result.concat(['notes', 'avatar']);
   });
 
   const mobileView = createMemo(() => {
@@ -86,7 +92,7 @@ export const Daggerheart = (props) => {
     return (
       <>
         <CharacterNavigation
-          tabsList={['traits', 'combat', 'equipment', 'domainCards', 'bonuses', 'rest', 'classLevels', 'companion', 'notes', 'avatar']}
+          tabsList={['traits'].concat(characterTabs())}
           activeTab={activeMobileTab()}
           setActiveTab={setActiveMobileTab}
           currentGuideStep={character().guide_step}
@@ -266,7 +272,7 @@ export const Daggerheart = (props) => {
     return (
       <>
         <CharacterNavigation
-          tabsList={['combat', 'equipment', 'domainCards', 'bonuses', 'rest', 'classLevels', 'companion', 'notes', 'avatar']}
+          tabsList={characterTabs()}
           activeTab={activeTab()}
           setActiveTab={setActiveTab}
           currentGuideStep={character().guide_step}

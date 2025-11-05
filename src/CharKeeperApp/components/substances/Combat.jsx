@@ -10,14 +10,14 @@ const TRANSLATION = {
     attack: 'Attack',
     damage: 'Damage',
     distance: 'Range',
-    primary: 'Primary',
+    primary: 'Ready to use',
     additional: 'Reserve'
   },
   ru: {
     attack: 'Атака',
     damage: 'Урон',
     distance: 'Дист',
-    primary: 'Основное',
+    primary: 'Подготовленное',
     additional: 'Запасное'
   }
 }
@@ -70,9 +70,9 @@ export const Combat = (props) => {
                         </For>
                       </div>
                     </Show>
-                    <Show when={attack.tags === undefined && attack.features && Object.keys(attack.features).length > 0}>
+                    <Show when={(attack.tags === undefined || character().provider === 'daggerheart') && attack.features && attack.features.length > 0}>
                       <p class="mt-1 text-xs">
-                        {typeof variable === 'string' ? attack.features.join(', ') : attack.features.map((item) => item[locale()]).join(', ')}
+                        {typeof attack.features[0] === 'string' ? attack.features.join(', ') : attack.features.map((item) => item[locale()]).join(', ')}
                       </p>
                     </Show>
                     <Show when={attack.notes}>
