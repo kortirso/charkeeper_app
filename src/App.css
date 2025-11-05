@@ -195,7 +195,8 @@ body.dark-theme {
 }
 
 #character-navigation {
-  @apply flex overflow-x-auto bg-white border-b border-gray-200 px-2 dark:bg-neutral-800 dark:border-black;
+  @apply flex overflow-x-auto bg-white border-b border-gray-200 px-2;
+  @apply dark:bg-neutral-800 dark:border-black;
 }
 
 #character-navigation::-webkit-scrollbar { 
@@ -314,10 +315,20 @@ body.dark-theme {
   text-overflow: ellipsis; /* Adds an ellipsis (...) at the end of the truncated text */
 }
 
+.warning {
+  @apply bg-blue-200 rounded p-4 mb-2;
+}
+
 .dice-button {
   @apply py-1 px-2 text-center cursor-pointer border border-dusty rounded dark:border-snow dark:text-snow;
 }
 
-.warning {
-  @apply bg-blue-200 rounded p-4 mb-2;
+.tag {
+  @apply px-1 border rounded bg-white border-gray-500 cursor-pointer;
+  @apply dark:bg-neutral-800 dark:border-neutral-800 dark:text-snow;
+}
+
+.dots-item {
+  @apply px-2 py-1 text-sm bg-white hover:bg-gray-200 cursor-pointer;
+  @apply dark:bg-dusty dark:hover:bg-neutral-800;
 }
