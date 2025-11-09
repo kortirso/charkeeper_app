@@ -16,11 +16,13 @@ import { modifier } from '../../../../helpers';
 const TRANSLATION = {
   en: {
     loadoutLimit: 'Loadout limit',
-    domainCardIsAdded: 'Domain card is added'
+    domainCardIsAdded: 'Domain card is added',
+    onlyAvailableSpells: 'Only available'
   },
   ru: {
     loadoutLimit: 'Лимит инвентаря',
-    domainCardIsAdded: 'Карта домена добавлена'
+    domainCardIsAdded: 'Карта домена добавлена',
+    onlyAvailableSpells: 'Доступные'
   }
 }
 
@@ -96,6 +98,7 @@ export const DaggerheartDomainCards = (props) => {
         setCharacterSpells([result.spell].concat(characterSpells()));
         renderNotice(TRANSLATION[locale()]['domainCardIsAdded']);
       });
+      props.onReloadCharacter();
     }
   }
 
@@ -161,7 +164,7 @@ export const DaggerheartDomainCards = (props) => {
             <>
               <div class="flex justify-between items-center mb-2">
                 <Checkbox
-                  labelText={t('character.onlyAvailableSpells')}
+                  labelText={TRANSLATION[locale()]['onlyAvailableSpells']}
                   labelPosition="right"
                   labelClassList="ml-2"
                   checked={availableDomainsFilter()}

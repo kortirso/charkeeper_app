@@ -3,12 +3,23 @@ import * as i18n from '@solid-primitives/i18n';
 import { createWindowSize } from '@solid-primitives/resize-observer';
 
 import {
-  Dc20Abilities, Dc20Skills, Dc20Saves, Dc20CombatStatic
+  Dc20Abilities, Dc20Skills, Dc20Saves, Dc20CombatStatic, Dc20Leveling
 } from '../../../pages';
 import {
-  CharacterNavigation, Notes, Avatar, ContentWrapper, createDiceRoll, Conditions, Equipment, Combat
+  CharacterNavigation, Notes, Avatar, ContentWrapper, createDiceRoll, Conditions, Equipment, Combat, Feats
 } from '../../../components';
 import { useAppLocale } from '../../../context';
+
+const TRANSLATION = {
+  en: {
+    equipmentHelpMessage: 'Here you can select equipment for your character.',
+    levelingHelpMessage: 'In the future on this tab you can level up your character.'
+  },
+  ru: {
+    equipmentHelpMessage: 'На этой вкладке вы можете выбрать снаряжение для вашего персонажа.',
+    levelingHelpMessage: 'В будущем на этой вкладке вы сможете указывать уровень вашего персонажа.'
+  }
+}
 
 export const Dc20 = (props) => {
   const size = createWindowSize();
@@ -19,7 +30,7 @@ export const Dc20 = (props) => {
   const [activeMobileTab, setActiveMobileTab] = createSignal('abilities');
   const [activeTab, setActiveTab] = createSignal('combat');
 
-  const [, dict] = useAppLocale();
+  const [locale, dict] = useAppLocale();
 
   const t = i18n.translator(dict);
 
@@ -27,17 +38,30 @@ export const Dc20 = (props) => {
   const armorFilter = (item) => item.kind.includes('armor');
   const shieldFilter = (item) => item.kind.includes('shield');
 
+  const ancestryFilter = (item) => item.origin === 'ancestry';
+  const classFilter = (item) => item.origin === 'class';
+  const maneuverFilter = (item) => item.origin === 'maneuver';
+
+  const featFilters = createMemo(() => {
+    const result = [
+      { title: 'ancestry', callback: ancestryFilter },
+      { title: 'class', callback: classFilter },
+      { title: 'maneuver', callback: maneuverFilter }
+    ];
+    return result;
+  });
+
   const mobileView = createMemo(() => {
     if (size.width >= 1152) return <></>;
 
     return (
       <>
         <CharacterNavigation
-          tabsList={['abilities', 'combat', 'equipment', 'notes', 'avatar']}
+          tabsList={['abilities', 'combat', 'equipment', 'classLevels', 'notes', 'avatar']}
           activeTab={activeMobileTab()}
           setActiveTab={setActiveMobileTab}
           currentGuideStep={character().guide_step}
-          markedTabs={{ '3': 'equipment' }}
+          markedTabs={{ '3': 'equipment', '4': 'classLevels' }}
         />
         <div class="p-2 pb-16 flex-1 overflow-y-auto">
           <Switch>
@@ -58,6 +82,14 @@ export const Dc20 = (props) => {
                 <Dc20Skills
                   character={character()}
                   openDiceRoll={openDiceRoll}
+                  onReplaceCharacter={props.onReplaceCharacter}
+                  onReloadCharacter={props.onReloadCharacter}
+                />
+              </div>
+              <div class="mt-4">
+                <Feats
+                  character={character()}
+                  filters={featFilters()}
                   onReplaceCharacter={props.onReplaceCharacter}
                   onReloadCharacter={props.onReloadCharacter}
                 />
@@ -83,6 +115,17 @@ export const Dc20 = (props) => {
                 ]}
                 onReplaceCharacter={props.onReplaceCharacter}
                 onReloadCharacter={props.onReloadCharacter}
+                guideStep={3}
+                helpMessage={TRANSLATION[locale()]['equipmentHelpMessage']}
+              />
+            </Match>
+            <Match when={activeMobileTab() === 'classLevels'}>
+              <Dc20Leveling
+                character={character()}
+                onReplaceCharacter={props.onReplaceCharacter}
+                onReloadCharacter={props.onReloadCharacter}
+                currentGuideStep={character().guide_step}
+                helpMessage={TRANSLATION[locale()]['levelingHelpMessage']}
               />
             </Match>
             <Match when={activeMobileTab() === 'notes'}>
@@ -132,11 +175,11 @@ export const Dc20 = (props) => {
     return (
       <>
         <CharacterNavigation
-          tabsList={['combat', 'equipment', 'notes', 'avatar']}
+          tabsList={['combat', 'equipment', 'classLevels', 'notes', 'avatar']}
           activeTab={activeTab()}
           setActiveTab={setActiveTab}
           currentGuideStep={character().guide_step}
-          markedTabs={{ '3': 'equipment' }}
+          markedTabs={{ '3': 'equipment', '4': 'classLevels' }}
         />
         <div class="p-2 pb-16 flex-1">
           <Switch>
@@ -147,6 +190,14 @@ export const Dc20 = (props) => {
                   character={character()}
                   openDiceRoll={openDiceRoll}
                   onReplaceCharacter={props.onReplaceCharacter}
+                />
+              </div>
+              <div class="mt-4">
+                <Feats
+                  character={character()}
+                  filters={featFilters()}
+                  onReplaceCharacter={props.onReplaceCharacter}
+                  onReloadCharacter={props.onReloadCharacter}
                 />
               </div>
             </Match>
@@ -160,6 +211,17 @@ export const Dc20 = (props) => {
                 ]}
                 onReplaceCharacter={props.onReplaceCharacter}
                 onReloadCharacter={props.onReloadCharacter}
+                guideStep={3}
+                helpMessage={TRANSLATION[locale()]['equipmentHelpMessage']}
+              />
+            </Match>
+            <Match when={activeTab() === 'classLevels'}>
+              <Dc20Leveling
+                character={character()}
+                onReplaceCharacter={props.onReplaceCharacter}
+                onReloadCharacter={props.onReloadCharacter}
+                currentGuideStep={character().guide_step}
+                helpMessage={TRANSLATION[locale()]['levelingHelpMessage']}
               />
             </Match>
             <Match when={activeTab() === 'notes'}>
