@@ -110,7 +110,7 @@ body.dark-theme {
   @apply uppercase pb-1 text-xs dark:text-snow;
 }
 
-.table tbody tr {
+.table:not(.no-darks) tbody tr {
   @apply border-b border-gray-200 dark:border-neutral-800;
 }
 
@@ -118,7 +118,7 @@ body.dark-theme {
   @apply align-top;
 }
 
-.table tbody tr:nth-of-type(2n) {
+.table:not(.no-darks) tbody tr:nth-of-type(2n) {
   @apply bg-gray-50 dark:bg-neutral-700;
 }
 
@@ -195,7 +195,7 @@ body.dark-theme {
 }
 
 #character-navigation {
-  @apply flex overflow-x-auto bg-white border-b border-gray-200 px-2;
+  @apply flex justify-between overflow-x-auto bg-white border-b border-gray-200 px-2;
   @apply dark:bg-neutral-800 dark:border-black;
 }
 
