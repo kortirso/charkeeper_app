@@ -80,7 +80,7 @@ body.dark-theme {
 }
 
 .modal {
-  @apply relative p-4 blockable dark:text-snow;
+  @apply relative p-4 blockable dark:text-snow overflow-y-auto;
 
   max-width: 90%;
   max-height: 90%;
@@ -331,4 +331,12 @@ body.dark-theme {
 .dots-item {
   @apply px-2 py-1 text-sm bg-white hover:bg-gray-200 cursor-pointer;
   @apply dark:bg-dusty dark:hover:bg-neutral-800;
+}
+
+.feat-markdown {
+  @apply text-sm;
+}
+
+.feat-markdown strong {
+  font-weight: 500;
 }
