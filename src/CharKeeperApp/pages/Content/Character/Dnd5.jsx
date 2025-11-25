@@ -3,14 +3,25 @@ import * as i18n from '@solid-primitives/i18n';
 import { createWindowSize } from '@solid-primitives/resize-observer';
 
 import {
-  Dnd5Abilities, Dnd5Combat, Dnd5Rest, Dnd5ClassLevels, Dnd5Professions, Dnd5Spells, DndGold, Dnd5Skills, Dnd5SavingThrows,
+  Dnd5Abilities, Dnd5Combat, Dnd5Rest, Dnd5ClassLevels, Dnd5Professions, Dnd5Spells, Dnd5Skills, Dnd5SavingThrows,
   Dnd5Proficiency, Dnd2024WildShapes, BeastFeatures
 } from '../../../pages';
 import {
-  CharacterNavigation, Equipment, Notes, Avatar, ContentWrapper, Feats, Bonuses, createDiceRoll, Conditions, Combat
+  CharacterNavigation, Equipment, Notes, Avatar, ContentWrapper, Feats, Bonuses, createDiceRoll, Conditions, Combat, Gold
 } from '../../../components';
 import { useAppState, useAppLocale } from '../../../context';
 import { updateCharacterRequest } from '../../../requests/updateCharacterRequest';
+
+const TRANSLATION = {
+  en: {
+    equipmentHelpMessage: 'Here you can select equipment for your character.',
+    levelingHelpMessage: 'In the future on this tab you can level up your character.'
+  },
+  ru: {
+    equipmentHelpMessage: 'На этой вкладке вы можете выбрать снаряжение для вашего персонажа.',
+    levelingHelpMessage: 'В будущем на этой вкладке вы сможете указывать уровень вашего персонажа.'
+  }
+}
 
 export const Dnd5 = (props) => {
   const size = createWindowSize();
@@ -22,7 +33,7 @@ export const Dnd5 = (props) => {
 
   const { DiceRoll, openDiceRoll } = createDiceRoll();
   const [appState] = useAppState();
-  const [, dict] = useAppLocale();
+  const [locale, dict] = useAppLocale();
 
   const t = i18n.translator(dict);
 
@@ -89,11 +100,18 @@ export const Dnd5 = (props) => {
           tabsList={['abilities', 'combat', 'equipment', 'spells', 'rest', 'bonuses', 'notes', 'professions', 'classLevels', 'avatar']}
           activeTab={activeMobileTab()}
           setActiveTab={setActiveMobileTab}
+          currentGuideStep={character().guide_step}
+          markedTabs={{ '3': 'equipment', '4': 'classLevels' }}
         />
         <div class="p-2 pb-16 flex-1 overflow-y-auto">
           <Switch>
             <Match when={activeMobileTab() === 'abilities'}>
-              <Dnd5Abilities character={character()} openDiceRoll={openDiceRoll} onReplaceCharacter={props.onReplaceCharacter} />
+              <Dnd5Abilities
+                character={character()}
+                openDiceRoll={openDiceRoll}
+                onReplaceCharacter={props.onReplaceCharacter}
+                onReloadCharacter={props.onReloadCharacter}
+              />
               <div class="mt-4">
                 <Dnd5Proficiency character={character()} onReplaceCharacter={props.onReplaceCharacter} />
               </div>
@@ -109,7 +127,12 @@ export const Dnd5 = (props) => {
                 </div>
               </Show>
               <div class="mt-4">
-                <Dnd5Skills character={character()} openDiceRoll={openDiceRoll} onReplaceCharacter={props.onReplaceCharacter} />
+                <Dnd5Skills
+                  character={character()}
+                  openDiceRoll={openDiceRoll}
+                  onReplaceCharacter={props.onReplaceCharacter}
+                  onReloadCharacter={props.onReloadCharacter}
+                />
               </div>
               <div class="mt-4">
                 <Feats
@@ -160,8 +183,10 @@ export const Dnd5 = (props) => {
                 ]}
                 onReplaceCharacter={props.onReplaceCharacter}
                 onReloadCharacter={props.onReloadCharacter}
+                guideStep={3}
+                helpMessage={TRANSLATION[locale()]['equipmentHelpMessage']}
               >
-                <DndGold character={character()} onReplaceCharacter={props.onReplaceCharacter} />
+                <Gold character={character()} onReplaceCharacter={props.onReplaceCharacter} />
               </Equipment>
             </Match>
             <Match when={activeMobileTab() === 'spells'}>
@@ -171,7 +196,13 @@ export const Dnd5 = (props) => {
               <Notes />
             </Match>
             <Match when={activeMobileTab() === 'classLevels'}>
-              <Dnd5ClassLevels character={character()} onReplaceCharacter={props.onReplaceCharacter} />
+              <Dnd5ClassLevels
+                character={character()}
+                onReplaceCharacter={props.onReplaceCharacter}
+                onReloadCharacter={props.onReloadCharacter}
+                currentGuideStep={character().guide_step}
+                helpMessage={TRANSLATION[locale()]['levelingHelpMessage']}
+              />
             </Match>
             <Match when={activeMobileTab() === 'professions'}>
               <Dnd5Professions
@@ -194,16 +225,21 @@ export const Dnd5 = (props) => {
 
     return (
       <>
-        <Dnd5Abilities character={character()} openDiceRoll={openDiceRoll} onReplaceCharacter={props.onReplaceCharacter} />
+        <Dnd5Abilities
+          character={character()}
+          openDiceRoll={openDiceRoll}
+          onReplaceCharacter={props.onReplaceCharacter}
+          onReloadCharacter={props.onReloadCharacter}
+        />
+        <div class="mt-4">
+          <Dnd5SavingThrows character={character()} openDiceRoll={openDiceRoll} />
+        </div>
+        <div class="mt-4">
+          <Dnd5Proficiency character={character()} onReplaceCharacter={props.onReplaceCharacter} />
+        </div>
         <div class="flex flex-col emd:flex-row emd:gap-4 emd:mt-4">
           <div class="mt-4 emd:mt-0 flex-1">
-            <Dnd5Proficiency character={character()} onReplaceCharacter={props.onReplaceCharacter} />
-            <div class="mt-4">
-              <Dnd5SavingThrows character={character()} openDiceRoll={openDiceRoll} />
-            </div>
-            <div class="mt-4">
-              <Conditions character={character()} />
-            </div>
+            <Conditions character={character()} />
             <Show when={character().provider === 'dnd2024' && Object.keys(character().classes).includes('druid')}>
               <div class="mt-4">
                 <Dnd2024WildShapes character={character()} onReplaceCharacter={props.onReplaceCharacter} />
@@ -211,7 +247,12 @@ export const Dnd5 = (props) => {
             </Show>
           </div>
           <div class="mt-4 emd:mt-0 flex-1">
-            <Dnd5Skills character={character()} openDiceRoll={openDiceRoll} onReplaceCharacter={props.onReplaceCharacter} />
+            <Dnd5Skills
+              character={character()}
+              openDiceRoll={openDiceRoll}
+              onReplaceCharacter={props.onReplaceCharacter}
+              onReloadCharacter={props.onReloadCharacter}
+            />
           </div>
         </div>
       </>
@@ -227,6 +268,8 @@ export const Dnd5 = (props) => {
           tabsList={['combat', 'equipment', 'spells', 'rest', 'bonuses', 'notes', 'professions', 'classLevels', 'avatar']}
           activeTab={activeTab()}
           setActiveTab={setActiveTab}
+          currentGuideStep={character().guide_step}
+          markedTabs={{ '3': 'equipment', '4': 'classLevels' }}
         />
         <div class="p-2 pb-16 flex-1">
           <Switch>
@@ -275,8 +318,10 @@ export const Dnd5 = (props) => {
                 ]}
                 onReplaceCharacter={props.onReplaceCharacter}
                 onReloadCharacter={props.onReloadCharacter}
+                guideStep={3}
+                helpMessage={TRANSLATION[locale()]['equipmentHelpMessage']}
               >
-                <DndGold character={character()} onReplaceCharacter={props.onReplaceCharacter} />
+                <Gold character={character()} onReplaceCharacter={props.onReplaceCharacter} />
               </Equipment>
             </Match>
             <Match when={activeTab() === 'spells'}>
@@ -289,7 +334,13 @@ export const Dnd5 = (props) => {
               <Bonuses character={character()} onReloadCharacter={props.onReloadCharacter} />
             </Match>
             <Match when={activeTab() === 'classLevels'}>
-              <Dnd5ClassLevels character={character()} onReplaceCharacter={props.onReplaceCharacter} />
+              <Dnd5ClassLevels
+                character={character()}
+                onReplaceCharacter={props.onReplaceCharacter}
+                onReloadCharacter={props.onReloadCharacter}
+                currentGuideStep={character().guide_step}
+                helpMessage={TRANSLATION[locale()]['levelingHelpMessage']}
+              />
             </Match>
             <Match when={activeTab() === 'professions'}>
               <Dnd5Professions

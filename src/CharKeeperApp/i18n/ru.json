@@ -192,24 +192,6 @@
       "gain_double_hope": "Получить 2 Надежды",
       "makeRolls": "Автоматические броски"
     },
-    "gold": {
-      "coins": "Монеты",
-      "handfuls": "Горсти",
-      "bags": "Мешочки",
-      "chests": "Сундучки",
-      "total": "Всего монет"
-    },
-    "leveling": {
-      "level": "Уровень класса",
-      "mastery": "Мастерство подкласса",
-      "health": "Бонус к ХП",
-      "stress": "Бонус к стрессу",
-      "evasion": "Бонус к уклонению",
-      "proficiency": "Бонус к мастерству",
-      "domainCards": "Дополнительная карта домена",
-      "domain": "Домен",
-      "subclass": "Подкласс"
-    },
     "domainCards": {
       "limit": "Лимит карт",
       "spellcastTraits": "Способности",
@@ -324,9 +306,6 @@
     "secondaryWeapon": "Запасное оружие",
     "armorList": "Броня",
     "shieldList": "Щиты",
-    "gold": "Золото",
-    "silver": "Серебро",
-    "copper": "Медь",
     "itemsList": "Предметы",
     "ammoList": "Боеприпасы",
     "focusList": "Фокусировка",
@@ -341,9 +320,6 @@
     "longRest": "Длинный отдых",
     "sessionRest": "Между сессиями"
   },
-
-
-
   "create": "Создать",
   "back": "Назад",
   "save": "Сохранить",
@@ -466,9 +442,7 @@
       "current": "Хиты",
       "max": "Макс хиты",
       "temp": "Врем хиты"
-    },
-    "proficiencyBonus": "Бонус мастерства",
-    "hitDices": "Кости хитов"
+    }
   },
   "damage": {
     "bludge": "Дробящий",

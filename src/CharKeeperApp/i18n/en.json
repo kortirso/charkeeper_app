@@ -192,24 +192,6 @@
       "gain_double_hope": "Gain 2 Hope",
       "makeRolls": "Make auto rolls"
     },
-    "gold": {
-      "coins": "Coins",
-      "handfuls": "Handfuls",
-      "bags": "Bags",
-      "chests": "Chests",
-      "total": "Total coins"
-    },
-    "leveling": {
-      "level": "Class level",
-      "mastery": "Subclass mastery",
-      "health": "Permanent Hit Point slots",
-      "stress": "Permanent Stress slots",
-      "evasion": "Permanent +1 bonus to Evasion",
-      "proficiency": "Permanent +1 bonus to Proficiency",
-      "domainCards": "Additional domain card",
-      "domain": "Domain",
-      "subclass": "Subclass"
-    },
     "domainCards": {
       "limit": "Cards limit",
       "spellcastTraits": "Spellcast traits",
@@ -324,9 +306,6 @@
     "secondaryWeapon": "Secondary weapon",
     "armorList": "Armor list",
     "shieldList": "Shield list",
-    "gold": "Gold",
-    "silver": "Silver",
-    "copper": "Copper",
     "itemsList": "Items",
     "ammoList": "Ammo",
     "focusList": "Focus",
@@ -341,9 +320,6 @@
     "longRest": "Long rest",
     "sessionRest": "Session rest"
   },
-
-
-
   "create": "Create",
   "back": "Back",
   "save": "Save",
@@ -465,9 +441,7 @@
       "current": "Health",
       "max": "Max health",
       "temp": "Temp health"
-    },
-    "proficiencyBonus": "Proficiency",
-    "hitDices": "Hit dices"
+    }
   },
   "damage": {
     "bludge": "Bludgeoning",
