@@ -40,7 +40,7 @@
 
 @utility blockable {
   @apply bg-white border-2 border-gray-200 rounded-t-lg;
-  @apply dark:bg-dusty border dark:border-gray-500;
+  @apply dark:bg-dusty border dark:border-gray-500 dark:text-snow;
 }
 
 * {
@@ -134,6 +134,10 @@ body.dark-theme {
   white-space: nowrap;
 }
 
+.levelbox {
+  @apply w-6 h-6;
+}
+
 .toggle {
   @apply w-6 h-6 border border-blue-400 bg-white rounded flex justify-center items-center cursor-pointer;
   @apply dark:border-fuzzy-red dark:text-dusty;
@@ -182,6 +186,10 @@ body.dark-theme {
   @apply dark:bg-neutral-800 dark:border-gray-500;
 
   max-height: 7.5rem;
+}
+
+.form-field .form-dropdown.full {
+  max-height: none;
 }
 
 .form-field .form-dropdown li {
