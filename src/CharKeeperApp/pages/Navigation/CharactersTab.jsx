@@ -41,7 +41,7 @@ export const CharactersTab = () => {
 
   const { Modal, openModal, closeModal } = createModal();
   const [appState, { navigate }] = useAppState();
-  const [{ renderAlert, renderAlerts }] = useAppAlert();
+  const [{ renderAlerts }] = useAppAlert();
   const [locale, dict] = useAppLocale();
 
   const t = i18n.translator(dict);
@@ -121,43 +121,13 @@ export const CharactersTab = () => {
     } else renderAlerts(result.errors_list);
   }
 
-  const imageToBase64 = (file) => {
-    if (file === null) return;
-
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const base64String = reader.result.replace(/^data:image\/[a-z]+;base64,/, "");
-        resolve(base64String);
-      };
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-  }
-
-  const saveCharacter = async (characterForm, selectedFile, avatarUrl) => {
+  const saveCharacter = async (characterForm) => {
     if (platform() === undefined) return undefined;
-    if (selectedFile && selectedFile.size > 1000000) {
-      renderAlert(t('alerts.fileSizeLimit'));
-      return undefined;
-    }
 
     setLoading(true);
 
-    let characterFormData = null;
-
-    characterFormData = Object.fromEntries(Object.entries(characterForm).filter(([, value]) => value !== undefined))
-
-    const fileContent = await imageToBase64(selectedFile);
-    if (fileContent) {
-      const avatarFile = { file_content: fileContent, file_name: selectedFile.name }
-      characterFormData = { ...characterFormData, avatar_file: avatarFile }
-    }
-    if (avatarUrl.length > 0) {
-      characterFormData = { ...characterFormData, avatar_url: avatarUrl }
-    }
-
-    const result = await createCharacterRequest(appState.accessToken, platform(), { character: characterFormData });
+    const formData = Object.fromEntries(Object.entries(characterForm).filter(([, value]) => value !== undefined));
+    const result = await createCharacterRequest(appState.accessToken, platform(), { character: formData });
     
     if (result.errors_list === undefined) {
       batch(() => {
