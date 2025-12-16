@@ -138,6 +138,7 @@ export const Dnd5 = (props) => {
                   openDiceRoll={openDiceRoll}
                   onReplaceCharacter={props.onReplaceCharacter}
                   onReloadCharacter={props.onReloadCharacter}
+                  onNextGuideStepClick={() => setActiveMobileTab('equipment')}
                 />
               </div>
               <div class="mt-4">
@@ -168,7 +169,7 @@ export const Dnd5 = (props) => {
               </div>
             </Match>
             <Match when={activeMobileTab() === 'rest'}>
-              <Dnd5Rest character={character()} onReplaceCharacter={props.onReplaceCharacter} />
+              <Dnd5Rest character={character()} onReloadCharacter={props.onReloadCharacter} />
             </Match>
             <Match when={activeMobileTab() === 'bonuses'}>
               <Bonuses character={character()} onReloadCharacter={props.onReloadCharacter} />
@@ -191,6 +192,7 @@ export const Dnd5 = (props) => {
                 onReloadCharacter={props.onReloadCharacter}
                 guideStep={3}
                 helpMessage={TRANSLATION[locale()]['equipmentHelpMessage']}
+                onNextGuideStepClick={() => setActiveMobileTab('classLevels')}
               >
                 <Gold character={character()} onReplaceCharacter={props.onReplaceCharacter} />
               </Equipment>
@@ -264,6 +266,7 @@ export const Dnd5 = (props) => {
               openDiceRoll={openDiceRoll}
               onReplaceCharacter={props.onReplaceCharacter}
               onReloadCharacter={props.onReloadCharacter}
+              onNextGuideStepClick={() => setActiveTab('equipment')}
             />
           </div>
         </div>
@@ -312,7 +315,7 @@ export const Dnd5 = (props) => {
               </div>
             </Match>
             <Match when={activeTab() === 'rest'}>
-              <Dnd5Rest character={character()} onReplaceCharacter={props.onReplaceCharacter} />
+              <Dnd5Rest character={character()} onReloadCharacter={props.onReloadCharacter} />
             </Match>
             <Match when={activeTab() === 'equipment'}>
               <Equipment
@@ -332,6 +335,7 @@ export const Dnd5 = (props) => {
                 onReloadCharacter={props.onReloadCharacter}
                 guideStep={3}
                 helpMessage={TRANSLATION[locale()]['equipmentHelpMessage']}
+                onNextGuideStepClick={() => setActiveTab('classLevels')}
               >
                 <Gold character={character()} onReplaceCharacter={props.onReplaceCharacter} />
               </Equipment>

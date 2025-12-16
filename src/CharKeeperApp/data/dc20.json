@@ -1,23 +1,24 @@
 {
   "ancestries": {
-    "human": {
-      "name": { "en": "Human", "ru": "Человек" },
-      "feats": {
-        "attribute_increase": { "name": { "en": "Attribute Increase", "ru": "Увеличение атрибута" }, "price": 2 },
-        "skill_expertise": { "name": { "en": "Skill Expertise", "ru": "Компетентность в навыке" }, "price": 2 },
-        "human_resolve": { "name": { "en": "Human Resolve", "ru": "Человеческое упорство" }, "price": 1 },
-        "undying": { "name": { "en": "Undying", "ru": "Неумирающий" }, "price": 0 },
-        "trade_expertise": { "name": { "en": "Trade Expertise", "ru": "Компетентность в ремесле" }, "price": 1 },
-        "human_determination": { "name": { "en": "Human Determination", "ru": "Человеческая решительность" }, "price": 1 },
-        "unbreakable": { "name": { "en": "Unbreakable", "ru": "Несломимый" }, "price": 1 },
-        "attribute_decrease": { "name": { "en": "Attribute Decrease", "ru": "Уменьшение атрибута" }, "price": -1 }
-      }
-    }
+    "human": { "name": { "en": "Human", "ru": "Человек" } },
+    "elf": { "name": { "en": "Elf", "ru": "Эльф" } },
+    "dwarf": { "name": { "en": "Dwarf", "ru": "Дварф" } }
   },
   "classes": {
-    "commander": { "name": { "en": "Commander", "ru": "Командир" } },
-    "spellblade": { "name": { "en": "Spellblade", "ru": "Маг клинка" } },
-    "wizard": { "name": { "en": "Wizard", "ru": "Волшебник" } }
+    "commander": {
+      "name": { "en": "Commander", "ru": "Командир" },
+      "subclasses": {
+        "crusader": { "name": { "en": "Crusader", "ru": "Крестоносец" } },
+        "warlord": { "name": { "en": "Warlord", "ru": "Военачальник" } }
+      }
+    },
+    "spellblade": {
+      "name": { "en": "Spellblade", "ru": "Маг клинка" },
+      "subclasses": {
+        "paladin": { "name": { "en": "Paladin", "ru": "Паладин" } },
+        "rune_knight": { "name": { "en": "Rune Knight", "ru": "Рунический рыцарь" } }
+      }
+    }
   },
   "spell_lists": {
     "arcane": { "name": { "en": "Arcane", "ru": "Арканный" } },

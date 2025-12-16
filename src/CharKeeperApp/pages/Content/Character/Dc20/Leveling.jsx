@@ -8,10 +8,11 @@ import { updateCharacterRequest } from '../../../../requests/updateCharacterRequ
 import { fetchTalentsRequest } from '../../../../requests/fetchTalentsRequest';
 import { createTalentRequest } from '../../../../requests/createTalentRequest';
 import { fetchTalentFeaturesRequest } from '../../../../requests/fetchTalentFeaturesRequest';
+import { translate } from '../../../../helpers';
 
 const TRANSLATION = {
   en: {
-    currentLevel: 'Current level',
+    currentLevel: 'level',
     paths: 'Character paths',
     existingPoints: 'Available path points',
     martialPathLevel: 'Martial path level',
@@ -40,10 +41,14 @@ const TRANSLATION = {
     selectedTalents: 'Selected talents',
     saveButton: 'Save',
     selectTalent: 'Select new talent',
-    selectMulticlassFeature: 'Select multiclass feature'
+    selectMulticlassFeature: 'Select multiclass feature',
+    selectSubclass: 'Select subclass',
+    paragon: 'Paragon',
+    general: 'General',
+    multiclass: 'Multiclass'
   },
   ru: {
-    currentLevel: 'Текущий уровень',
+    currentLevel: 'уровень',
     paths: 'Пути персонажа',
     existingPoints: 'Доступные очки пути',
     martialPathLevel: 'Развитие пути бойца',
@@ -72,7 +77,11 @@ const TRANSLATION = {
     selectedTalents: 'Выбранные таланты',
     saveButton: 'Сохранить',
     selectTalent: 'Выберите новый талант',
-    selectMulticlassFeature: 'Выберите черту любого класса'
+    selectMulticlassFeature: 'Выберите черту любого класса',
+    selectSubclass: 'Выберите подкласс',
+    paragon: 'Эталон',
+    general: 'Общий',
+    multiclass: 'Мультикласс'
   }
 }
 
@@ -82,6 +91,7 @@ export const Dc20Leveling = (props) => {
   const [lastActiveCharacterId, setLastActiveCharacterId] = createSignal(undefined);
   const [selectedTalent, setSelectedTalent] = createSignal(null);
   const [selectedMultiTalent, setSelectedMultiTalent] = createSignal(null);
+  const [subclass, setSubclass] = createSignal(null);
 
   const [talents, setTalents] = createSignal(undefined);
   const [talentFeatures, setTalentFeatures] = createSignal(undefined);
@@ -106,10 +116,25 @@ export const Dc20Leveling = (props) => {
     setLastActiveCharacterId(character().id);
   });
 
+  const talentOrigin = (item) => {
+    if (item.origin_value === 'general') return `${item.title} (${TRANSLATION[locale()].general})`;
+    if (item.origin_value === 'multiclass') return `${item.title} (${TRANSLATION[locale()].multiclass})`;
+
+    return `${item.title} (${config.classes[item.origin_value].name[locale()]})`;
+  }
+
   const availableTalents = createMemo(() => {
     if (talents() === undefined) return {};
 
-    return talents().filter((item) => item.multiple || !item.selected).reduce((acc, item) => { acc[item.id] = item.title; return acc }, {});
+    return talents().filter((item) => item.multiple || !item.selected).reduce((acc, item) => { acc[item.id] = talentOrigin(item); return acc }, {});
+  });
+
+  const availableSubclasses = createMemo(() => {
+    const result = translate(config.classes[character().main_class].subclasses, locale());
+
+    result['paragon'] = TRANSLATION[locale()].paragon;
+
+    return result;
   });
 
   const changeManeuver = (value) => {
@@ -137,6 +162,7 @@ export const Dc20Leveling = (props) => {
 
     if (talent.origin_value === 'multiclass') {
       const result = await fetchTalentFeatures(1);
+      console.log(result.talents)
       setTalentFeatures(result.talents)
     } else {
       batch(() => {
@@ -171,15 +197,33 @@ export const Dc20Leveling = (props) => {
       >
         <div class="blockable p-4 mb-2">
           <div class="flex items-center">
-            <Button
-              default
-              classList='rounded mr-4'
-              onClick={levelUp}
-            >
+            <Button default classList="rounded mr-4" onClick={levelUp}>
               <Arrow top />
             </Button>
-            <p class="dark:text-snow">{TRANSLATION[locale()]['currentLevel']} - {character().level}</p>
+            <p class="dark:text-snow">
+              <Show
+                when={character().subclass}
+                fallback={config.classes[character().main_class].name[locale()]}
+              >
+                {character().subclass === 'paragon' ? TRANSLATION[locale()].paragon : config.classes[character().main_class].subclasses[character().subclass].name[locale()]}
+              </Show>
+              {' '}- {character().level} {TRANSLATION[locale()].currentLevel}
+            </p>
           </div>
+          <Show when={character().level >= 3 && !character().subclass}>
+            <Select
+              labelText={TRANSLATION[locale()].selectSubclass}
+              containerClassList="mt-2"
+              items={availableSubclasses()}
+              selectedValue={subclass()}
+              onSelect={setSubclass}
+            />
+            <Show when={subclass()}>
+              <Button default textable size="small" classList="inline-block mt-2" onClick={() => updateCharacter({ subclass: subclass() })}>
+                {TRANSLATION[locale()].saveButton}
+              </Button>
+            </Show>
+          </Show>
         </div>
         <Toggle
           title={
@@ -279,7 +323,7 @@ export const Dc20Leveling = (props) => {
                 <Select
                   labelText={TRANSLATION[locale()].selectMulticlassFeature}
                   containerClassList="flex-1 mt-1"
-                  items={talentFeatures().reduce((acc, item) => { acc[item.id] = item.title; return acc }, {})}
+                  items={talentFeatures().reduce((acc, item) => { acc[item.id] = `${item.title} (${config.classes[item.origin_value] ? config.classes[item.origin_value].name[locale()] : ''})`; return acc }, {})}
                   selectedValue={selectedMultiTalent()?.id}
                   onSelect={modifySelectedMultiTalent}
                 />

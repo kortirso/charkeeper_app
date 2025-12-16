@@ -1,12 +1,22 @@
 import { createSignal, For, Show, batch } from 'solid-js';
 import { Key } from '@solid-primitives/keyed';
 
-import { ErrorWrapper, Levelbox, Input, EditWrapper } from '../../../../components';
+import { ErrorWrapper, Levelbox, Input, EditWrapper, Dice } from '../../../../components';
 import config from '../../../../data/pathfinder2.json';
 import { useAppState, useAppLocale, useAppAlert } from '../../../../context';
 import { updateCharacterRequest } from '../../../../requests/updateCharacterRequest';
-
 import { modifier } from '../../../../helpers';
+
+const TRANSLATION = {
+  en: {
+    free: 'Free',
+    skillBoosts: 'You can improve your skills:'
+  },
+  ru: {
+    free: 'Универсальное',
+    skillBoosts: 'Вы можете улучшить следующие умения:'
+  }
+}
 
 export const Pathfinder2Skills = (props) => {
   const character = () => props.character;
@@ -17,6 +27,18 @@ export const Pathfinder2Skills = (props) => {
   const [appState] = useAppState();
   const [{ renderAlerts }] = useAppAlert();
   const [locale] = useAppLocale();
+
+  const renderSkillBoosts = (skillBoosts) => {
+    const result = [];
+    Object.keys(skillBoosts).forEach((key) => {
+      if (key === 'free') return;
+
+      result.push(`${key.split('_').map((item) => config.skills[item].name[locale()]).join('/')} - ${skillBoosts[key]}`)
+    });
+    if (skillBoosts.free) result.push(`${TRANSLATION[locale()].free} - ${skillBoosts.free}`);
+
+    return result.join('; ');
+  }
 
   const updateSkill = (slug) => {
     const result = skillsData().slice().map((item) => {
@@ -79,6 +101,12 @@ export const Pathfinder2Skills = (props) => {
         onCancelEditing={cancelEditing}
         onSaveChanges={updateCharacter}
       >
+        <Show when={character().skill_boosts}>
+          <div class="warning">
+            <p class="text-sm">{TRANSLATION[locale()].skillBoosts}</p>
+            <p class="text-sm">{renderSkillBoosts(character().skill_boosts)}</p>
+          </div>
+        </Show>
         <div class="blockable p-4 mb-2">
           <For each={Object.keys(config.abilities)}>
             {(slug) =>
@@ -87,7 +115,7 @@ export const Pathfinder2Skills = (props) => {
                 by={item => item.slug}
               >
                 {(skill) =>
-                  <div class="flex justify-between items-center mb-1 dark:text-snow">
+                  <div class="flex justify-between items-center mb-1">
                     <Show
                       when={editMode()}
                       fallback={<Levelbox classList="mr-2" value={skill().level} />}
@@ -108,7 +136,12 @@ export const Pathfinder2Skills = (props) => {
                       </Show>
                     </p>
                     <span>
-                      {modifier(skill().modifier + skill().prof + skill().item + (skill().armor || 0))}
+                      <Dice
+                        width="28"
+                        height="28"
+                        text={modifier(skill().total_modifier)}
+                        onClick={() => props.openDiceRoll(`/check skill ${skill().slug}`, skill().total_modifier)}
+                      />
                     </span>
                   </div>
                 }

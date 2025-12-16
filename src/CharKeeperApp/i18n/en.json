@@ -145,18 +145,6 @@
       }
     }
   },
-  "pathfinder2": {
-    "static": {
-      "armor_class": "Armor Class",
-      "perception": "Perception",
-      "speed": "Speed"
-    },
-    "savingThrows": {
-      "fortitude": "Fortitude",
-      "reflex": "Reflex",
-      "will": "Will"
-    }
-  },
   "dndV2": {
     "bonuses": {
       "title": "Bonuses",
@@ -312,9 +300,6 @@
     "newBonusComment": "Comment"
   },
   "professionsPage": {
-    "feats": "Feats",
-    "originFeats": "Origin feats",
-    "generalFeats": "General feats",
     "fightingFeats": "Fighting style",
     "languages": "Languages",
     "weaponCoreSkill": "Weapon core skills",
