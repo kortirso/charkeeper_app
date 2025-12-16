@@ -3,6 +3,7 @@
 ```bash
 yarn tauri build --bundles dmg # MacOS
 yarn tauri android build --aab # Android
+yarn tauri android build --apk # Android
 yarn tauri ios build --export-method app-store-connect # iOS
 ```
 
