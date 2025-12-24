@@ -4,10 +4,10 @@ import { createWindowSize } from '@solid-primitives/resize-observer';
 
 import {
   Dnd5Abilities, Dnd5Combat, Dnd5Rest, Dnd5ClassLevels, Dnd5Professions, Dnd5Spells, Dnd5Skills, Dnd5SavingThrows,
-  Dnd5Proficiency, Dnd2024WildShapes, BeastFeatures, Dnd5Craft
+  Dnd5Proficiency, Dnd2024WildShapes, BeastFeatures, Dnd5Craft, Dnd5Bonuses
 } from '../../../pages';
 import {
-  CharacterNavigation, Equipment, Notes, Avatar, ContentWrapper, Feats, Bonuses, createDiceRoll, Conditions, Combat, Gold
+  CharacterNavigation, Equipment, Notes, Avatar, ContentWrapper, Feats, createDiceRoll, Conditions, Combat, Gold
 } from '../../../components';
 import { useAppState, useAppLocale } from '../../../context';
 import { updateCharacterRequest } from '../../../requests/updateCharacterRequest';
@@ -31,7 +31,7 @@ export const Dnd5 = (props) => {
   const [activeMobileTab, setActiveMobileTab] = createSignal('abilities');
   const [activeTab, setActiveTab] = createSignal('combat');
 
-  const { DiceRoll, openDiceRoll } = createDiceRoll();
+  const { DiceRoll, openDiceRoll, openSimpleDiceRoll } = createDiceRoll();
   const [appState] = useAppState();
   const [locale, dict] = useAppLocale();
 
@@ -59,6 +59,7 @@ export const Dnd5 = (props) => {
   const focusFilter = (item) => item.kind === 'focus';
   const toolsFilter = (item) => item.kind === 'tools';
   const musicFilter = (item) => item.kind === 'music';
+  const potionFilter = (item) => item.kind === 'potion';
 
   const raceFilter = (item) => item.origin === 'race';
   const subraceFilter = (item) => item.origin === 'subrace';
@@ -163,6 +164,7 @@ export const Dnd5 = (props) => {
                   <Combat
                     character={character()}
                     openDiceRoll={openDiceRoll}
+                    openSimpleDiceRoll={openSimpleDiceRoll}
                     onReplaceCharacter={props.onReplaceCharacter}
                   />
                 </Show>
@@ -172,7 +174,7 @@ export const Dnd5 = (props) => {
               <Dnd5Rest character={character()} onReloadCharacter={props.onReloadCharacter} />
             </Match>
             <Match when={activeMobileTab() === 'bonuses'}>
-              <Bonuses character={character()} onReloadCharacter={props.onReloadCharacter} />
+              <Dnd5Bonuses character={character()} onReloadCharacter={props.onReloadCharacter} />
             </Match>
             <Match when={activeMobileTab() === 'equipment'}>
               <Equipment
@@ -183,10 +185,11 @@ export const Dnd5 = (props) => {
                   { title: t('equipment.itemsList'), callback: itemFilter },
                   { title: t('equipment.weaponsList'), callback: weaponFilter },
                   { title: t('equipment.armorList'), callback: armorFilter },
+                  { title: t('equipment.consumables'), callback: potionFilter},
                   { title: t('equipment.ammoList'), callback: ammoFilter },
                   { title: t('equipment.focusList'), callback: focusFilter },
                   { title: t('equipment.toolsList'), callback: toolsFilter },
-                  { title: t('equipment.musicList'), callback: musicFilter},
+                  { title: t('equipment.musicList'), callback: musicFilter}
                 ]}
                 onReplaceCharacter={props.onReplaceCharacter}
                 onReloadCharacter={props.onReloadCharacter}
@@ -301,6 +304,7 @@ export const Dnd5 = (props) => {
                   <Combat
                     character={character()}
                     openDiceRoll={openDiceRoll}
+                    openSimpleDiceRoll={openSimpleDiceRoll}
                     onReplaceCharacter={props.onReplaceCharacter}
                   />
                 </Show>
@@ -326,10 +330,11 @@ export const Dnd5 = (props) => {
                   { title: t('equipment.itemsList'), callback: itemFilter },
                   { title: t('equipment.weaponsList'), callback: weaponFilter },
                   { title: t('equipment.armorList'), callback: armorFilter },
+                  { title: t('equipment.consumables'), callback: potionFilter},
                   { title: t('equipment.ammoList'), callback: ammoFilter },
                   { title: t('equipment.focusList'), callback: focusFilter },
                   { title: t('equipment.toolsList'), callback: toolsFilter },
-                  { title: t('equipment.musicList'), callback: musicFilter},
+                  { title: t('equipment.musicList'), callback: musicFilter}
                 ]}
                 onReplaceCharacter={props.onReplaceCharacter}
                 onReloadCharacter={props.onReloadCharacter}
@@ -347,7 +352,7 @@ export const Dnd5 = (props) => {
               <Notes />
             </Match>
             <Match when={activeTab() === 'bonuses'}>
-              <Bonuses character={character()} onReloadCharacter={props.onReloadCharacter} />
+              <Dnd5Bonuses character={character()} onReloadCharacter={props.onReloadCharacter} />
             </Match>
             <Match when={activeTab() === 'classLevels'}>
               <Dnd5ClassLevels

@@ -5,10 +5,10 @@ import { createWindowSize } from '@solid-primitives/resize-observer';
 import {
   DaggerheartTraits, DaggerheartStatic, DaggerheartHealth, DaggerheartBeastform, DaggerheartCompanion,
   DaggerheartDomainCards, DaggerheartRest, DaggerheartLeveling, DaggerheartExperience, DaggerheartTransform,
-  DaggerheartStances
+  DaggerheartStances, DaggerheartBonuses
 } from '../../../pages';
 import {
-  CharacterNavigation, Equipment, Bonuses, Notes, Avatar, ContentWrapper, Feats, createDiceRoll, Conditions, Combat, Gold
+  CharacterNavigation, Equipment, Notes, Avatar, ContentWrapper, Feats, createDiceRoll, Conditions, Combat, Gold
 } from '../../../components';
 import { useAppLocale } from '../../../context';
 
@@ -32,7 +32,7 @@ export const Daggerheart = (props) => {
   const [activeMobileTab, setActiveMobileTab] = createSignal('traits');
   const [activeTab, setActiveTab] = createSignal('combat');
 
-  const { DiceRoll, openDiceRoll } = createDiceRoll();
+  const { DiceRoll, openDiceRoll, openSimpleDiceRoll } = createDiceRoll();
   const [locale, dict] = useAppLocale();
 
   const t = i18n.translator(dict);
@@ -64,6 +64,7 @@ export const Daggerheart = (props) => {
   const personalFilter = (item) => item.origin === 'character';
   const transformationFilter = (item) => item.origin === 'transformation';
   const domainCardFilter = (item) => (item.origin === 'domain_card' && item.ready_to_use) || item.origin === 'parent';
+  const equipmentFilter = (item) => item.origin === 'equipment';
 
   const featFilters = createMemo(() => {
     const result = [
@@ -71,7 +72,8 @@ export const Daggerheart = (props) => {
       { title: 'community', callback: communityFilter },
       { title: 'class', callback: classFilter },
       { title: 'subclass', callback: subclassFilter },
-      { title: 'domainCards', callback: domainCardFilter }
+      { title: 'domainCards', callback: domainCardFilter },
+      { title: 'equipment', callback: equipmentFilter }
     ];
 
     if (character().beastform !== null) result.push({ title: 'beastform', callback: beastformFilter });
@@ -136,6 +138,7 @@ export const Daggerheart = (props) => {
                 <Combat
                   character={character()}
                   openDiceRoll={openDiceRoll}
+                  openSimpleDiceRoll={openSimpleDiceRoll}
                   onReplaceCharacter={props.onReplaceCharacter}
                 />
               </div>
@@ -181,6 +184,7 @@ export const Daggerheart = (props) => {
                 guideStep={4}
                 helpMessage={TRANSLATION[locale()]['domainHelpMessage']}
                 onNextGuideStepClick={() => setActiveMobileTab('classLevels')}
+                openDiceRoll={openDiceRoll}
               />
             </Match>
             <Match when={activeMobileTab() === 'states'}>
@@ -196,7 +200,7 @@ export const Daggerheart = (props) => {
               <DaggerheartCompanion character={character()} />
             </Match>
             <Match when={activeMobileTab() === 'bonuses'}>
-              <Bonuses character={character()} onReloadCharacter={props.onReloadCharacter} />
+              <DaggerheartBonuses character={character()} onReloadCharacter={props.onReloadCharacter} />
             </Match>
             <Match when={activeMobileTab() === 'rest'}>
               <DaggerheartRest character={character()} onReloadCharacter={props.onReloadCharacter} />
@@ -281,6 +285,7 @@ export const Daggerheart = (props) => {
                 <Combat
                   character={character()}
                   openDiceRoll={openDiceRoll}
+                  openSimpleDiceRoll={openSimpleDiceRoll}
                   onReplaceCharacter={props.onReplaceCharacter}
                 />
               </div>
@@ -326,6 +331,7 @@ export const Daggerheart = (props) => {
                 guideStep={4}
                 helpMessage={TRANSLATION[locale()]['domainHelpMessage']}
                 onNextGuideStepClick={() => setActiveTab('classLevels')}
+                openDiceRoll={openDiceRoll}
               />
             </Match>
             <Match when={activeTab() === 'states'}>
@@ -341,7 +347,7 @@ export const Daggerheart = (props) => {
               <DaggerheartCompanion character={character()} />
             </Match>
             <Match when={activeTab() === 'bonuses'}>
-              <Bonuses character={character()} onReloadCharacter={props.onReloadCharacter} />
+              <DaggerheartBonuses character={character()} onReloadCharacter={props.onReloadCharacter} />
             </Match>
             <Match when={activeTab() === 'rest'}>
               <DaggerheartRest character={character()} onReloadCharacter={props.onReloadCharacter} />
@@ -372,7 +378,7 @@ export const Daggerheart = (props) => {
   return (
     <>
       <ContentWrapper mobileView={mobileView()} leftView={leftView()} rightView={rightView()} />
-      <DiceRoll provider="daggerheart" characterId={character().id} />
+      <DiceRoll provider="daggerheart" characterId={character().id} advantageDice={character().advantage_dice} />
     </>
   );
 }

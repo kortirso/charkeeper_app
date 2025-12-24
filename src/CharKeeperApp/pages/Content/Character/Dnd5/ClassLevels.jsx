@@ -17,14 +17,20 @@ const TRANSLATION = {
     existingTalentPoints: 'Available feats',
     selectTalent: 'Select new feat',
     saveButton: 'Save',
-    selectedTalents: 'Selected feats'
+    selectedTalents: 'Selected feats',
+    origin: 'Origin',
+    general: 'General',
+    epic: 'Epic'
   },
   ru: {
     talents: 'Черты',
     existingTalentPoints: 'Доступно черт',
     selectTalent: 'Выберите новую черту',
     saveButton: 'Сохранить',
-    selectedTalents: 'Выбранные черты'
+    selectedTalents: 'Выбранные черты',
+    origin: 'Происхождение',
+    general: 'Общее',
+    epic: 'Эпическая'
   }
 }
 
@@ -53,9 +59,7 @@ export const Dnd5ClassLevels = (props) => {
     if (character().provider === 'dnd2024') {
       Promise.all([fetchTalents()]).then(
         ([talentsData]) => {
-          batch(() => {
-            setTalents(talentsData.talents);
-          });
+          setTalents(talentsData.talents);
         }
       );
     }
@@ -70,7 +74,7 @@ export const Dnd5ClassLevels = (props) => {
   const availableTalents = createMemo(() => {
     if (talents() === undefined) return {};
 
-    return talents().filter((item) => item.multiple || !item.selected).reduce((acc, item) => { acc[item.id] = item.title; return acc }, {});
+    return talents().filter((item) => item.multiple || !item.selected).reduce((acc, item) => { acc[item.id] = `${item.title} (${TRANSLATION[locale()][item.origin_value]})`; return acc }, {});
   });
 
   const classes = () => translate(currentConfig().classes, locale());
@@ -112,14 +116,18 @@ export const Dnd5ClassLevels = (props) => {
       appState.accessToken,
       character().provider,
       character().id,
-      { character: { classes: classesData(), subclasses: subclassesData() } }
+      { character: { classes: classesData(), subclasses: subclassesData() }, only_head: true }
     );
 
     if (result.errors_list === undefined) {
       batch(() => {
-        props.onReplaceCharacter(result.character);
+        props.onReloadCharacter();
         renderNotice(t('alerts.characterIsUpdated'));
       });
+
+      const result = await fetchTalents();
+      setTalents(result.talents);
+
     } else renderAlerts(result.errors_list);
   }
 
@@ -212,14 +220,13 @@ export const Dnd5ClassLevels = (props) => {
           </For>
           <Button default textable classList="mt-2" onClick={updateClasses}>{t('save')}</Button>
         </div>
-
         <Show when={character().provider === 'dnd2024'}>
           <Toggle
             containerClassList="mt-2"
             title={
               <div class="flex justify-between">
                 <p>{TRANSLATION[locale()].talents}</p>
-                <p>{TRANSLATION[locale()].existingTalentPoints} - {1 + Math.trunc(character().level / 4) - Object.values(character().selected_talents).reduce((acc, value) => acc + value, 0)}</p>
+                <p>{TRANSLATION[locale()].existingTalentPoints} - {character().available_talents - Object.values(character().selected_talents).reduce((acc, value) => acc + value, 0)}</p>
               </div>
             }
           >
@@ -232,7 +239,7 @@ export const Dnd5ClassLevels = (props) => {
               </For>
               <div class="mb-2" />
             </Show>
-            <Show when={1 + Math.trunc(character().level / 4) > Object.values(character().selected_talents).reduce((acc, value) => acc + value, 0)}>
+            <Show when={character().available_talents > Object.values(character().selected_talents).reduce((acc, value) => acc + value, 0)}>
               <Select
                 labelText={TRANSLATION[locale()].selectTalent}
                 containerClassList="flex-1"

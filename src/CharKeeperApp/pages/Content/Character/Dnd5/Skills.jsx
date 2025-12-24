@@ -31,10 +31,14 @@ export const Dnd5Skills = (props) => {
   const [locale] = useAppLocale();
 
   createEffect(() => {
-    if (lastActiveCharacterId() === character().id) return;
+    if (lastActiveCharacterId() === character().id && character().guide_step !== 1) {
+      setEditMode(character().guide_step === 2);
+      return;
+    }
 
     batch(() => {
       setSkillsData(character().skills);
+      setEditMode(character().guide_step === 2);
       setLastActiveCharacterId(character().id);
     });
   });
@@ -94,7 +98,7 @@ export const Dnd5Skills = (props) => {
         onReloadCharacter={props.onReloadCharacter}
         onNextClick={props.onNextGuideStepClick}
       >
-        <Show when={character().guide_step === 2 && (character().skill_boosts > 0 || character().any_skill_boosts > 0)}>
+        <Show when={character().skill_boosts > 0 || character().any_skill_boosts > 0}>
           <div class="warning">
             <Show when={character().any_skill_boosts > 0}>
               <p class="text-sm">{TRANSLATION[locale()]['anySkillBoosts']} {character().any_skill_boosts}</p>

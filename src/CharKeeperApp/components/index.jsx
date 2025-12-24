@@ -19,10 +19,11 @@ export * from './molecules/CharacterNavigation';
 export * from './molecules/FeatureTitle';
 export * from './molecules/ItemsTable';
 export * from './molecules/Dice';
+export * from './molecules/DualityDice';
 
 export * from './substances/Avatar';
 export * from './substances/Notes';
-export * from './substances/Bonuses';
+export * from './substances/SharedBonuses';
 export * from './substances/Equipment';
 export * from './substances/Feats';
 export * from './substances/DiceRoll';

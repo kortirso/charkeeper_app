@@ -10,10 +10,16 @@ import { modifier } from '../../../../helpers';
 const TRANSLATION = {
   en: {
     abilityBoosts: 'Additionally, distribute 3 points across at least 2 abilities from the list:',
+    levelingAbilityBoosts: 'You have available ability boosts',
+    splitBoosts: 'Share boosts between:',
+    anySplitBoosts: 'Share boosts between any abilities',
     helpMessage: 'Your character can start with a standard set of abilities, or you can generate them in any way according to the rules.'
   },
   ru: {
     abilityBoosts: 'Дополнительно распределите 3 очка по, как минимум, 2 характеристикам из списка:',
+    levelingAbilityBoosts: 'У вас есть доступные повышения характеристик',
+    splitBoosts: 'Распределите повышения между:',
+    anySplitBoosts: 'Распределите между любыми характеристиками',
     helpMessage: 'Ваш персонаж может начать со стандартным набором характеристик. Или вы можете сгенерировать их любым способом согласно правилам.'
   }
 }
@@ -34,6 +40,7 @@ export const Dnd5Abilities = (props) => {
 
     batch(() => {
       setAbilitiesData(character().abilities);
+      setEditMode(character().guide_step === 1);
       setLastActiveCharacterId(character().id);
     });
   });
@@ -72,6 +79,17 @@ export const Dnd5Abilities = (props) => {
         <Show when={character().guide_step && character().ability_boosts.length > 0}>
           <div class="warning">
             <p class="text-sm">{TRANSLATION[locale()]['abilityBoosts']} {Object.entries(config.abilities).filter(([slug]) => character().ability_boosts.includes(slug)).map(([, values]) => values.name[locale()]).join(', ')}</p>
+          </div>
+        </Show>
+        <Show when={character().leveling_ability_boosts > 0}>
+          <div class="warning">
+            <p class="text-sm">{TRANSLATION[locale()]['levelingAbilityBoosts']}, {character().leveling_ability_boosts}</p>
+            <Show
+              when={character().leveling_ability_boosts_list.length > 0}
+              fallback={<p class="text-sm">{TRANSLATION[locale()]['anySplitBoosts']}</p>}
+            >
+              <p class="text-sm">{TRANSLATION[locale()]['splitBoosts']} {Object.entries(config.abilities).filter(([slug]) => character().leveling_ability_boosts_list.includes(slug)).map(([, values]) => values.name[locale()]).join(', ')}</p>
+            </Show>
           </div>
         </Show>
         <EditWrapper

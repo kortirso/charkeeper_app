@@ -12,6 +12,7 @@ import { updateCharacterItemRequest } from '../../requests/updateCharacterItemRe
 import { removeCharacterItemRequest } from '../../requests/removeCharacterItemRequest';
 import { fetchItemInfoRequest } from '../../requests/fetchItemInfoRequest';
 import { createCharacterHomebrewItemRequest } from '../../requests/createCharacterHomebrewItemRequest';
+import { consumeCharacterBonusRequest } from '../../requests/consumeCharacterBonusRequest';
 
 const TRANSLATION = {
   en: {
@@ -21,7 +22,28 @@ const TRANSLATION = {
     homebrewName: 'Item name',
     homebrewDescription: 'Item description',
     add: 'Add',
-    tooltip: "Once you've crafted an item, you can edit it in the <a href='https://charkeeper.org/homebrews' class='underline' target='_blank' rel='noopener noreferrer'>Homebrews</a> section, even converting it into a weapon or armor."
+    tooltip: "Once you've crafted an item, you can edit it in the <a href='https://charkeeper.org/homebrews' class='underline' target='_blank' rel='noopener noreferrer'>Homebrews</a> section, even converting it into a weapon or armor.",
+    in: {
+      hands: {
+        title: 'In hands',
+        description: 'Items in your hands'
+      },
+      equipment: {
+        title: 'On body',
+        description: 'Equiped armor, ammo for weapon, consumables'
+      },
+      backpack: {
+        title: 'In backpack',
+        description: "Items in backpack, can't be quickly used"
+      },
+      storage: {
+        title: 'In storage',
+        description: 'Outer storage of your items'
+      }
+    },
+    amount: 'Moving amount',
+    was: 'Was',
+    will: 'will be'
   },
   ru: {
     searchByName: 'Поиск по названию (от 3 символов)',
@@ -30,10 +52,31 @@ const TRANSLATION = {
     homebrewName: 'Название предмета',
     homebrewDescription: 'Описание предмета',
     add: 'Добавить',
-    tooltip: "После создания предмета вы сможете его отредактировать в разделе <a href='https://charkeeper.org/homebrews' class='underline' target='_blank' rel='noopener noreferrer'>Homebrews</a>, даже преобразовать в оружие или броню"
+    tooltip: "После создания предмета вы сможете его отредактировать в разделе <a href='https://charkeeper.org/homebrews' class='underline' target='_blank' rel='noopener noreferrer'>Homebrews</a>, даже преобразовать в оружие или броню",
+    in: {
+      hands: {
+        title: 'В руках',
+        description: "Предметы в руках"
+      },
+      equipment: {
+        title: 'На теле',
+        description: 'Экипированный доспех, боеприпасы, расходные материалы'
+      },
+      backpack: {
+        title: 'В рюкзаке',
+        description: 'Предметы в рюкзаке, не могут быть быстро использованы'
+      },
+      storage: {
+        title: 'В хранилище',
+        description: 'Предметы в отдалённом хранилище'
+      }
+    },
+    amount: 'Кол-во перемещаемого',
+    was: 'Было',
+    will: 'будет'
   }
 }
-const CREATE_HOMEBREW_ITEMS = ['daggerheart'];
+const CREATE_HOMEBREW_ITEMS = ['daggerheart', 'dnd2024'];
 
 export const Equipment = (props) => {
   const safeChildren = children(() => props.children);
@@ -46,6 +89,8 @@ export const Equipment = (props) => {
   const [characterItems, setCharacterItems] = createSignal(undefined);
   const [items, setItems] = createSignal(undefined);
   const [itemsSelectingMode, setItemsSelectingMode] = createSignal(false);
+
+  const [movingItem, setMovingItem] = createStore({ item: null, fromState: null, toState: null, amount: 1 });
   const [changingItem, setChangingItem] = createSignal(null);
   const [itemInfo, setItemInfo] = createSignal(null);
   const [filterByName, setFilterByName] = createSignal('');
@@ -90,6 +135,52 @@ export const Equipment = (props) => {
     });
   }
 
+  const consumeItem = async (item, fromState) => {
+    const result = await consumeCharacterBonusRequest(
+      appState.accessToken,
+      character().provider,
+      character().id,
+      item.bonuses[0].id,
+      { character_item_id: item.id, from_state: fromState, only_head: true }
+    );
+
+    if (result.errors_list === undefined) {
+      props.onReloadCharacter();
+      reloadCharacterItems();
+    }
+  }
+
+  const moveItem = async (item, fromState, toState) => {
+    if (item.states[fromState] === 1) {
+      const payload = {
+        ...item.states,
+        [fromState]: 0,
+        [toState]: item.states[toState] + 1
+      }
+
+      await updateCharacterItem(item, { character_item: { states: payload } });
+    } else {
+      batch(() => {
+        setMovingItem({ item: item, fromState: fromState, toState: toState, amount: 1 });
+        openModal();
+      });
+    }
+  }
+
+  const finishMovingItem = async () => {
+    const states = movingItem.item.states;
+    if (states[movingItem.fromState] < movingItem.amount) return;
+    if (movingItem.amount < 1) return;
+
+    const payload = {
+      ...states,
+      [movingItem.fromState]: states[movingItem.fromState] - movingItem.amount,
+      [movingItem.toState]: states[movingItem.toState] + movingItem.amount
+    }
+
+    await updateCharacterItem(movingItem.item, { character_item: { states: payload } });
+  }
+
   const showInfo = async (id, name) => {
     const result = await fetchItemInfoRequest(appState.accessToken, id);
 
@@ -103,10 +194,14 @@ export const Equipment = (props) => {
   }
 
   // submits
-  const updateItem = async () => {
-    await updateCharacterItem(
+  const updateItem = () => {
+    if (Object.values(changingItem().states).reduce((acc, item) => acc + item, 0) === 0) {
+      return removeCharacterItem(changingItem());
+    }
+
+    updateCharacterItem(
       changingItem(),
-      { character_item: { quantity: changingItem().quantity, notes: changingItem().notes } }
+      { character_item: { states: changingItem().states, notes: changingItem().notes } }
     );
   }
 
@@ -140,7 +235,7 @@ export const Equipment = (props) => {
           return { ...element, ...payload.character_item } 
         });
         setCharacterItems(newValue);
-        closeModal()
+        closeModal();
       });
     }
   }
@@ -155,6 +250,8 @@ export const Equipment = (props) => {
           reloadCharacterItems();
           props.onReloadCharacter();
         } else setCharacterItems(characterItems().filter((element) => element !== item));
+        closeModal();
+        setChangingItem(null);
       });
     }
   }
@@ -270,10 +367,12 @@ export const Equipment = (props) => {
             <For each={['hands', 'equipment', 'backpack', 'storage']}>
               {(state) =>
                 <ItemsTable
-                  title={t(`equipment.in.${state}.title`)}
-                  subtitle={t(`equipment.in.${state}.description`)}
+                  title={TRANSLATION[locale()].in[state].title}
+                  subtitle={TRANSLATION[locale()].in[state].description}
                   state={state}
-                  items={characterItems().filter((item) => item.state === state)}
+                  items={characterItems().filter((item) => item.states[state] > 0)}
+                  onConsumeItem={consumeItem}
+                  onMoveCharacterItem={moveItem}
                   onChangeItem={changeItem}
                   onInfoItem={showInfo}
                   onUpdateCharacterItem={updateCharacterItem}
@@ -281,13 +380,6 @@ export const Equipment = (props) => {
                 />
               }
             </For>
-            <Show when={props.withWeight}>
-              <div class="flex justify-end">
-                <div class="p-4 flex blockable">
-                  <p class="dark:text-snow">{calculateCurrentLoad()} / {character().load}</p>
-                </div>
-              </div>
-            </Show>
             <Show when={CREATE_HOMEBREW_ITEMS.includes(character().provider)}>
               <Toggle title={TRANSLATION[locale()].createHomebrew}>
                 <Input
@@ -310,19 +402,30 @@ export const Equipment = (props) => {
                 <Button default onClick={addHomebrewItem}>{TRANSLATION[locale()].add}</Button>
               </Toggle>
             </Show>
+            <Show when={props.withWeight}>
+              <div class="flex justify-end">
+                <div class="p-4 flex blockable">
+                  <p>{calculateCurrentLoad()} / {character().load}</p>
+                </div>
+              </div>
+            </Show>
           </Show>
         </Show>
       </GuideWrapper>
       <Modal classList="md:max-w-md!">
         <Show when={changingItem()}>
-          <div class="mb-2 flex items-center">
-            <p class="flex-1 text-sm text-left dark:text-snow">{changingItem().name}</p>
-            <Input
-              numeric
-              containerClassList="w-20 ml-8"
-              value={changingItem().quantity}
-              onInput={(value) => setChangingItem({ ...changingItem(), quantity: Number(value) })}
-            />
+          <p class="text-lg mb-2">{changingItem().name}</p>
+          <div class="grid grid-cols-2 gap-2 mb-2">
+            <For each={['hands', 'equipment', 'backpack', 'storage']}>
+              {(state) =>
+                <Input
+                  numeric
+                  labelText={TRANSLATION[locale()].in[state].title}
+                  value={changingItem().states[state]}
+                  onInput={(value) => setChangingItem({ ...changingItem(), states: { ...changingItem().states, [state]: parseInt(value) } })}
+                />
+              }
+            </For>
           </div>
           <TextArea
             rows="2"
@@ -330,11 +433,22 @@ export const Equipment = (props) => {
             onChange={(value) => setChangingItem({ ...changingItem(), notes: value })}
             value={changingItem().notes}
           />
-          <Button default textable classList="mt-2" onClick={updateItem}>{t('save')}</Button>
+          <Button default textable classList="mt-4" onClick={updateItem}>{t('save')}</Button>
         </Show>
         <Show when={itemInfo()}>
           <p class="mb-3 text-xl">{itemInfo()[0]}</p>
           <p>{itemInfo()[1]}</p>
+        </Show>
+        <Show when={movingItem.item}>
+          <p class="text-lg mb-2">{movingItem.item.name}</p>
+          <p class="text-sm mb-1">{TRANSLATION[locale()].was} {TRANSLATION[locale()].in[movingItem.fromState].title.toLowerCase()}, {TRANSLATION[locale()].will} {TRANSLATION[locale()].in[movingItem.toState].title.toLowerCase()}</p>
+          <Input
+            numeric
+            labelText={TRANSLATION[locale()].amount}
+            value={movingItem.amount}
+            onInput={(value) => setMovingItem({ ...movingItem, amount: parseInt(value) })}
+          />
+          <Button default textable classList="mt-4" onClick={finishMovingItem}>{t('save')}</Button>
         </Show>
       </Modal>
     </ErrorWrapper>
