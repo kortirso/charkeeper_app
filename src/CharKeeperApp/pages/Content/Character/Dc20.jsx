@@ -3,7 +3,8 @@ import * as i18n from '@solid-primitives/i18n';
 import { createWindowSize } from '@solid-primitives/resize-observer';
 
 import {
-  Dc20Abilities, Dc20Skills, Dc20Saves, Dc20CombatStatic, Dc20Leveling, Dc20Resources, Dc20Spells, Dc20Rest
+  Dc20Abilities, Dc20Skills, Dc20Saves, Dc20CombatStatic, Dc20Leveling, Dc20Resources, Dc20Spells, Dc20Rest,
+  Dc20Bonuses
 } from '../../../pages';
 import {
   CharacterNavigation, Notes, Avatar, ContentWrapper, createDiceRoll, Conditions, Equipment, Combat, Feats
@@ -37,6 +38,7 @@ export const Dc20 = (props) => {
   const weaponFilter = (item) => item.kind.includes('weapon');
   const armorFilter = (item) => item.kind.includes('armor');
   const shieldFilter = (item) => item.kind.includes('shield');
+  const focusFilter = (item) => item.kind.includes('focus');
 
   const ancestryFilter = (item) => item.origin === 'ancestry';
   const classFilter = (item) => item.origin === 'class' || item.origin === 'class_flavor' || item.origin === 'talent';
@@ -54,7 +56,7 @@ export const Dc20 = (props) => {
   const characterTabs = createMemo(() => {
     const result = ['combat', 'equipment'];
     if (character().mana_points.max > 0) result.push('spells');
-    return result.concat(['classLevels', 'rest', 'notes', 'avatar']);
+    return result.concat(['classLevels', 'rest', 'bonuses', 'notes', 'avatar']);
   });
 
   const mobileView = createMemo(() => {
@@ -121,7 +123,8 @@ export const Dc20 = (props) => {
                 itemFilters={[
                   { title: t('equipment.weaponsList'), callback: weaponFilter },
                   { title: t('equipment.armorList'), callback: armorFilter },
-                  { title: t('equipment.shieldList'), callback: shieldFilter }
+                  { title: t('equipment.shieldList'), callback: shieldFilter },
+                  { title: t('equipment.focusList'), callback: focusFilter }
                 ]}
                 onReplaceCharacter={props.onReplaceCharacter}
                 onReloadCharacter={props.onReloadCharacter}
@@ -141,11 +144,14 @@ export const Dc20 = (props) => {
             </Match>
             <Match when={activeMobileTab() === 'spells'}>
               <Dc20Spells
-                character={character()}
+                character={character()} openDiceRoll={openDiceRoll}
               />
             </Match>
             <Match when={activeMobileTab() === 'rest'}>
               <Dc20Rest character={character()} onReloadCharacter={props.onReloadCharacter} />
+            </Match>
+            <Match when={activeMobileTab() === 'bonuses'}>
+              <Dc20Bonuses character={character()} onReloadCharacter={props.onReloadCharacter} />
             </Match>
             <Match when={activeMobileTab() === 'notes'}>
               <Notes />
@@ -230,7 +236,8 @@ export const Dc20 = (props) => {
                 itemFilters={[
                   { title: t('equipment.weaponsList'), callback: weaponFilter },
                   { title: t('equipment.armorList'), callback: armorFilter },
-                  { title: t('equipment.shieldList'), callback: shieldFilter }
+                  { title: t('equipment.shieldList'), callback: shieldFilter },
+                  { title: t('equipment.focusList'), callback: focusFilter }
                 ]}
                 onReplaceCharacter={props.onReplaceCharacter}
                 onReloadCharacter={props.onReloadCharacter}
@@ -250,11 +257,14 @@ export const Dc20 = (props) => {
             </Match>
             <Match when={activeTab() === 'spells'}>
               <Dc20Spells
-                character={character()}
+                character={character()} openDiceRoll={openDiceRoll}
               />
             </Match>
             <Match when={activeTab() === 'rest'}>
               <Dc20Rest character={character()} onReloadCharacter={props.onReloadCharacter} />
+            </Match>
+            <Match when={activeTab() === 'bonuses'}>
+              <Dc20Bonuses character={character()} onReloadCharacter={props.onReloadCharacter} />
             </Match>
             <Match when={activeTab() === 'notes'}>
               <Notes />

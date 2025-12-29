@@ -55,6 +55,7 @@ export * from './Content/Character/Daggerheart/Companion';
 export * from './Content/Character/Daggerheart/Transformation';
 export * from './Content/Character/Daggerheart/Stances';
 export * from './Content/Character/Daggerheart/Bonuses';
+export * from './Content/Character/Daggerheart/Craft';
 
 export * from './Content/Character/Dc20';
 export * from './Content/Character/Dc20/Abilities';
@@ -65,6 +66,7 @@ export * from './Content/Character/Dc20/Leveling';
 export * from './Content/Character/Dc20/Resources';
 export * from './Content/Character/Dc20/Spells';
 export * from './Content/Character/Dc20/Rest';
+export * from './Content/Character/Dc20/Bonuses';
 
 export * from './Navigation/Characters/ListItem';
 export * from './Navigation/Characters/CharacterForm';

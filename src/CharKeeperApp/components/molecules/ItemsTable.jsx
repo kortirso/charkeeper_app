@@ -21,6 +21,7 @@ const TRANSLATION = {
     quantity: 'Кол-во'
   }
 }
+const ITEMS_INFO = ['daggerheart'];
 
 export const ItemsTable = (props) => {
   const items = () => props.items;
@@ -87,6 +88,11 @@ export const ItemsTable = (props) => {
                           <Drink width={16} height={16} />
                         </Button>
                       </Show>
+                      <Show when={item.kind === 'consumables' && item.info.consume}>
+                        <Button default size="small" onClick={() => props.onConsumeCharacterItem(item, props.state)}>
+                          <Drink width={16} height={16} />
+                        </Button>
+                      </Show>
                       <div class="relative h-6" use:clickOutside={() => setIsOpen(false)}>
                         <IconButton onClick={() => toggleMenu(item)}>
                           <Dots />
@@ -94,8 +100,8 @@ export const ItemsTable = (props) => {
                         <Show when={isOpen() === item}>
                           <div class="absolute z-9 right-0 border border-gray-200 rounded overflow-hidden">
                             <p class="dots-item" onClick={() => props.onChangeItem(item)}>{TRANSLATION[locale()].change}</p>
-                            <Show when={item.has_description}>
-                              <p class="dots-item" onClick={() => props.onInfoItem(item.item_id, item.name)}>{TRANSLATION[locale()].info}</p>
+                            <Show when={ITEMS_INFO.includes(props.provider)}>
+                              <p class="dots-item" onClick={() => props.onInfoItem(item)}>{TRANSLATION[locale()].info}</p>
                             </Show>
                             <p class="dots-item" onClick={() => props.onRemoveCharacterItem(item)}>{TRANSLATION[locale()].delete}</p>
                           </div>
