@@ -201,7 +201,7 @@ export const Dnd5 = (props) => {
               </Equipment>
             </Match>
             <Match when={activeMobileTab() === 'spells'}>
-              <Dnd5Spells character={character()} onReplaceCharacter={props.onReplaceCharacter} />
+              <Dnd5Spells character={character()} openDiceRoll={openDiceRoll} onReplaceCharacter={props.onReplaceCharacter} />
             </Match>
             <Match when={activeMobileTab() === 'notes'}>
               <Notes />
@@ -254,8 +254,8 @@ export const Dnd5 = (props) => {
         <div class="mt-4">
           <Dnd5Proficiency character={character()} onReplaceCharacter={props.onReplaceCharacter} />
         </div>
-        <div class="flex flex-col emd:flex-row emd:gap-4 emd:mt-4">
-          <div class="mt-4 emd:mt-0 flex-1">
+        <div class="emd:gap-4 emd:mt-4 grid grid-cols-1 emd:grid-cols-2">
+          <div class="mt-4 emd:mt-0">
             <Conditions character={character()} />
             <Show when={character().provider === 'dnd2024' && Object.keys(character().classes).includes('druid')}>
               <div class="mt-4">
@@ -263,7 +263,7 @@ export const Dnd5 = (props) => {
               </div>
             </Show>
           </div>
-          <div class="mt-4 emd:mt-0 flex-1">
+          <div class="mt-4 emd:mt-0">
             <Dnd5Skills
               character={character()}
               openDiceRoll={openDiceRoll}
@@ -346,7 +346,7 @@ export const Dnd5 = (props) => {
               </Equipment>
             </Match>
             <Match when={activeTab() === 'spells'}>
-              <Dnd5Spells character={character()} onReplaceCharacter={props.onReplaceCharacter} />
+              <Dnd5Spells character={character()} openDiceRoll={openDiceRoll} onReplaceCharacter={props.onReplaceCharacter} />
             </Match>
             <Match when={activeTab() === 'notes'}>
               <Notes />

@@ -15,27 +15,34 @@ import { fetchCharacterRequest } from '../../requests/fetchCharacterRequest';
 import { createCharacterRequest } from '../../requests/createCharacterRequest';
 import { removeCharacterRequest } from '../../requests/removeCharacterRequest';
 import { fetchHomebrewsRequest } from '../../requests/fetchHomebrewsRequest';
+import { resetCharacterRequest } from '../../requests/resetCharacterRequest';
 
 const TRANSLATION = {
   en: {
     deleteCharacterConfirm: 'Are you sure need to remove this character?',
     deleteCharacterTitle: 'Deleting character',
-    delete: 'Delete'
+    delete: 'Delete',
+    resetCharacterConfirm: 'Are you sure need to reset this character to 1 level?',
+    resetCharacterTitle: 'Reseting character',
+    reset: 'Reset'
   },
   ru: {
     deleteCharacterConfirm: 'Вы точно хотите избавиться от этого персонажа?',
     deleteCharacterTitle: 'Удаление персонажа',
-    delete: 'Удалить'
+    delete: 'Удалить',
+    resetCharacterConfirm: 'Вы точно хотите сбросить от этого персонажа до 1 уровня?',
+    resetCharacterTitle: 'Сброс персонажа',
+    reset: 'Сбросить'
   }
 }
 
 export const CharactersTab = () => {
-  const [loading, setLoading] = createSignal(false);
   const [currentTab, setCurrentTab] = createSignal('characters');
   const [activeFilter, setActiveFilter] = createSignal('allFilter');
   const [characters, setCharacters] = createSignal(undefined);
   const [platform, setPlatform] = createSignal(undefined);
   const [deletingCharacterId, setDeletingCharacterId] = createSignal(undefined);
+  const [resetingCharacterId, setResetingCharacterId] = createSignal(undefined);
   const [adminCharacterId, setAdminCharacterId] = createSignal('');
   const [homebrews, setHomebrews] = createSignal(undefined);
 
@@ -46,11 +53,12 @@ export const CharactersTab = () => {
 
   const t = i18n.translator(dict);
 
+  const fetchCharacters = async () => await fetchCharactersRequest(appState.accessToken);
+
   createEffect(() => {
     if (characters() !== undefined) return;
     if (homebrews() !== undefined) return;
 
-    const fetchCharacters = async () => await fetchCharactersRequest(appState.accessToken);
     const fetchHomebrews = async () => await fetchHomebrewsRequest(appState.accessToken);
 
     Promise.all([fetchCharacters(), fetchHomebrews()]).then(
@@ -109,6 +117,15 @@ export const CharactersTab = () => {
     });
   }
 
+  const resetCharacter = (event, characterId) => {
+    event.stopPropagation();
+
+    batch(() => {
+      setResetingCharacterId(characterId);
+      openModal();
+    });
+  }
+
   const confirmCharacterDeleting = async () => {
     const result = await removeCharacterRequest(appState.accessToken, deletingCharacterId());
 
@@ -121,10 +138,21 @@ export const CharactersTab = () => {
     } else renderAlerts(result.errors_list);
   }
 
+  const confirmCharacterReseting = async () => {
+    const result = await resetCharacterRequest(appState.accessToken, resetingCharacterId());
+
+    if (result.errors_list === undefined) {
+      const refreshData = await fetchCharacters()
+      batch(() => {
+        setCharacters(refreshData.characters);
+        closeModal();
+        navigate(null, {});
+      });
+    } else renderAlerts(result.errors_list);
+  }
+
   const saveCharacter = async (characterForm) => {
     if (platform() === undefined) return undefined;
-
-    setLoading(true);
 
     const formData = Object.fromEntries(Object.entries(characterForm).filter(([, value]) => value !== undefined));
     const result = await createCharacterRequest(appState.accessToken, platform(), { character: formData });
@@ -134,12 +162,10 @@ export const CharactersTab = () => {
         setCharacters([result.character, ...characters()]);
         setPlatform(undefined);
         setCurrentTab('characters');
-        setLoading(false);
       });
     } else {
       batch(() => {
         renderAlerts(result.errors_list);
-        setLoading(false);
       })
     }
 
@@ -186,6 +212,7 @@ export const CharactersTab = () => {
                     onClick={() => navigate('character', { id: character.id })}
                     onViewClick={() => navigate('characterView', { id: character.id })}
                     onDeleteCharacter={(e) => deleteCharacter(e, character.id)}
+                    onResetCharacter={(e) => resetCharacter(e, character.id)}
                   />
                 }
               </For>
@@ -218,29 +245,24 @@ export const CharactersTab = () => {
             />
             <Switch>
               <Match when={platform() === 'dnd5'}>
-                <Dnd5CharacterForm loading={loading} onCreateCharacter={saveCharacter} homebrews={homebrews} setCurrentTab={setCurrentTab} />
+                <Dnd5CharacterForm onCreateCharacter={saveCharacter} homebrews={homebrews} setCurrentTab={setCurrentTab} />
               </Match>
               <Match when={platform() === 'dnd2024'}>
-                <Dnd2024CharacterForm loading={loading} onCreateCharacter={saveCharacter} homebrews={homebrews} setCurrentTab={setCurrentTab} dnd2024Races={dnd2024Races} />
+                <Dnd2024CharacterForm onCreateCharacter={saveCharacter} homebrews={homebrews} setCurrentTab={setCurrentTab} dnd2024Races={dnd2024Races} />
               </Match>
               <Match when={platform() === 'pathfinder2'}>
-                <Pathfinder2CharacterForm loading={loading} onCreateCharacter={saveCharacter} homebrews={homebrews} setCurrentTab={setCurrentTab} />
+                <Pathfinder2CharacterForm onCreateCharacter={saveCharacter} homebrews={homebrews} setCurrentTab={setCurrentTab} />
               </Match>
               <Match when={platform() === 'daggerheart'}>
-                <DaggerheartCharacterForm loading={loading} onCreateCharacter={saveCharacter} homebrews={homebrews} setCurrentTab={setCurrentTab} />
+                <DaggerheartCharacterForm onCreateCharacter={saveCharacter} homebrews={homebrews} setCurrentTab={setCurrentTab} />
               </Match>
               <Match when={platform() === 'dc20'}>
-                <Dc20CharacterForm loading={loading} onCreateCharacter={saveCharacter} setCurrentTab={setCurrentTab} />
+                <Dc20CharacterForm onCreateCharacter={saveCharacter} setCurrentTab={setCurrentTab} />
               </Match>
             </Switch>
             <Show when={platform() === undefined}>
               <div class="flex mt-4">
-                <Button
-                  outlined
-                  size='default'
-                  classList='w-full mr-2'
-                  onClick={() => loading() ? null : setCurrentTab('characters')}
-                >
+                <Button outlined size="default" classList="w-full mr-2" onClick={() => setCurrentTab('characters')}>
                   {t('back')}
                 </Button>
               </div>
@@ -249,12 +271,22 @@ export const CharactersTab = () => {
         </Match>
       </Switch>
       <Modal>
-        <p class="mb-3 text-xl">{TRANSLATION[locale()]['deleteCharacterTitle']}</p>
-        <p class="mb-3">{TRANSLATION[locale()]['deleteCharacterConfirm']}</p>
-        <div class="flex w-full">
-          <Button outlined classList='flex-1 mr-2 text-sm md:text-base' onClick={closeModal}>{t('cancel')}</Button>
-          <Button default classList='flex-1 ml-2 text-sm md:text-base' onClick={confirmCharacterDeleting}>{TRANSLATION[locale()]['delete']}</Button>
-        </div>
+        <Show when={deletingCharacterId()}>
+          <p class="mb-3 text-xl">{TRANSLATION[locale()].deleteCharacterTitle}</p>
+          <p class="mb-3">{TRANSLATION[locale()].deleteCharacterConfirm}</p>
+          <div class="flex w-full">
+            <Button outlined classList='flex-1 mr-2 text-sm md:text-base' onClick={closeModal}>{t('cancel')}</Button>
+            <Button default classList='flex-1 ml-2 text-sm md:text-base' onClick={confirmCharacterDeleting}>{TRANSLATION[locale()].delete}</Button>
+          </div>
+        </Show>
+        <Show when={resetingCharacterId()}>
+          <p class="mb-3 text-xl">{TRANSLATION[locale()].resetCharacterTitle}</p>
+          <p class="mb-3">{TRANSLATION[locale()].resetCharacterConfirm}</p>
+          <div class="flex w-full">
+            <Button outlined classList='flex-1 mr-2 text-sm md:text-base' onClick={closeModal}>{t('cancel')}</Button>
+            <Button default classList='flex-1 ml-2 text-sm md:text-base' onClick={confirmCharacterReseting}>{TRANSLATION[locale()].reset}</Button>
+          </div>
+        </Show>
       </Modal>
     </>
   );
