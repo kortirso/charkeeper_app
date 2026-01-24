@@ -6,7 +6,7 @@
 [subrepo]
 	remote = git@github.com:kortirso/charkeeper_solid_app.git
 	branch = main
-	commit = b3237c23d5479cf485386b374e1cf234fe0c5360
-	parent = 2cdbf8aa825db490594a4853589451beb8ac50d4
+	commit = 9cef924935a7a8ec3cdbf639f00493b9032aa4d2
+	parent = 9581f46f5ff966d158bcaf0b7ec1c27f9a63d336
 	method = merge
 	cmdver = 0.4.9
