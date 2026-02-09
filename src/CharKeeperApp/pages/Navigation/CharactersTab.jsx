@@ -3,7 +3,7 @@ import * as i18n from '@solid-primitives/i18n';
 
 import {
   CharactersListItem, Dc20CharacterForm, DaggerheartCharacterForm, Dnd5CharacterForm, Dnd2024CharacterForm,
-  Pathfinder2CharacterForm
+  Pathfinder2CharacterForm, FateCharacterForm
 } from '../../pages';
 import { CharacterNavigation, createModal, PageHeader, Select, Input, Button, Loading } from '../../components';
 import { Plus } from '../../assets';
@@ -15,6 +15,7 @@ import { createCharacterRequest } from '../../requests/createCharacterRequest';
 import { removeCharacterRequest } from '../../requests/removeCharacterRequest';
 import { fetchHomebrewsRequest } from '../../requests/fetchHomebrewsRequest';
 import { resetCharacterRequest } from '../../requests/resetCharacterRequest';
+import { localize } from '../../helpers';
 
 const TRANSLATION = {
   en: {
@@ -180,7 +181,7 @@ export const CharactersTab = () => {
             </Button>
           </Show>
           <CharacterNavigation
-            tabsList={['allFilter'].concat(['dnd5', 'dnd2024', 'pathfinder2', 'daggerheart', 'dc20'].filter((item) => characterProviders().includes(item)))}
+            tabsList={['allFilter'].concat(['dnd5', 'dnd2024', 'pathfinder2', 'daggerheart', 'fate', 'dc20'].filter((item) => characterProviders().includes(item)))}
             activeTab={activeFilter()}
             setActiveTab={setActiveFilter}
           />
@@ -226,7 +227,7 @@ export const CharactersTab = () => {
               containerClassList="mb-2"
               classList="w-full"
               labelText={t('newCharacterPage.platform')}
-              items={{ 'dnd5': 'D&D 5', 'dnd2024': 'D&D 2024', 'daggerheart': 'Daggerheart', 'pathfinder2': 'Pathfinder 2', 'dc20': 'DC20 0.10' }}
+              items={{ 'dnd5': 'D&D 5', 'dnd2024': 'D&D 2024', 'daggerheart': 'Daggerheart', 'pathfinder2': 'Pathfinder 2', 'fate': 'Fate', 'dc20': 'DC20 0.10' }}
               selectedValue={platform()}
               onSelect={(value) => setPlatform(value)}
             />
@@ -242,6 +243,9 @@ export const CharactersTab = () => {
               </Match>
               <Match when={platform() === 'daggerheart'}>
                 <DaggerheartCharacterForm onCreateCharacter={saveCharacter} homebrews={homebrews} setCurrentTab={setCurrentTab} />
+              </Match>
+              <Match when={platform() === 'fate'}>
+                <FateCharacterForm onCreateCharacter={saveCharacter} setCurrentTab={setCurrentTab} />
               </Match>
               <Match when={platform() === 'dc20'}>
                 <Dc20CharacterForm onCreateCharacter={saveCharacter} setCurrentTab={setCurrentTab} />
@@ -259,20 +263,20 @@ export const CharactersTab = () => {
       </Switch>
       <Modal>
         <Show when={deletingCharacterId()}>
-          <p class="mb-2 text-xl">{TRANSLATION[locale()].deleteCharacterTitle}</p>
-          <p class="mb-2">{TRANSLATION[locale()].deleteCharacterConfirm}</p>
+          <p class="mb-2 text-xl">{localize(TRANSLATION, locale()).deleteCharacterTitle}</p>
+          <p class="mb-2">{localize(TRANSLATION, locale()).deleteCharacterConfirm}</p>
           <div class="flex w-full">
             <Button outlined classList='flex-1 mr-2 text-sm md:text-base' onClick={closeModal}>{t('cancel')}</Button>
-            <Button default classList='flex-1 ml-2 text-sm md:text-base' onClick={confirmCharacterDeleting}>{TRANSLATION[locale()].delete}</Button>
+            <Button default classList='flex-1 ml-2 text-sm md:text-base' onClick={confirmCharacterDeleting}>{localize(TRANSLATION, locale()).delete}</Button>
           </div>
         </Show>
         <Show when={resetingCharacterId()}>
-          <p class="mb-2 text-xl">{TRANSLATION[locale()].resetCharacterTitle}</p>
-          <p class="mb-2">{TRANSLATION[locale()].resetCharacterConfirm1}</p>
-          <p class="mb-2">{TRANSLATION[locale()].resetCharacterConfirm2}</p>
+          <p class="mb-2 text-xl">{localize(TRANSLATION, locale()).resetCharacterTitle}</p>
+          <p class="mb-2">{localize(TRANSLATION, locale()).resetCharacterConfirm1}</p>
+          <p class="mb-2">{localize(TRANSLATION, locale()).resetCharacterConfirm2}</p>
           <div class="flex w-full">
             <Button outlined classList='flex-1 mr-2 text-sm md:text-base' onClick={closeModal}>{t('cancel')}</Button>
-            <Button default classList='flex-1 ml-2 text-sm md:text-base' onClick={confirmCharacterReseting}>{TRANSLATION[locale()].reset}</Button>
+            <Button default classList='flex-1 ml-2 text-sm md:text-base' onClick={confirmCharacterReseting}>{localize(TRANSLATION, locale()).reset}</Button>
           </div>
         </Show>
       </Modal>

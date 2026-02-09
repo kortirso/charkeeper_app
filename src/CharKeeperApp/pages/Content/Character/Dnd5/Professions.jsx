@@ -1,10 +1,11 @@
 import { createSignal, createEffect, For, Show, batch } from 'solid-js';
 import * as i18n from '@solid-primitives/i18n';
 
-import { ErrorWrapper, Toggle, Checkbox, GuideWrapper } from '../../../../components';
+import { ErrorWrapper, Toggle, Checkbox, GuideWrapper, Languages } from '../../../../components';
 import config from '../../../../data/dnd2024.json';
 import { useAppLocale, useAppState } from '../../../../context';
 import { fetchItemsRequest } from '../../../../requests/fetchItemsRequest';
+import { localize } from '../../../../helpers';
 
 const TRANSLATION = {
   en: {
@@ -22,7 +23,6 @@ export const Dnd5Professions = (props) => {
   // changeable data
   const [lastActiveCharacterId, setLastActiveCharacterId] = createSignal(undefined);
   const [items, setItems] = createSignal(undefined);
-  const [languagesData, setLanguagesData] = createSignal(character().languages);
   const [toolsData, setToolsData] = createSignal(character().tools);
   const [musicData, setMusicData] = createSignal(character().music);
 
@@ -43,7 +43,6 @@ export const Dnd5Professions = (props) => {
     );
 
     batch(() => {
-      setLanguagesData(character().languages);
       setToolsData(character().tools);
       setMusicData(character().music);
       setLastActiveCharacterId(character().id);
@@ -53,12 +52,6 @@ export const Dnd5Professions = (props) => {
   const toggleFeat = async (slug) => {
     const newValue = character().selected_feats.includes(slug) ? character().selected_feats.filter((item) => item !== slug) : character().selected_feats.concat(slug);
     await props.onReloadCharacter({ selected_feats: newValue });
-  }
-
-  const toggleLanguage = async (slug) => {
-    const newValue = languagesData().includes(slug) ? languagesData().filter((item) => item !== slug) : languagesData().concat(slug);
-    const result = await props.onRefreshCharacter({ languages: newValue });
-    if (result.errors_list === undefined) setLanguagesData(newValue);
   }
 
   const toggleTool = async (slug) => {
@@ -113,23 +106,9 @@ export const Dnd5Professions = (props) => {
             </For>
           </Toggle>
         </Show>
-        <Toggle title={t('professionsPage.languages')}>
-          <For each={Object.entries(dict().dnd.languages)}>
-            {([slug, language]) =>
-              <div class="mb-1">
-                <Checkbox
-                  labelText={language}
-                  labelPosition="right"
-                  labelClassList="text-sm ml-4"
-                  checked={languagesData().includes(slug)}
-                  onToggle={() => toggleLanguage(slug)}
-                />
-              </div>
-            }
-          </For>
-        </Toggle>
+        <Languages character={character()} defaults={config.languages} />
         <Show when={character().provider === 'dnd2024'}>
-          <Toggle title={TRANSLATION[locale()]['weaponMastery']}>
+          <Toggle title={localize(TRANSLATION, locale())['weaponMastery']}>
             <For each={Object.entries(config.weaponMasteries)}>
               {([slug, names]) =>
                 <div class="mb-1">

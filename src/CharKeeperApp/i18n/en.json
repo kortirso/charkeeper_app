@@ -30,6 +30,9 @@
       "dnd2024": "D&D 2024",
       "pathfinder2": "Pathfinder 2",
       "daggerheart": "Daggerheart",
+      "fate": "Fate",
+      "aspects": "Aspects",
+      "skills": "Skills",
       "traits": "Traits",
       "combat": "Combat",
       "equipment": "Equipment",
@@ -38,7 +41,7 @@
       "rest": "Rest",
       "notes": "Notes",
       "classLevels": "Leveling",
-      "avatar": "Avatar",
+      "avatar": "Personal",
       "abilities": "Abilities",
       "professions": "Mastery",
       "spells": "Spells",
@@ -252,7 +255,6 @@
   },
   "professionsPage": {
     "fightingFeats": "Fighting style",
-    "languages": "Languages",
     "weaponCoreSkill": "Weapon core skills",
     "weaponSkills": "Weapon skills",
     "lightWeaponSkills": "Light weapon",
@@ -297,20 +299,6 @@
       "chaotic_good": "Chaotic good",
       "chaotic_neutral": "Chaotic neutral",
       "chaotic_evil": "Chaotic evil"
-    },
-    "languages": {
-      "common": "Common",
-      "dwarvish": "Dwarvish",
-      "elvish": "Elvish",
-      "giant": "Giant",
-      "gnomish": "Gnomish",
-      "goblin": "Goblin",
-      "halfling": "Halfling",
-      "orc": "Orc",
-      "draconic": "Draconic",
-      "undercommon": "Undercommon",
-      "infernal": "Infernal",
-      "druidic": "Druidic"
     },
     "coreWeaponSkills": {
       "light": "Light Weapon",

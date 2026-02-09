@@ -7,6 +7,7 @@ export * from './atoms/IconButton';
 export * from './atoms/Button';
 export * from './atoms/TextArea';
 export * from './atoms/Label';
+export * from './atoms/Text';
 
 export * from './molecules/Modal';
 export * from './molecules/StatsBlock';
@@ -22,6 +23,8 @@ export * from './molecules/Dice';
 export * from './molecules/DualityDice';
 export * from './molecules/Loading';
 
+export * from './rolls/Fate';
+
 export * from './substances/Avatar';
 export * from './substances/Notes';
 export * from './substances/SharedBonuses';
@@ -32,5 +35,6 @@ export * from './substances/DiceRoll';
 export * from './substances/Conditions';
 export * from './substances/Combat';
 export * from './substances/Gold';
+export * from './substances/Languages';
 
 export * from './wrappers/Guide';

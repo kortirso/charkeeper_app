@@ -5,7 +5,7 @@ import { PageHeader, NotificationsBudge } from '../../components';
 import { Telegram, Discord, Vk, Boosty, BuyMeACoffee } from '../../assets';
 import { useAppState, useAppLocale } from '../../context';
 import { logoutRequest } from '../../requests/logoutRequest';
-import { readFromCache } from '../../helpers';
+import { readFromCache, localize } from '../../helpers';
 import { useTelegram } from '../../hooks';
 
 const CHARKEEPER_HOST_CACHE_NAME = 'CharKeeperHost';
@@ -71,7 +71,7 @@ export const SettingsTab = () => {
       <div class="p-4 flex-1 flex flex-col overflow-y-auto">
         <div class="flex-1">
           <Show when={host()}>
-            <p class="mb-4 dark:text-snow">{TRANSLATION[locale()].baseHost} - {host()}</p>
+            <p class="mb-4 dark:text-snow">{localize(TRANSLATION, locale()).baseHost} - {host()}</p>
           </Show>
           {renderSettingsLink(t('pages.settingsPage.profile'), 'profile')}
           {renderSettingsLink(t('pages.settingsPage.profileDeleting'), 'profileDeleting')}
@@ -105,7 +105,7 @@ export const SettingsTab = () => {
             </p>
           </Show>
         </div>
-        <p class="py-3 px-4 dark:text-snow">{t('pages.settingsPage.version')} 0.4.5, 2026.01.30</p>
+        <p class="py-3 px-4 dark:text-snow">{t('pages.settingsPage.version')} 0.4.6, 2026.02.09</p>
       </div>
     </>
   );
