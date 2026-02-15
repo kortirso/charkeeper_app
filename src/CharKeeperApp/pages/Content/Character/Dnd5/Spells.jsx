@@ -65,7 +65,6 @@ export const Dnd5Spells = (props) => {
 
   const [characterSpells, setCharacterSpells] = createSignal(undefined);
   const [spells, setSpells] = createSignal(undefined);
-  const [spentSpellSlots, setSpentSpellSlots] = createSignal(undefined);
   const [activeSpellClass, setActiveSpellClass] = createSignal(undefined);
 
   const [spellsSelectingMode, setSpellsSelectingMode] = createSignal(false);
@@ -100,7 +99,6 @@ export const Dnd5Spells = (props) => {
     );
 
     batch(() => {
-      setSpentSpellSlots(character().spent_spell_slots);
       setActiveSpellClass(Object.keys(character().spell_classes)[0] || 'static');
       setLastActiveCharacterId(character().id);
       setSpellsSelectingMode(false);
@@ -179,25 +177,25 @@ export const Dnd5Spells = (props) => {
 
   const spendSpellSlot = async (level) => {
     let newValue;
-    if (spentSpellSlots()[level]) {
-      newValue = { ...spentSpellSlots(), [level]: spentSpellSlots()[level] + 1 };
+    if (character().spent_spell_slots[level]) {
+      newValue = { ...character().spent_spell_slots, [level]: character().spent_spell_slots[level] + 1 };
     } else {
-      newValue = { ...spentSpellSlots(), [level]: 1 };
+      newValue = { ...character().spent_spell_slots, [level]: 1 };
     }
 
     const result = await updateCharacterRequest(
       appState.accessToken, character().provider, character().id, { character: { spent_spell_slots: newValue }, only_head: true }
     );
-    if (result.errors_list === undefined) setSpentSpellSlots(newValue);
+    if (result.errors_list === undefined) props.onReplaceCharacter({ spent_spell_slots: newValue });
   }
 
   const freeSpellSlot = async (level) => {
-    const newValue = { ...spentSpellSlots(), [level]: spentSpellSlots()[level] - 1 };
+    const newValue = { ...character().spent_spell_slots, [level]: character().spent_spell_slots[level] - 1 };
 
     const result = await updateCharacterRequest(
       appState.accessToken, character().provider, character().id, { character: { spent_spell_slots: newValue }, only_head: true }
     );
-    if (result.errors_list === undefined) setSpentSpellSlots(newValue);
+    if (result.errors_list === undefined) props.onReplaceCharacter({ spent_spell_slots: newValue });
   }
 
   const updateCharacterSpell = async (spellId, payload) => {
@@ -324,14 +322,14 @@ export const Dnd5Spells = (props) => {
                 ]}
               />
               <div class="mb-2 p-4 flex blockable">
-                <div class="flex-1 flex flex-col items-center dark:text-snow">
+                <div class="flex-1 flex flex-col items-center">
                   <p class="uppercase text-xs mb-1">{localize(TRANSLATION, locale())['cantrips']}</p>
                   <p class="text-2xl mb-1">
                     {character().spell_classes[activeSpellClass()].cantrips_amount}
                   </p>
                 </div>
                 <Show when={character().provider === 'dnd5'}>
-                  <div class="flex-1 flex flex-col items-center dark:text-snow">
+                  <div class="flex-1 flex flex-col items-center">
                     <p class="uppercase text-xs mb-1">{localize(TRANSLATION, locale())['known']}</p>
                     <p class="text-2xl mb-1 flex gap-2 items-start">
                       <span>{character().spell_classes[activeSpellClass()].spells_amount || '-'}</span>
@@ -339,7 +337,7 @@ export const Dnd5Spells = (props) => {
                     </p>
                   </div>
                 </Show>
-                <div class="flex-1 flex flex-col items-center dark:text-snow">
+                <div class="flex-1 flex flex-col items-center">
                   <p class="uppercase text-xs mb-1">{localize(TRANSLATION, locale())['prepared']}</p>
                   <p class="text-2xl mb-1">
                     {character().spell_classes[activeSpellClass()].prepared_spells_amount}
@@ -396,7 +394,7 @@ export const Dnd5Spells = (props) => {
                   character={character()}
                   activeSpellClass={activeSpellClass()}
                   spells={filteredCharacterSpells().filter((item) => item.level === level)}
-                  spentSpellSlots={spentSpellSlots()}
+                  spentSpellSlots={character().spent_spell_slots}
                   canPrepareSpells={canPrepareSpells()}
                   slotsAmount={character().spells_slots[level]}
                   onEnableSpell={enableSpell}

@@ -5,7 +5,7 @@ import { createWindowSize } from '@solid-primitives/resize-observer';
 import {
   DaggerheartTraits, DaggerheartStatic, DaggerheartHealth, DaggerheartBeastform, DaggerheartCompanion,
   DaggerheartDomainCards, DaggerheartRest, DaggerheartLeveling, DaggerheartExperience, DaggerheartTransform,
-  DaggerheartStances, DaggerheartBonuses, DaggerheartCraft, DaggerheartScars
+  DaggerheartStances, DaggerheartBonuses, DaggerheartCraft, DaggerheartScars, DaggerheartInfo
 } from '../../../pages';
 import {
   CharacterNavigation, Equipment, Notes, Avatar, ContentWrapper, Feats, createDiceRoll, Conditions, Combat, Gold
@@ -33,7 +33,7 @@ export const Daggerheart = (props) => {
   const [activeMobileTab, setActiveMobileTab] = createSignal('traits');
   const [activeTab, setActiveTab] = createSignal('combat');
 
-  const { DiceRoll, openDiceRoll, openSimpleDiceRoll } = createDiceRoll();
+  const { DiceRoll, openDiceRoll, openAttackRoll } = createDiceRoll();
   const [locale, dict] = useAppLocale();
 
   const t = i18n.translator(dict);
@@ -105,12 +105,15 @@ export const Daggerheart = (props) => {
         <div class="p-2 pb-16 flex-1 overflow-y-auto">
           <Switch>
             <Match when={activeMobileTab() === 'traits'}>
-              <DaggerheartTraits
-                character={character()}
-                openDiceRoll={openDiceRoll}
-                onReplaceCharacter={props.onReplaceCharacter}
-                onReloadCharacter={props.onReloadCharacter}
-              />
+              <DaggerheartInfo character={character()} />
+              <div class="mt-4">
+                <DaggerheartTraits
+                  character={character()}
+                  openDiceRoll={openDiceRoll}
+                  onReplaceCharacter={props.onReplaceCharacter}
+                  onReloadCharacter={props.onReloadCharacter}
+                />
+              </div>
               <div class="mt-4">
                 <DaggerheartExperience
                   object={character()}
@@ -138,7 +141,7 @@ export const Daggerheart = (props) => {
                 <Combat
                   character={character()}
                   openDiceRoll={openDiceRoll}
-                  openSimpleDiceRoll={openSimpleDiceRoll}
+                  openAttackRoll={openAttackRoll}
                   onReplaceCharacter={props.onReplaceCharacter}
                 />
               </div>
@@ -245,12 +248,15 @@ export const Daggerheart = (props) => {
 
     return (
       <>
-        <DaggerheartTraits
-          character={character()}
-          openDiceRoll={openDiceRoll}
-          onReplaceCharacter={props.onReplaceCharacter}
-          onReloadCharacter={props.onReloadCharacter}
-        />
+        <DaggerheartInfo character={character()} />
+        <div class="mt-4">
+          <DaggerheartTraits
+            character={character()}
+            openDiceRoll={openDiceRoll}
+            onReplaceCharacter={props.onReplaceCharacter}
+            onReloadCharacter={props.onReloadCharacter}
+          />
+        </div>
         <div class="mt-4">
           <DaggerheartStatic character={character()} />
         </div>
@@ -295,7 +301,7 @@ export const Daggerheart = (props) => {
                 <Combat
                   character={character()}
                   openDiceRoll={openDiceRoll}
-                  openSimpleDiceRoll={openSimpleDiceRoll}
+                  openAttackRoll={openAttackRoll}
                   onReplaceCharacter={props.onReplaceCharacter}
                 />
               </div>

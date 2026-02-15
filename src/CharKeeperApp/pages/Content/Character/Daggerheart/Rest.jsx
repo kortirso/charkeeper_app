@@ -9,7 +9,7 @@ import { fetchDaggerheartProjectsRequest } from '../../../../requests/fetchDagge
 import { createDaggerheartProjectRequest } from '../../../../requests/createDaggerheartProjectRequest';
 import { updateDaggerheartProjectRequest } from '../../../../requests/updateDaggerheartProjectRequest';
 import { removeDaggerheartProjectRequest } from '../../../../requests/removeDaggerheartProjectRequest';
-import { replace, localize } from '../../../../helpers';
+import { replace, localize, performResponse, isSuccessResponse } from '../../../../helpers';
 
 const TRANSLATION = {
   en: {
@@ -133,7 +133,7 @@ export const DaggerheartRest = (props) => {
   const restActions = createMemo(() => {
     if (value() === null) return {};
 
-    const result = DOWNTIME_ACTIONS.reduce((acc, key) => {
+    const result = DOWNTIME_ACTIONS.reduce((acc, key) => { // eslint-disable-line solid/reactivity
       acc[key] = replace(localize(TRANSLATION, locale())[key.startsWith('clear') ? `${key}_${value()}` : key], { tier: character().tier });
       return acc;
     }, {});
@@ -157,7 +157,7 @@ export const DaggerheartRest = (props) => {
       character().id,
       { value: value(), options: restOptions, make_rolls: makeRolls(), project: projectOptions }
     );
-    if (result.errors_list === undefined) {
+    if (isSuccessResponse(result)) {
       batch(() => {
         props.onReloadCharacter();
         setFirstAction(null);
@@ -190,23 +190,31 @@ export const DaggerheartRest = (props) => {
   const createProject = async () => {
     const result = await createDaggerheartProjectRequest(appState.accessToken, appState.activePageParams.id, { project: projectForm });
 
-    if (result.errors_list === undefined) {
-      setProjects([result.project].concat(projects()));
-      cancelProject();
-    }
+    performResponse(
+      result,
+      function() { // eslint-disable-line solid/reactivity
+        setProjects([result.project].concat(projects()));
+        cancelProject();
+      },
+      function() { renderAlerts(result.errors_list) }
+    );
   }
 
   const updateProject = async () => {
     const result = await updateDaggerheartProjectRequest(appState.accessToken, appState.activePageParams.id, projectForm.id, { project: projectForm });
 
-    if (result.errors_list === undefined) {
-      setProjects(projects().slice().map((item) => {
-        if (item.id !== projectForm.id) return item;
+    performResponse(
+      result,
+      function() { // eslint-disable-line solid/reactivity
+        setProjects(projects().slice().map((item) => {
+          if (item.id !== projectForm.id) return item;
 
-        return result.project;
-      }));
-      cancelProject();
-    }
+          return result.project;
+        }));
+        cancelProject();
+      },
+      function() { renderAlerts(result.errors_list) }
+    );
   }
 
   const cancelProject = () => {
@@ -220,7 +228,13 @@ export const DaggerheartRest = (props) => {
     event.stopPropagation();
 
     const result = await removeDaggerheartProjectRequest(appState.accessToken, appState.activePageParams.id, projectId);
-    if (result.errors_list === undefined) setProjects(projects().filter((item) => item.id !== projectId));
+    performResponse(
+      result,
+      function() { // eslint-disable-line solid/reactivity
+        setProjects(projects().filter((item) => item.id !== projectId));
+      },
+      function() { renderAlerts(result.errors_list) }
+    );
   }
 
   return (

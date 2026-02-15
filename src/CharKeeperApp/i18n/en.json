@@ -140,11 +140,6 @@
       "backpack": "Backpack"
     }
   },
-  "notes": {
-    "newNote": "Add new note",
-    "newNoteTitle": "Title",
-    "newNoteValue": "Note text"
-  },
   "equipment": {
     "weight": "Weight",
     "cost": "Cost",
@@ -290,17 +285,6 @@
     "thunder": "Thunder"
   },
   "dnd": {
-    "alignments": {
-      "lawful_good": "Lawful good",
-      "lawful_neutral": "Lawful neutral",
-      "lawful_evil": "Lawful evil",
-      "neutral_good": "Neutral good",
-      "neutral": "Neutral",
-      "neutral_evil": "Neutral evil",
-      "chaotic_good": "Chaotic good",
-      "chaotic_neutral": "Chaotic neutral",
-      "chaotic_evil": "Chaotic evil"
-    },
     "coreWeaponSkills": {
       "light": "Light Weapon",
       "martial": "Martial Weapon"

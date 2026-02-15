@@ -41,7 +41,8 @@ const TRANSLATION = {
     back: 'Back',
     noValue: 'Default',
     filterByClass: 'Filter by class',
-    damageUp: '<p>The damage increases by 1 dice when you reach levels 5, 11 and 17.</p>'
+    damageUp: '<p>The damage increases by 1 dice when you reach levels 5, 11 and 17.</p>',
+    check: 'Spell attack'
   },
   ru: {
     cantrips: 'Заговоры',
@@ -57,7 +58,8 @@ const TRANSLATION = {
     back: 'Назад',
     noValue: 'Стандартная',
     filterByClass: 'Фильтр по классам',
-    damageUp: '<p>Урон увеличивается на 1 кость, когда вы достигаете 5, 11 и 17 уровня.</p>'
+    damageUp: '<p>Урон увеличивается на 1 кость, когда вы достигаете 5, 11 и 17 уровня.</p>',
+    check: 'Атака заклинанием'
   }
 }
 
@@ -68,7 +70,6 @@ export const Dnd2024Spells = (props) => {
 
   const [characterSpells, setCharacterSpells] = createSignal(undefined);
   const [spells, setSpells] = createSignal(undefined);
-  const [spentSpellSlots, setSpentSpellSlots] = createSignal(undefined);
   const [activeSpellClass, setActiveSpellClass] = createSignal(undefined);
   const [descriptions, setDescriptions] = createSignal({});
   const [openDescriptions, setOpenDescriptions] = createSignal({});
@@ -105,7 +106,6 @@ export const Dnd2024Spells = (props) => {
     );
 
     batch(() => {
-      setSpentSpellSlots(character().spent_spell_slots);
       setActiveSpellClass(Object.keys(character().spell_classes)[0] || 'static');
       setLastActiveCharacterId(character().id);
       setSpellsSelectingMode(false);
@@ -194,25 +194,25 @@ export const Dnd2024Spells = (props) => {
 
   const spendSpellSlot = async (level) => {
     let newValue;
-    if (spentSpellSlots()[level]) {
-      newValue = { ...spentSpellSlots(), [level]: spentSpellSlots()[level] + 1 };
+    if (character().spent_spell_slots[level]) {
+      newValue = { ...character().spent_spell_slots, [level]: character().spent_spell_slots[level] + 1 };
     } else {
-      newValue = { ...spentSpellSlots(), [level]: 1 };
+      newValue = { ...character().spent_spell_slots, [level]: 1 };
     }
 
     const result = await updateCharacterRequest(
       appState.accessToken, character().provider, character().id, { character: { spent_spell_slots: newValue }, only_head: true }
     );
-    if (result.errors_list === undefined) setSpentSpellSlots(newValue);
+    if (result.errors_list === undefined) props.onReplaceCharacter({ spent_spell_slots: newValue });
   }
 
   const freeSpellSlot = async (level) => {
-    const newValue = { ...spentSpellSlots(), [level]: spentSpellSlots()[level] - 1 };
+    const newValue = { ...character().spent_spell_slots, [level]: character().spent_spell_slots[level] - 1 };
 
     const result = await updateCharacterRequest(
       appState.accessToken, character().provider, character().id, { character: { spent_spell_slots: newValue }, only_head: true }
     );
-    if (result.errors_list === undefined) setSpentSpellSlots(newValue);
+    if (result.errors_list === undefined) props.onReplaceCharacter({ spent_spell_slots: newValue });
   }
 
   const updateCharacterSpell = async (spellId, payload) => {
@@ -387,7 +387,7 @@ export const Dnd2024Spells = (props) => {
                         width="36"
                         height="36"
                         text={modifier(character().spell_classes[activeSpellClass()].attack_bonus)}
-                        onClick={() => props.openDiceRoll('/check attack spell', character().spell_classes[activeSpellClass()].attack_bonus)}
+                        onClick={() => props.openDiceRoll('/check attack spell', character().spell_classes[activeSpellClass()].attack_bonus, localize(TRANSLATION, locale())['check'])}
                       />
                   },
                   { title: localize(TRANSLATION, locale())['saveDC'], value: character().spell_classes[activeSpellClass()].save_dc }
@@ -450,6 +450,7 @@ export const Dnd2024Spells = (props) => {
               onDisableSpell={disableSpell}
               onUpdateCharacterSpell={updateCharacterSpell}
               openDiceRoll={props.openDiceRoll}
+              openAttackRoll={props.openAttackRoll}
             />
             <For each={Array.from([...Array(character().available_spell_level).keys()], (x) => x + 1)}>
               {(level) =>
@@ -458,7 +459,7 @@ export const Dnd2024Spells = (props) => {
                   character={character()}
                   activeSpellClass={activeSpellClass()}
                   spells={filteredCharacterSpells().filter((item) => item.spell.level === level)}
-                  spentSpellSlots={spentSpellSlots()}
+                  spentSpellSlots={character().spent_spell_slots}
                   canPrepareSpells={canPrepareSpells()}
                   slotsAmount={character().spells_slots[level]}
                   onEnableSpell={enableSpell}
@@ -467,6 +468,7 @@ export const Dnd2024Spells = (props) => {
                   onFreeSpellSlot={freeSpellSlot}
                   onUpdateCharacterSpell={updateCharacterSpell}
                   openDiceRoll={props.openDiceRoll}
+                  openAttackRoll={props.openAttackRoll}
                 />
               }
             </For>
