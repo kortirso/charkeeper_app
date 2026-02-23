@@ -120,7 +120,7 @@ export const Dnd5Skills = (props) => {
           onCancelEditing={cancelEditing}
           onSaveChanges={updateCharacter}
         >
-          <div class="blockable p-4 mb-2">
+          <div class="blockable p-4 pb-8 mb-2">
             <For each={Object.keys(config.abilities)}>
               {(slug) =>
                 <For each={(editMode() ? skillsData() : character().skills).filter((item) => item.ability === slug)}>
@@ -154,7 +154,7 @@ export const Dnd5Skills = (props) => {
                         width="28"
                         height="28"
                         text={modifier(skill.modifier)}
-                        onClick={() => props.openDiceRoll(`/check skill ${skill.slug}`, skill.modifier, `${localize(TRANSLATION, locale())['check']}, ${config.skills[skill.slug].name[locale()]}`)}
+                        onClick={() => props.openDiceRoll(`/check skill "${skill.slug}"`, skill.modifier, `${localize(TRANSLATION, locale())['check']}, ${config.skills[skill.slug].name[locale()]}`)}
                       />
                     </div>
                   }
