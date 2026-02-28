@@ -4,10 +4,10 @@ import { createWindowSize } from '@solid-primitives/resize-observer';
 
 import {
   Dc20Abilities, Dc20Skills, Dc20Saves, Dc20CombatStatic, Dc20Leveling, Dc20Resources, Dc20Spells, Dc20Rest,
-  Dc20Bonuses
+  Dc20Bonuses, Dc20Damages, Dc20Conditions
 } from '../../../pages';
 import {
-  CharacterNavigation, Notes, Avatar, ContentWrapper, createDiceRoll, Conditions, Equipment, Combat, Feats
+  CharacterNavigation, Notes, Avatar, ContentWrapper, createDiceRoll, Equipment, Combat, Feats
 } from '../../../components';
 import { useAppLocale } from '../../../context';
 import { localize } from '../../../helpers';
@@ -43,12 +43,14 @@ export const Dc20 = (props) => {
 
   const ancestryFilter = (item) => item.origin === 'ancestry';
   const classFilter = (item) => item.origin === 'class' || item.origin === 'class_flavor' || item.origin === 'talent';
+  const subclassFilter = (item) => item.origin === 'subclass' || item.origin === 'subclass_flavor';
   const maneuverFilter = (item) => item.origin === 'maneuver';
 
   const featFilters = createMemo(() => {
     const result = [
       { title: 'ancestry', callback: ancestryFilter },
       { title: 'class', callback: classFilter },
+      { title: 'subclass', callback: subclassFilter },
       { title: 'maneuver', callback: maneuverFilter }
     ];
     return result;
@@ -85,7 +87,7 @@ export const Dc20 = (props) => {
                 <Dc20Saves character={character()} openDiceRoll={openDiceRoll} />
               </div>
               <div class="mt-4">
-                <Conditions character={character()} />
+                <Dc20Conditions character={character()} onReloadCharacter={props.onReloadCharacter} />
               </div>
               <div class="mt-4">
                 <Dc20Skills
@@ -109,6 +111,9 @@ export const Dc20 = (props) => {
               <Dc20CombatStatic character={character()} openDiceRoll={openDiceRoll} />
               <div class="mt-4">
                 <Dc20Resources character={character()} onReplaceCharacter={props.onReplaceCharacter} />
+              </div>
+              <div class="mt-4">
+                <Dc20Damages character={character()} onReloadCharacter={props.onReloadCharacter} />
               </div>
               <div class="mt-4">
                 <Combat
@@ -181,7 +186,7 @@ export const Dc20 = (props) => {
           <Dc20Saves character={character()} openDiceRoll={openDiceRoll} />
         </div>
         <div class="mt-4">
-          <Conditions character={character()} />
+          <Dc20Conditions character={character()} onReloadCharacter={props.onReloadCharacter} />
         </div>
         <div class="mt-4">
           <Dc20Skills
@@ -214,6 +219,9 @@ export const Dc20 = (props) => {
               <Dc20CombatStatic character={character()} openDiceRoll={openDiceRoll} />
               <div class="mt-4">
                 <Dc20Resources character={character()} onReplaceCharacter={props.onReplaceCharacter} />
+              </div>
+              <div class="mt-4">
+                <Dc20Damages character={character()} onReloadCharacter={props.onReloadCharacter} />
               </div>
               <div class="mt-4">
                 <Combat

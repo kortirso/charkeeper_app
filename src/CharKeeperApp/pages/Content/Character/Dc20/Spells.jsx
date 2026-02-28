@@ -145,9 +145,11 @@ export const Dc20Spells = (props) => {
 
   const renderSpellDuration = (duration) => {
     if (duration === 'instant') return `${localize(TRANSLATION, locale()).duration}: ${localize(TRANSLATION, locale()).instant}`;
-    if (duration >= 60) return `${localize(TRANSLATION, locale()).duration} (${localize(TRANSLATION, locale()).hours}): ${duration / 60}`;
 
-    return `${localize(TRANSLATION, locale()).duration} (${localize(TRANSLATION, locale()).minutes}): ${duration}`;
+    const values = duration.split(',');
+    if (values[1] === 'h') return `${localize(TRANSLATION, locale()).duration} (${localize(TRANSLATION, locale()).hours}): ${values[0]}`;
+
+    return `${localize(TRANSLATION, locale()).duration} (${localize(TRANSLATION, locale()).minutes}): ${values[0]}`;
   }
 
   const showTagInfo = async (tag, value) => {
@@ -201,16 +203,26 @@ export const Dc20Spells = (props) => {
                 {(list) =>
                   <Toggle title={spellLists()[list].name[locale()]}>
                     <div>
-                      <For each={spells().filter((spell) => spell.origin_value.includes(list))}>
+                      <For each={spells().filter((spell) => spell.origin_value.includes(list)).sort((a, b) => a.title.localeCompare(b.title))}>
                         {(spell) =>
                           <div
-                            class="even:bg-stone-100 dark:even:bg-dark-dusty p-1"
+                            class="even:bg-stone-100 dark:even:bg-dusty p-1"
                             classList={{ 'opacity-50': learnedSpellIds().includes(spell.id) }}
                           >
-                            <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center justify-between mb-1">
                               <p class="font-normal! text-lg">{spell.title}</p>
                               <p>{schools()[spell.school].name[locale()]}</p>
                             </div>
+                            <div class="flex gap-x-2 flex-wrap mb-2">
+                              <For each={spell.origin_values}>
+                                {(tag) =>
+                                  <span class="text-sm tag">{tag}</span>
+                                }
+                              </For>
+                            </div>
+                            <Show when={spell.price}>
+                              <p class="text-sm mb-1">{localize(TRANSLATION, locale()).price}: {renderSpellPrice(spell.price)}</p>
+                            </Show>
                             <p
                               class="feat-markdown text-xs"
                               innerHTML={spell.description} // eslint-disable-line solid/no-innerhtml
@@ -280,10 +292,24 @@ export const Dc20Spells = (props) => {
             </Show>
             <Show when={learnedSpellIds().length > 0}>
               <div class="mt-2">
-                <For each={learnedSpells()}>
+                <For each={learnedSpells().sort((a, b) => a.title.localeCompare(b.title))}>
                   {(spell) =>
-                    <Toggle title={spell.title}>
+                    <Toggle
+                      title={
+                        <div class="flex items-center justify-between">
+                          <p>{spell.title}</p>
+                          <p>{schools()[spell.school].name[locale()]}</p>
+                        </div>
+                      }
+                    >
                       <div>
+                        <div class="flex gap-x-2 flex-wrap mb-1">
+                          <For each={spell.origin_values}>
+                            {(tag) =>
+                              <span class="text-sm tag cursor-default!">{tag}</span>
+                            }
+                          </For>
+                        </div>
                         <Show when={spell.price}>
                           <p class="text-sm mt-1">{localize(TRANSLATION, locale()).price}: {renderSpellPrice(spell.price)}</p>
                         </Show>

@@ -5,6 +5,12 @@
     "dwarf": { "name": { "en": "Dwarf", "ru": "Дварф" } }
   },
   "classes": {
+    "barbarian": {
+      "name": { "en": "Barbarian", "ru": "Варвар" },
+      "subclasses": {
+        "spirit_guardian": { "name": { "en": "Spirit Guardian", "ru": "Духовный защитник" } }
+      }
+    },
     "commander": {
       "name": { "en": "Commander", "ru": "Командир" },
       "subclasses": {
@@ -21,7 +27,10 @@
     },
     "wizard": {
       "name": { "en": "Wizard", "ru": "Волшебник" },
-      "subclasses": {}
+      "subclasses": {
+        "portal_mage": { "name": { "en": "Portal Mage", "ru": "Порталист" } },
+        "witch": { "name": { "en": "Witch", "ru": "Ведьма" } }
+      }
     }
   },
   "spell_lists": {
@@ -74,103 +83,23 @@
     "occultism": { "name": { "en": "Occultism", "ru": "Оккультизм" } },
     "religion": { "name": { "en": "Religion", "ru": "Религия" } }
   },
-  "conditions": {
-    "blinded": {
-      "name": { "en": "Blinded", "ru": "Ослеплён" },
-      "description": {
-        "en": "You can't see. All terrain is considered Difficult Terrain for you unless you're guided by another creature. Attack rolls against you have Advantage, and your attack rolls have Disadvantage.",
-        "ru": "Вы не видите. Вся местность для вас считается Труднопроходимой, только если вас не ведёт другое существо. Броски атаки против вас совершаются с преимуществом, а ваши броски атаки совершаются с помехой."
-      }
-    }
+  "damages": {
+    "bludge": { "name": { "en": "Bludgeoning", "ru": "Дробящий" } },
+    "pierce": { "name": { "en": "Piercing", "ru": "Колющий" } },
+    "slash": { "name": { "en": "Slashing", "ru": "Рубящий" } },
+    "fire": { "name": { "en": "Fire", "ru": "Огненный" } },
+    "cold": { "name": { "en": "Cold", "ru": "Морозный" } },
+    "lightning": { "name": { "en": "Lightning", "ru": "Электрический" } },
+    "poison": { "name": { "en": "Poison", "ru": "Ядовитый" } },
+    "corrosion": { "name": { "en": "Corrosion", "ru": "Кислотный" } },
+    "psychic": { "name": { "en": "Psychic", "ru": "Психический" } },
+    "radiant": { "name": { "en": "Radiant", "ru": "Сияющий" } },
+    "umbral": { "name": { "en": "Umbral", "ru": "Сумрачный" } },
+    "true": { "name": { "en": "True", "ru": "Истинный" } }
   },
-  "maneuvers": {
-    "extend_attack": {
-      "name": { "en": "Extend Attack", "ru": "Удлинить атаку" },
-      "type": "attack"
-    },
-    "power_attack": {
-      "name": { "en": "Power Attack", "ru": "Усилить атаку" },
-      "type": "attack"
-    },
-    "sweep_attack": {
-      "name": { "en": "Sweep Attack", "ru": "Расширить атаку" },
-      "type": "attack"
-    },
-    "bleed": {
-      "name": { "en": "Bleed", "ru": "Ранить" },
-      "type": "save"
-    },
-    "daze": {
-      "name": { "en": "Daze", "ru": "Потрясти" },
-      "type": "save"
-    },
-    "expose": {
-      "name": { "en": "Expose", "ru": "Раскрыть для удара" },
-      "type": "save"
-    },
-    "hamstring": {
-      "name": { "en": "Hamstring", "ru": "Замедлить" },
-      "type": "save"
-    },
-    "hinder": {
-      "name": { "en": "Hinder", "ru": "Сковать" },
-      "type": "save"
-    },
-    "impair": {
-      "name": { "en": "Impair", "ru": "Ослабить" },
-      "type": "save"
-    },
-    "knockback": {
-      "name": { "en": "Knockback", "ru": "Оттолкнуть" },
-      "type": "save"
-    },
-    "trip": {
-      "name": { "en": "Trip", "ru": "Повалить" },
-      "type": "save"
-    },
-    "body_block": {
-      "name": { "en": "Body Block", "ru": "Закрыться" },
-      "type": "grapple"
-    },
-    "restrain": {
-      "name": { "en": "Restrain", "ru": "Обездвижить" },
-      "type": "grapple"
-    },
-    "slam": {
-      "name": { "en": "Slam", "ru": "Сдавить" },
-      "type": "grapple"
-    },
-    "takedown": {
-      "name": { "en": "Takedown", "ru": "Уронить" },
-      "type": "grapple"
-    },
-    "throw": {
-      "name": { "en": "Throw", "ru": "Бросить" },
-      "type": "grapple"
-    },
-    "parry": {
-      "name": { "en": "Parry", "ru": "Парировать" },
-      "type": "defense"
-    },
-    "protect": {
-      "name": { "en": "Protect", "ru": "Защитить" },
-      "type": "defense"
-    },
-    "raise_shield": {
-      "name": { "en": "Raise Shield", "ru": "Поднять щит" },
-      "type": "defense"
-    },
-    "side_step": {
-      "name": { "en": "Side Step", "ru": "Отшагнуть" },
-      "type": "defense"
-    },
-    "swap": {
-      "name": { "en": "Swap", "ru": "Прикрыть" },
-      "type": "defense"
-    },
-    "taunt": {
-      "name": { "en": "Taunt", "ru": "Спровоцировать" },
-      "type": "defense"
-    }
+  "damageGroups": {
+    "physical": { "name": { "en": "Physical", "ru": "Физический" } },
+    "elemental": { "name": { "en": "Elemental", "ru": "Элементальный" } },
+    "mystical": { "name": { "en": "Mystical", "ru": "Мистический" } }
   }
 }
