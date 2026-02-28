@@ -310,6 +310,18 @@ body.dark-theme {
   @apply bg-gray-50 dark:bg-neutral-700;
 }
 
+.dc20-conditions .dc20-condition {
+  @apply flex flex-col dark:text-snow p-2;
+}
+
+.dc20-conditions .dc20-condition:nth-of-type(2n) {
+  @apply bg-gray-50 dark:bg-dusty;
+}
+
+.dc20-condition-data {
+  @apply flex items-center;
+}
+
 .truncate-text {
   display: -webkit-box;
   -webkit-box-orient: vertical;
@@ -403,15 +415,19 @@ body.dark-theme {
 }
 
 .dnd2024-spell-tooltips {
-  @apply flex text-sm mt-2;
+  @apply grid grid-cols-3 sm:grid-cols-6 gap-y-2 text-sm mt-2;
 }
 
 .spell-attribute {
   @apply flex-1 flex justify-center items-center dark:border-r dark:border-neutral-800;
 }
 
+.spell-attribute:nth-of-type(3), .spell-attribute:nth-of-type(6) {
+  @apply border-r-0 sm:border-r-1;
+}
+
 .spell-attribute:last-of-type {
-  @apply border-r-0;
+  @apply sm:border-r-0;
 }
 
 .character-info-block {
