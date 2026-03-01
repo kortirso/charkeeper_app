@@ -1,7 +1,7 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "Charkeeper",
-  "version": "0.4.10",
+  "version": "0.4.11",
   "identifier": "org.kortirso.charkeeper",
   "build": {
     "beforeDevCommand": "yarn dev",
@@ -34,10 +34,10 @@
       "icons/icon.ico"
     ],
     "android": {
-      "versionCode": 4010
+      "versionCode": 4011
     },
     "iOS": {
-      "bundleVersion": "38"
+      "bundleVersion": "39"
     },
     "category": "Utilities",
     "copyright": "Bogdanov © 2025",

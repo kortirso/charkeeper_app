@@ -445,3 +445,7 @@ body.dark-theme {
 .character-info-text {
   @apply text-[11px] uppercase;
 }
+
+.stat-title {
+  @apply uppercase text-sm mb-2 text-center;
+}
