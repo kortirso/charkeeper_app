@@ -343,6 +343,10 @@ body.dark-theme {
   @apply dark:bg-neutral-800 dark:border-neutral-800 dark:text-snow;
 }
 
+.dots {
+  @apply absolute z-9 right-0 border border-gray-200 rounded overflow-hidden;
+}
+
 .dots-item {
   @apply px-2 py-1 text-sm bg-white hover:bg-gray-200 cursor-pointer;
   @apply dark:bg-dusty dark:hover:bg-neutral-800;
@@ -448,4 +452,68 @@ body.dark-theme {
 
 .stat-title {
   @apply uppercase text-sm mb-2 text-center;
+}
+
+.equipment {
+  @apply blockable px-2 py-4 md:px-4 mb-2;
+}
+
+.equipment-title {
+  @apply text-lg mb-2 flex items-center gap-x-2;
+}
+
+.equipment-subtitle {
+  @apply text-sm mb-2;
+}
+
+.equipment-item {
+  @apply flex p-0.5;
+}
+
+.equipment-item:nth-of-type(n+2) {
+  @apply border-t border-gray-200 dark:border-neutral-800
+}
+
+.equipment-item:nth-of-type(2n) {
+  @apply bg-gray-50 dark:bg-neutral-700;
+}
+
+.equipment-item-name {
+  @apply text-sm md:text-base leading-6 line-clamp-1;
+}
+
+.equipment-item-notes {
+  @apply text-xs mt-1 text-stone-800 dark:text-stone-300;
+}
+
+.hybrid-edit-block {
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 mt-2;
+}
+
+.domain-cards {
+  @apply blockable px-2 md:px-4 py-4 mb-2;
+}
+
+.domain-card {
+  @apply even:bg-stone-100 dark:even:bg-dark-dusty p-1;
+}
+
+.domain-card-title {
+  @apply flex items-center justify-between mb-2;
+}
+
+.domain-card-actions {
+  @apply flex flex-row items-center justify-end gap-y-4 gap-x-2;
+}
+
+.domain-card-recall-cost {
+  @apply px-1 text-center font-normal! text-lg;
+}
+
+.domain-card-desc {
+  @apply text-xs mb-1;
+}
+
+.domain-card-learn {
+  @apply flex flex-col flex-col-reverse md:flex-row items-center justify-end gap-y-4 gap-x-2;
 }
