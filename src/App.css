@@ -160,8 +160,20 @@ body.dark-theme {
   @apply w-8 h-8;
 }
 
+.toggle-title {
+  @apply py-2 px-2 md:px-4; dark:text-snow;
+}
+
 .toggle.disabled {
   @apply bg-neutral-400;
+}
+
+.toggle-inner {
+  @apply py-4 px-2 md:px-4 border-t border-gray-200 dark:border-gray-500;
+}
+
+.toggle-inner-default {
+  @apply flex-1 dark:text-snow relative dark:bg-neutral-700;
 }
 
 .form-field .form-value {
@@ -261,15 +273,15 @@ body.dark-theme {
 }
 
 .damage-caption p:nth-of-type(1) {
-  @apply flex-1 text-center flex items-center uppercase font-medium! dark:text-snow py-4 px-2 text-sm md:text-base;
+  @apply flex-1 text-center flex items-center uppercase font-medium! p-2 pt-4 text-sm md:text-base;
 }
 
 .damage-caption p:nth-of-type(2) {
-  @apply text-xs dark:text-snow;
+  @apply text-xs;
 }
 
 .damage-threshold {
-  @apply flex items-center pb-4 relative;
+  @apply flex items-center pb-2 relative;
 
   padding-right: 12.5px;
 }
@@ -302,12 +314,28 @@ body.dark-theme {
   @apply flex items-center justify-between text-sm mb-2;
 }
 
-.experiences .experience {
-  @apply flex dark:text-snow items-center pl-2 py-1;
+.experience-title-box {
+  @apply flex justify-between items-center;
 }
 
-.experiences .experience:nth-of-type(2n) {
-  @apply bg-gray-50 dark:bg-neutral-700;
+.experience-title {
+  @apply flex-1 text-lg dark:text-snow;
+}
+
+.experience-new-box {
+  @apply flex items-center gap-2;
+}
+
+.experience {
+  @apply flex dark:text-snow items-center py-1;
+}
+
+.experience:nth-of-type(2n) {
+  @apply bg-gray-50 dark:bg-dusty;
+}
+
+.experience:nth-of-type(n+2) {
+  @apply border-t border-gray-200 dark:border-neutral-800;
 }
 
 .dc20-conditions .dc20-condition {
@@ -339,7 +367,7 @@ body.dark-theme {
 }
 
 .tag {
-  @apply px-1 border rounded bg-white border-gray-500 cursor-pointer;
+  @apply px-1 border rounded bg-white border-gray-500 cursor-pointer text-sm md:text-base;
   @apply dark:bg-neutral-800 dark:border-neutral-800 dark:text-snow;
 }
 
@@ -435,7 +463,7 @@ body.dark-theme {
 }
 
 .character-info-block {
-  @apply blockable p-4;
+  @apply blockable py-4 px-2 md:px-4;
 }
 
 .character-info-title {
@@ -447,11 +475,63 @@ body.dark-theme {
 }
 
 .character-info-text {
-  @apply text-[11px] uppercase;
+  @apply text-[11px]! uppercase;
 }
 
 .stat-title {
   @apply uppercase text-sm mb-2 text-center;
+}
+
+.weapon-title {
+  @apply text-lg font-normal! mb-2;
+}
+
+.weapon-item {
+  @apply p-0.5;
+}
+
+.weapon-item:nth-of-type(n+2) {
+  @apply border-t border-gray-200 dark:border-neutral-800;
+}
+
+.weapon-item:nth-of-type(2n) {
+  @apply bg-gray-50 dark:bg-neutral-700;
+}
+
+.weapon-item-header {
+  @apply flex flex-col md:flex-row md:justify-between md:items-center gap-y-1;
+}
+
+.weapon-item-name {
+  @apply line-clamp-1 text-sm md:text-base;
+}
+
+.weapon-item-stats {
+  @apply flex items-center gap-x-4;
+}
+
+.weapon-damage {
+  @apply flex items-center justify-center;
+}
+
+.weapon-damage-trait {
+  @apply mr-2 text-sm uppercase;
+}
+
+.weapon-tags {
+  @apply flex flex-wrap gap-x-2 gap-y-1 mt-2;
+}
+
+.weapon-features {
+  @apply text-xs mt-2;
+}
+
+.weapon-settings {
+  @apply absolute top-0 right-0 rounded opacity-50 m-0!;
+}
+
+.weapon-settings-select {
+  @apply w-full md:w-1/2 mb-2;
 }
 
 .equipment {
@@ -471,7 +551,7 @@ body.dark-theme {
 }
 
 .equipment-item:nth-of-type(n+2) {
-  @apply border-t border-gray-200 dark:border-neutral-800
+  @apply border-t border-gray-200 dark:border-neutral-800;
 }
 
 .equipment-item:nth-of-type(2n) {
@@ -498,6 +578,14 @@ body.dark-theme {
   @apply even:bg-stone-100 dark:even:bg-dark-dusty p-1;
 }
 
+.domain-card:nth-of-type(n+2) {
+  @apply border-t border-gray-200 dark:border-neutral-800;
+}
+
+.domain-card.reverse {
+  @apply even:bg-stone-100 dark:even:bg-dusty p-1;
+}
+
 .domain-card-title {
   @apply flex items-center justify-between mb-2;
 }
@@ -511,9 +599,114 @@ body.dark-theme {
 }
 
 .domain-card-desc {
-  @apply text-xs mb-1;
+  @apply text-xs mb-1 sm:text-sm;
 }
 
-.domain-card-learn {
-  @apply flex flex-col flex-col-reverse md:flex-row items-center justify-end gap-y-4 gap-x-2;
+.dh-static-box {
+  @apply blockable py-4 px-2 md:px-4 flex justify-center gap-2;
+}
+
+.dh-static-title {
+  @apply text-sm uppercase text-center mb-4;
+}
+
+.dh-static-value {
+  @apply mx-auto flex items-center justify-center text-2xl font-normal!;
+}
+
+.dh-attribute-title {
+  @apply text-sm/4 uppercase mb-1;
+}
+
+.select-input {
+  @apply outline-none w-full;
+}
+
+.select-input::placeholder {
+  @apply text-gray-200 opacity-100 text-sm;
+}
+
+.default-input {
+  @apply w-full h-12 px-2 border border-gray-200 text-sm bg-white rounded;
+  @apply dark:bg-neutral-700 dark:border-gray-500 dark:text-snow;
+}
+
+.default-label {
+  @apply text-sm/4 text-gray-400 dark:text-gray-200 flex-1;
+}
+
+.default-select {
+  @apply flex justify-between items-center h-12;
+}
+
+.default-button {
+  @apply rounded cursor-pointer flex justify-center items-center font-normal!;
+}
+
+.default-button-size {
+  @apply min-h-10 min-w-10;
+}
+
+.small-button-size {
+  @apply min-h-6 min-w-6 text-sm;
+}
+
+.default-button-color {
+  @apply bg-blue-400 text-snow dark:bg-fuzzy-red;
+}
+
+.outlined-button-color {
+  @apply bg-white text-blue-400 border border-blue-400 dark:text-black dark:border-fuzzy-red;
+}
+
+.character-item {
+  @apply p-4 pb-0 pr-0 flex items-center cursor-pointer relative;
+}
+
+.character-item-not-active {
+  @apply bg-white hover:bg-gray-100 dark:bg-neutral-800 dark:hover:bg-dusty;
+}
+
+.character-item-active {
+  @apply bg-blue-400 dark:bg-fuzzy-red;
+}
+
+.avatar-block {
+  @apply mr-3 pb-4 dark:text-snow;
+}
+
+.avatar {
+  @apply w-16 h-16 rounded;
+}
+
+.character-item-dots {
+  @apply relative h-16 dark:text-snow;
+}
+
+.character-item-dots-dropdown {
+  @apply absolute z-9 right-0 border border-gray-200 rounded overflow-hidden;
+}
+
+.character-item-name {
+  @apply font-normal! text-lg dark:text-snow;
+}
+
+.character-item-first-text {
+  @apply text-xs/4 text-gray-400 dark:text-gray-300;
+}
+
+.character-item-second-text {
+  @apply text-xs/4 text-gray-400 dark:text-gray-300;
+}
+
+.character-item-box {
+  @apply flex-1 flex pb-4 pr-4;
+}
+
+.character-item-box-active {
+  @apply border-b border-blue-400 dark:border-fuzzy-red;
+}
+
+.character-item-box-not-active {
+  @apply border-b border-gray-200 dark:border-dusty;
 }
