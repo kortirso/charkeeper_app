@@ -87,6 +87,12 @@ export const Combat = (props) => {
     readDistanceSettings();
   });
 
+  const currentLocale = createMemo(() => {
+    const providerLocale = appState.providerLocales[character().provider];
+    if (providerLocale && providerLocale.includes(`${locale()}-`)) return providerLocale;
+    return locale();
+  });
+
   const distanceOptions = createMemo(() => {
     const result = {}
 
@@ -152,6 +158,19 @@ export const Combat = (props) => {
     return `${squares} ${localize(TRANSLATION, locale()).squares}`;
   }
 
+  const renderFalloutAttackDice = (attack) => {
+    const skill = character().skills.find(({ slug }) => attack.kind === slug);
+
+    return (
+      <Dice
+        width="32"
+        height="32"
+        text={modifier(skill.modifier + skill.attribute_modifier)}
+        onClick={() => props.openAttackRoll(`/check skill "${attack.name}"`, attack.name, skill.modifier + skill.attribute_modifier, (skill.expertise ? skill.modifier : 1), attack.damage, attack.id)}
+      />
+    )
+  }
+
   const renderAttacksBox = (title, values) => {
     if (values.length === 0) return <></>;
 
@@ -165,18 +184,32 @@ export const Combat = (props) => {
                 <div class="weapon-item-header">
                   <p class="weapon-item-name">{attack.name}</p>
                   <div class="weapon-item-stats">
-                    <div class="weapon-damage">
-                      <Show when={character().provider === 'daggerheart' && attack.trait}>
-                        <span class="weapon-damage-trait">{daggerheartConfig.traits[attack.trait].shortName[locale()]}</span>
-                      </Show>
-                      <Dice width="28" height="28" text={modifier(attack.attack_bonus)} onClick={() => openAttackRoll(attack, attack.attack_bonus)} />
-                      <Show when={attack.thrown_attack_bonus}>
-                        <span> / </span>
-                        <Dice width="28" height="28" text={modifier(attack.thrown_attack_bonus)} onClick={() => openAttackRoll(attack, attack.thrown_attack_bonus)} />
-                      </Show>
-                    </div>
-                    <p>{attack.damage}{attack.damage_bonus !== 0 ? modifier(attack.damage_bonus) : ''}</p>
-                    <p class="text-sm">{renderAttackDistance(attack)}</p>
+                    <Show
+                      when={character().provider === 'fallout'}
+                      fallback={
+                        <>
+                          <div class="weapon-damage">
+                            <Show when={character().provider === 'daggerheart' && attack.trait}>
+                              <span class="weapon-damage-trait">{localize(daggerheartConfig.traits[attack.trait].shortName, currentLocale())}</span>
+                            </Show>
+                            <Dice width="28" height="28" text={modifier(attack.attack_bonus)} onClick={() => openAttackRoll(attack, attack.attack_bonus)} />
+                            <Show when={attack.thrown_attack_bonus}>
+                              <span> / </span>
+                              <Dice width="28" height="28" text={modifier(attack.thrown_attack_bonus)} onClick={() => openAttackRoll(attack, attack.thrown_attack_bonus)} />
+                            </Show>
+                          </div>
+                          <p>{attack.damage}{attack.damage_bonus !== 0 ? modifier(attack.damage_bonus) : ''}</p>
+                          <p class="text-sm">{renderAttackDistance(attack)}</p>
+                        </>
+                      }
+                    >
+                      <>
+                        <div class="weapon-damage">
+                          {renderFalloutAttackDice(attack)}
+                          <Dice type="D6" width="32" height="32" text={attack.damage} />
+                        </div>
+                      </>
+                    </Show>
                   </div>
                 </div>
                 <Show when={attack.tags && Object.keys(attack.tags).length > 0}>
