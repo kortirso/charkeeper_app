@@ -1,4 +1,4 @@
-import { createSignal, createEffect, For, Show, batch } from 'solid-js';
+import { createSignal, createEffect, createMemo, For, Show, batch } from 'solid-js';
 import { createStore } from 'solid-js/store';
 
 import { ErrorWrapper, Checkbox, Levelbox, EditWrapper, GuideWrapper, Input, Select, Button, Dice } from '../../../../components';
@@ -20,7 +20,10 @@ const TRANSLATION = {
     languages: 'Languages',
     convert: 'Convert',
     toTrades: 'to 2 trades',
-    toLangs: 'to 2 langs'
+    toLangs: 'to 2 langs',
+    overQualified: 'Too many skill points spent',
+    overQualifiedTrades: 'Too many trade points spent',
+    fluent: 'Fluent'
   },
   ru: {
     helpMessage: 'Заполните данные по навыкам, ремёслам и языкам вашего персонажа. Конвертация очков необратима.',
@@ -34,7 +37,10 @@ const TRANSLATION = {
     languages: 'Языки',
     convert: 'Обменять',
     toTrades: 'на 2 ремесла',
-    toLangs: 'на 2 языка'
+    toLangs: 'на 2 языка',
+    overQualified: 'Потрачено много очков навыков',
+    overQualifiedTrades: 'Потрачено много очков ремёсел',
+    fluent: 'Владение'
   }
 }
 
@@ -55,7 +61,7 @@ export const Dc20Skills = (props) => {
   const [tradeKnowledge, setTradeKnowledge] = createSignal({});
 
   const [appState] = useAppState();
-  const [{ renderAlerts }] = useAppAlert();
+  const [{ renderAlerts, renderAlert }] = useAppAlert();
   const [locale] = useAppLocale();
 
   createEffect(() => {
@@ -76,9 +82,11 @@ export const Dc20Skills = (props) => {
         tradePoints: character().trade_points,
         tradeExpertisePoints: character().trade_expertise_points,
         languagePoints: character().language_points
-      })
+      });
     });
   });
+
+  const maxSkillLevel = createMemo(() => Math.floor(character().level / 5) + 1);
 
   const convertSkillPoint = async () => {
     if (skillPoints.skillPoints <= 0) return;
@@ -98,6 +106,47 @@ export const Dc20Skills = (props) => {
       setSkillPoints,
       { ...skillPoints, tradePoints: skillPoints.tradePoints - 1, languagePoints: skillPoints.languagePoints + 2 }
     );
+  }
+
+  const renderSkillBoxes = (object, checkCallback, toggleCallback) => {
+    const maxValue = maxSkillLevel() + (object.expertise ? 1 : 0);
+    const disabled = 5 - maxValue;
+
+    return (
+      <div class="flex gap-0.5">
+        <For each={Array.from([...Array(maxValue).keys()], (x) => x + 1)}>
+          {(index) =>
+            <Checkbox filled checked={object.level >= index} onToggle={() => checkCallback(object.slug, index)} />
+          }
+        </For>
+        <Show when={disabled > 0}>
+          <For each={Array.from([...Array(disabled).keys()])}>
+            {() =>
+              <Checkbox disabled checked={false} />
+            }
+          </For>
+        </Show>
+        <Checkbox filled classList="ml-2 rotate-45" checked={object.expertise} onToggle={() => toggleCallback(object.slug)} />
+      </div>
+    );
+  }
+
+  const updateSkill = (slug, nextValue) => {
+    let modifier;
+
+    const result = skillsData().slice().map((item) => {
+      if (item.slug !== slug) return item;
+
+      if (nextValue === 1 && item.level === 1) {
+        modifier = -1;
+        nextValue = 0;
+      } else modifier = nextValue - item.level;
+      return { ...item, level: nextValue } 
+    });
+    batch(() => {
+      setSkillPoints({ ...skillPoints, skillPoints: skillPoints.skillPoints - modifier });
+      setSkillsData(result);
+    });
   }
 
   const toggleSkillExpertise = (slug) => {
@@ -126,20 +175,21 @@ export const Dc20Skills = (props) => {
     });
   }
 
-  const updateSkill = (slug) => {
-    let difference;
-    const result = skillsData().slice().map((item) => {
+  const updateTrade = (slug, nextValue) => {
+    let modifier;
+
+    const result = tradesData().slice().map((item) => {
       if (item.slug !== slug) return item;
 
-      const maxLevel = Math.round(character().level / 5) + 1 + (item.expertise ? 1 : 0);
-
-      const newValue = item.level === maxLevel ? 0 : (item.level === undefined ? 1 : (item.level + 1));
-      difference = newValue - item.level;
-      return { ...item, level: newValue } 
+      if (nextValue === 1 && item.level === 1) {
+        modifier = -1;
+        nextValue = 0;
+      } else modifier = nextValue - item.level;
+      return { ...item, level: nextValue } 
     });
     batch(() => {
-      setSkillPoints({ ...skillPoints, skillPoints: skillPoints.skillPoints - difference });
-      setSkillsData(result);
+      setSkillPoints({ ...skillPoints, tradePoints: skillPoints.tradePoints - modifier });
+      setTradesData(result);
     });
   }
 
@@ -169,37 +219,27 @@ export const Dc20Skills = (props) => {
     });
   }
 
-  const updateTrade = (slug) => {
-    let difference;
-    const result = tradesData().slice().map((item) => {
-      if (item.slug !== slug) return item;
-
-      const maxLevel = Math.round(character().level / 5) + 1 + (item.expertise ? 1 : 0);
-
-      const newValue = item.level === maxLevel ? 0 : (item.level === undefined ? 1 : (item.level + 1));
-      difference = newValue - item.level;
-      return { ...item, level: newValue } 
-    });
-    batch(() => {
-      setSkillPoints({ ...skillPoints, tradePoints: skillPoints.tradePoints - difference });
-      setTradesData(result);
-    });
-  }
-
-  const updateLanguage = (slug) => {
-    const currentLevel = languagesData()[slug];
-    const newValue = currentLevel === 2 ? 0 : (currentLevel === undefined ? 1 : (currentLevel + 1));
-    const difference = newValue - currentLevel
+  const updateLanguage = (slug, nextValue) => {
+    let modifier;
+    if (nextValue === 1 && languagesData()[slug] === 1) {
+      modifier = -1;
+      nextValue = 0;
+    } else modifier = nextValue - languagesData()[slug];
 
     batch(() => {
-      setSkillPoints({ ...skillPoints, languagePoints: skillPoints.languagePoints - difference });
-      setLanguagesData({ ...languagesData(), [slug]: newValue });
+      setSkillPoints({ ...skillPoints, languagePoints: skillPoints.languagePoints - modifier });
+      setLanguagesData({ ...languagesData(), [slug]: nextValue });
     });
   }
 
   const cancelSkillsEditing = () => {
     batch(() => {
       setSkillsData(character().skills);
+      setSkillPoints({
+        ...skillPoints,
+        skillPoints: character().skill_points,
+        skillExpertisePoints: character().skill_expertise_points
+      });
       setEditSkillsMode(false);
     });
   }
@@ -208,6 +248,11 @@ export const Dc20Skills = (props) => {
     batch(() => {
       setTradesData(character().trades);
       setTradeKnowledge(character().trade_knowledge);
+      setSkillPoints({
+        ...skillPoints,
+        tradePoints: character().trade_points,
+        tradeExpertisePoints: character().trade_expertise_points
+      });
       setEditTradesMode(false);
     });
   }
@@ -240,6 +285,9 @@ export const Dc20Skills = (props) => {
   }
 
   const updateCharacterSkills = () => {
+    const overQualified = skillsData().filter((item) => item.level > maxSkillLevel() + (item.expertise ? 1 : 0)).map((item) => localize(config.skills[item.slug].name, locale()));
+    if (overQualified.length > 0) return renderAlert(`${localize(TRANSLATION, locale()).overQualified}: ${overQualified.join(', ')}`);
+
     const skillLevels = skillsData().reduce((acc, item) => { acc[item.slug] = item.level; return acc }, {});
     const skillExpertise = skillsData().filter((item) => item.expertise).map((item) => item.slug);
 
@@ -247,6 +295,9 @@ export const Dc20Skills = (props) => {
   }
 
   const updateCharacterTrades = () => {
+    const overQualified = tradesData().filter((item) => item.level > maxSkillLevel() + (item.expertise ? 1 : 0))
+    if (overQualified.length > 0) return renderAlert(localize(TRANSLATION, locale()).overQualifiedTrades);
+
     const tradeLevels = tradesData().reduce((acc, item) => { acc[item.slug] = item.level; return acc }, {});
     const tradeExpertise = tradesData().filter((item) => item.expertise).map((item) => item.slug);
 
@@ -283,8 +334,8 @@ export const Dc20Skills = (props) => {
         onReloadCharacter={props.onReloadCharacter}
         onNextClick={props.onNextGuideStepClick}
       >
-        <div class="flex flex-col emd:flex-row emd:gap-2 mt-2">
-          <div class="flex-1">
+        <div class="grid grid-cols-1 emd:grid-cols-2 emd:gap-2 mt-2">
+          <div>
             <EditWrapper
               editMode={editSkillsMode()}
               onSetEditMode={setEditSkillsMode}
@@ -309,50 +360,49 @@ export const Dc20Skills = (props) => {
                     </Show>
                   </div>
                 </Show>
-                <For each={['prime'].concat(Object.keys(config.abilities))}>
-                  {(slug) =>
-                    <For each={(editSkillsMode() ? skillsData() : character().skills).filter((item) => item.ability === slug)}>
-                      {(skill) =>
-                        <div class="flex items-center mb-1">
-                          <Show
-                            when={editSkillsMode()}
-                            fallback={<Levelbox classList="mr-2" value={skill.level} />}
-                          >
-                            <Checkbox
-                              classList="mr-2"
-                              checked={skill.expertise}
-                              onToggle={() => toggleSkillExpertise(skill.slug)}
-                            />
-                            <Levelbox
-                              classList="mr-2"
-                              value={skill.level}
-                              onToggle={() => updateSkill(skill.slug)}
-                            />
-                          </Show>
-                          <p class="uppercase mr-4">{skill.ability === 'prime' ? 'prm' : skill.ability}</p>
-                          <p
-                            class="flex-1 flex"
-                            classList={{ 'font-medium!': skill.level > 0 }}
-                          >
-                            {config.skills[skill.slug].name[locale()]}
-                          </p>
-                          <span>
-                            <Dice
-                              width="28"
-                              height="28"
-                              text={modifier(skill.modifier)}
-                              onClick={() => props.openDiceRoll(`/check skill "${skill.slug}"`, skill.modifier)}
-                            />
-                          </span>
-                        </div>
-                      }
-                    </For>
-                  }
-                </For>
+                <div>
+                  <For each={['prime'].concat(Object.keys(config.abilities))}>
+                    {(slug) =>
+                      <Show
+                        when={editSkillsMode()}
+                        fallback={
+                          <For each={character().skills.filter((item) => item.ability === slug)}>
+                            {(skill) =>
+                              <div class="dc20-skill">
+                                <Levelbox classList="mr-2" value={skill.level} />
+                                <p class="uppercase mr-4">{skill.ability === 'prime' ? 'prm' : skill.ability}</p>
+                                <p class="flex-1" classList={{ 'font-medium!': skill.expertise }}>
+                                  {config.skills[skill.slug].name[locale()]}
+                                </p>
+                                <Dice
+                                  width="28"
+                                  height="28"
+                                  text={modifier(skill.modifier)}
+                                  onClick={() => props.openDiceRoll(`/check skill "${skill.slug}"`, skill.modifier)}
+                                />
+                              </div>
+                            }
+                          </For>
+                        }
+                      >
+                        <For each={skillsData().filter((item) => item.ability === slug)}>
+                          {(skill) =>
+                            <div class="dc20-skill justify-between">
+                              <p class="flex-1 text-sm md:text-base" classList={{ 'font-medium!': skill.expertise }}>
+                                {config.skills[skill.slug].name[locale()]}
+                              </p>
+                              {renderSkillBoxes(skill, updateSkill, toggleSkillExpertise)}
+                            </div>
+                          }
+                        </For>
+                      </Show>
+                    }
+                  </For>
+                </div>
               </div>
             </EditWrapper>
           </div>
-          <div class="flex-1">
+          <div>
             <EditWrapper
               editMode={editTradesMode()}
               onSetEditMode={setEditTradesMode}
@@ -377,43 +427,45 @@ export const Dc20Skills = (props) => {
                     </Show>
                   </div>
                 </Show>
-                <For each={Object.keys(config.abilities)}>
-                  {(slug) =>
-                    <For each={(editTradesMode() ? tradesData() : character().trades).filter((item) => item.ability === slug)}>
-                      {(trade) =>
-                        <div class="flex items-center mb-1">
-                          <Show
-                            when={editTradesMode()}
-                            fallback={<Levelbox classList="mr-2" value={trade.level} />}
-                          >
-                            <Checkbox
-                              classList="mr-2"
-                              checked={trade.expertise}
-                              onToggle={() => toggleTradeExpertise(trade.slug)}
-                            />
-                            <Levelbox
-                              classList="mr-2"
-                              value={trade.level}
-                              onToggle={() => updateTrade(trade.slug)}
-                            />
-                          </Show>
-                          <p class="uppercase mr-4">{trade.ability}</p>
-                          <p class={`flex-1 flex ${trade.level > 0 ? 'font-normal!' : ''}`}>
-                            {config.trades[trade.slug] ? config.trades[trade.slug].name[locale()] : trade.slug}
-                          </p>
-                          <span>
-                            <Dice
-                              width="28"
-                              height="28"
-                              text={modifier(trade.modifier)}
-                              onClick={() => props.openDiceRoll(`/check trade "${trade.slug}"`, trade.modifier)}
-                            />
-                          </span>
-                        </div>
-                      }
-                    </For>
-                  }
-                </For>
+                <div>
+                  <For each={Object.keys(config.abilities)}>
+                    {(slug) =>
+                      <Show
+                        when={editTradesMode()}
+                        fallback={
+                          <For each={character().trades.filter((item) => item.ability === slug)}>
+                            {(trade) =>
+                              <div class="dc20-skill">
+                                <Levelbox classList="mr-2" value={trade.level} />
+                                <p class="uppercase mr-4">{trade.ability}</p>
+                                <p class="flex-1" classList={{ 'font-medium!': trade.expertise }}>
+                                  {config.trades[trade.slug] ? config.trades[trade.slug].name[locale()] : trade.slug}
+                                </p>
+                                <Dice
+                                  width="28"
+                                  height="28"
+                                  text={modifier(trade.modifier)}
+                                  onClick={() => props.openDiceRoll(`/check trade "${trade.slug}"`, trade.modifier)}
+                                />
+                              </div>
+                            }
+                          </For>
+                        }
+                      >
+                        <For each={tradesData().filter((item) => item.ability === slug)}>
+                          {(trade) =>
+                            <div class="dc20-skill">
+                              <p class="flex-1 text-sm md:text-base" classList={{ 'font-medium!': trade.expertise }}>
+                                {config.trades[trade.slug] ? config.trades[trade.slug].name[locale()] : trade.slug}
+                              </p>
+                              {renderSkillBoxes(trade, updateTrade, toggleTradeExpertise)}
+                            </div>
+                          }
+                        </For>
+                      </Show>
+                    }
+                  </For>
+                </div>
                 <Show when={editTradesMode()}>
                   <div class="flex flex-row items-center gap-x-2 mt-4">
                     <Input
@@ -445,31 +497,31 @@ export const Dc20Skills = (props) => {
                 </Show>
                 <For each={Object.entries(editLanguagesMode() ? languagesData() : character().language_levels)}>
                   {([name, level]) =>
-                    <div class="flex items-center mb-1">
+                    <div class="dc20-skill gap-x-1">
                       <Show
                         when={editLanguagesMode()}
-                        fallback={<Levelbox classList="mr-2" value={level} />}
-                      >
-                        <Levelbox
-                          classList="mr-2"
-                          value={level}
-                          onToggle={() => updateLanguage(name)}
-                        />
-                      </Show>
-                      <p class={`flex-1 flex ${level > 0 ? 'font-normal!' : ''}`}>{name}</p>
-                      <span>
-                        {level == 2 || level == 0 ? (
-                            '-'
-                          ) : (
-                            <Dice
-                              width="28"
-                              height="28"
-                              text={modifier(Math.max(...[character().modified_abilities.int, character().modified_abilities.cha]))}
-                              onClick={() => props.openDiceRoll(`/check language "${name}"`, Math.max(...[character().modified_abilities.int, character().modified_abilities.cha]))}
-                            />
-                          )
+                        fallback={
+                          <>
+                            <p class={`flex-1 ${level > 0 ? 'font-normal!' : ''}`}>{name}</p>
+                            <span>
+                              <Show when={level === 0}>-</Show>
+                              <Show when={level === 1}>
+                                <Dice
+                                  width="28"
+                                  height="28"
+                                  text={modifier(Math.max(...[character().modified_abilities.int, character().modified_abilities.cha]))}
+                                  onClick={() => props.openDiceRoll(`/check language "${name}"`, Math.max(...[character().modified_abilities.int, character().modified_abilities.cha]))}
+                                />
+                              </Show>
+                              <Show when={level === 2}>{localize(TRANSLATION, locale()).fluent}</Show>
+                            </span>
+                          </>
                         }
-                      </span>
+                      >
+                        <p class={`flex-1 flex ${level > 0 ? 'font-normal!' : ''}`}>{name}</p>
+                        <Checkbox filled checked={level >= 1} onToggle={() => updateLanguage(name, 1)} />
+                        <Checkbox filled checked={level >= 2} onToggle={() => updateLanguage(name, 2)} />
+                      </Show>
                     </div>
                   }
                 </For>

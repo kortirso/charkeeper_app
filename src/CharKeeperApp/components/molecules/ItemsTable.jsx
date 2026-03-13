@@ -22,7 +22,7 @@ const TRANSLATION = {
     info: 'Информация'
   }
 }
-const ITEMS_INFO = ['daggerheart'];
+const ITEMS_INFO = ['daggerheart', 'dnd2024', 'dnd5'];
 
 export const ItemsTable = (props) => {
   const size = createWindowSize();
@@ -62,7 +62,10 @@ export const ItemsTable = (props) => {
               {(item) =>
                 <div class="equipment-item">
                   <div class="flex-1">
-                    <p class="equipment-item-name">{item.name} ({item.states[props.state]})</p>
+                    <p class="equipment-item-name">
+                      {item.name}
+                      <Show when={item.states[props.state] > 1}><span> ({item.states[props.state]})</span></Show>
+                    </p>
                     <Show when={item.notes}>
                       <p class="equipment-item-notes">{item.notes}</p>
                     </Show>
@@ -78,6 +81,7 @@ export const ItemsTable = (props) => {
                     <Show when={size.width >= 1024}>
                       <div class="flex items-start gap-x-1 mr-2">
                         <ItemsTableItem
+                          size="small"
                           state={props.state}
                           item={item}
                           upgrades={props.upgrades}
@@ -97,6 +101,7 @@ export const ItemsTable = (props) => {
                           <Show when={size.width < 1024}>
                             <div class="dots-item flex gap-x-1">
                               <ItemsTableItem
+                                size="medium"
                                 state={props.state}
                                 item={item}
                                 upgrades={props.upgrades}
@@ -111,7 +116,7 @@ export const ItemsTable = (props) => {
                           <Show when={ITEMS_INFO.includes(props.provider)}>
                             <p class="dots-item" onClick={() => props.onInfoItem(item)}>{localize(TRANSLATION, locale()).info}</p>
                           </Show>
-                          <p class="dots-item" onClick={() => props.onRemoveCharacterItem(item)}>{localize(TRANSLATION, locale()).delete}</p>
+                          <p class="dots-item" onClick={() => props.onRemoveCharacterItem(item, props.state)}>{localize(TRANSLATION, locale()).delete}</p>
                         </div>
                       </Show>
                     </div>

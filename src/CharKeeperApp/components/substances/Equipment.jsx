@@ -81,7 +81,7 @@ const TRANSLATION = {
   }
 }
 const CREATE_HOMEBREW_ITEMS = ['daggerheart', 'dnd2024'];
-const ITEMS_INFO = ['daggerheart'];
+const ITEMS_INFO = ['daggerheart', 'dnd2024', 'dnd5'];
 const HOMEBREWED_PROVIDERS = ['daggerheart', 'dnd2024']
 
 export const Equipment = (props) => {
@@ -246,7 +246,7 @@ export const Equipment = (props) => {
 
     if (result.errors_list === undefined) {
       batch(() => {
-        if (item.kind.includes('weapon')) props.onReloadCharacter();
+        if (props.weaponsKinds && props.weaponsKinds.includes(item.kind) || item.kind.includes('weapon')) props.onReloadCharacter();
         reloadCharacterItems();
         renderNotice(t('alerts.itemIsAdded'));
       });
@@ -271,10 +271,13 @@ export const Equipment = (props) => {
     }
   }
 
-  const removeCharacterItem = async (item) => {
-    const result = await removeCharacterItemRequest(
-      appState.accessToken, character().provider, character().id, item.id
-    );
+  const removeCharacterItem = async (item, state) => {
+    const newStates = { ...item.states, [state]: 0 };
+    if (Object.values(newStates).reduce((acc, item) => acc + item, 0) > 0) {
+      return updateCharacterItem(item, { character_item: { states: newStates } });
+    }
+
+    const result = await removeCharacterItemRequest(appState.accessToken, character().provider, character().id, item.id);
     if (result.errors_list === undefined) {
       batch(() => {
         if (item.kind.includes('weapon') || item.state === 'hands') {
@@ -297,7 +300,11 @@ export const Equipment = (props) => {
   const calculateCurrentLoad = createMemo(() => {
     if (characterItems() === undefined) return 0;
 
-    return characterItems().reduce((acc, item) => acc + item.quantity * item.data.weight, 0);
+    return characterItems().reduce((acc, item) => {
+      const quantity = Object.values(item.states).reduce((total, value) => total + value, 0) - item.states.storage;
+      acc = acc + quantity * item.data.weight;
+      return acc;
+    }, 0);
   });
 
   const filteredItems = createMemo(() => {
@@ -426,7 +433,6 @@ export const Equipment = (props) => {
                   onMoveCharacterItem={moveItem}
                   onChangeItem={changeItem}
                   onInfoItem={showInfo}
-                  onUpdateCharacterItem={updateCharacterItem}
                   onRemoveCharacterItem={removeCharacterItem}
                 />
               }
