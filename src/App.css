@@ -165,7 +165,7 @@ body.dark-theme {
 }
 
 .toggle.disabled {
-  @apply bg-neutral-400;
+  @apply bg-neutral-300;
 }
 
 .toggle-inner {
@@ -202,10 +202,10 @@ body.dark-theme {
 }
 
 .form-field .form-dropdown {
-  @apply absolute w-full bg-white border-r border-l border-gray-200 z-10 overflow-y-auto shadow;
+  @apply absolute w-full bg-white border-r border-l border-b border-gray-200 z-10 overflow-y-auto shadow;
   @apply dark:bg-neutral-800 dark:border-gray-500;
 
-  max-height: 7.5rem;
+  max-height: 9rem;
 }
 
 .form-field .form-dropdown.full {
@@ -219,6 +219,10 @@ body.dark-theme {
 .form-field .form-dropdown li {
   @apply border-b border-gray-200 m-0 py-2 px-4;
   @apply dark:text-snow dark:border-gray-500;
+}
+
+.form-field .form-dropdown li:last-of-type {
+  @apply border-none;
 }
 
 .form-field .form-dropdown li:hover {
@@ -385,6 +389,10 @@ body.dark-theme {
   @apply dark:text-stone-200;
 }
 
+.feat-markdown p {
+  @apply mb-1;
+}
+
 .feat-markdown strong {
   @apply text-[15px] text-black;
   @apply dark:text-snow;
@@ -482,6 +490,14 @@ body.dark-theme {
   @apply uppercase text-sm mb-2 text-center;
 }
 
+.dc20-stat-value-box {
+  @apply mx-auto flex items-center justify-center;
+}
+
+.dc20-stat-value {
+  @apply text-2xl font-normal! leading-10;
+}
+
 .weapon-title {
   @apply text-lg font-normal! mb-2;
 }
@@ -559,7 +575,7 @@ body.dark-theme {
 }
 
 .equipment-item-name {
-  @apply text-sm md:text-base leading-6 line-clamp-1;
+  @apply leading-6 line-clamp-1;
 }
 
 .equipment-item-notes {
@@ -639,12 +655,20 @@ body.dark-theme {
   @apply flex justify-between items-center h-12;
 }
 
+.default-icon-button {
+  @apply flex justify-center items-center cursor-pointer rounded-full hover:bg-gray-100 dark:hover:bg-gray-400;
+}
+
 .default-button {
   @apply rounded cursor-pointer flex justify-center items-center font-normal!;
 }
 
 .default-button-size {
   @apply min-h-10 min-w-10;
+}
+
+.medium-button-size {
+  @apply min-h-8 min-w-8;
 }
 
 .small-button-size {
@@ -709,4 +733,69 @@ body.dark-theme {
 
 .character-item-box-not-active {
   @apply border-b border-gray-200 dark:border-dusty;
+}
+
+.dc20-skill {
+  @apply flex items-center p-1;
+  @apply even:bg-stone-100 even:dark:bg-dark-dusty;
+}
+
+.dc20-skill:nth-of-type(n+2) {
+  @apply border-t border-gray-200 dark:border-neutral-800;
+}
+
+.fallout-skills {
+  @apply grid grid-cols-1 sm:grid-cols-2 gap-x-8 mt-2;
+}
+
+.fallout-skill {
+  @apply flex items-center p-1;
+}
+
+.fallout-skill-actions {
+  @apply flex items-center gap-x-2;
+}
+
+@media (width < 48rem) {
+  .fallout-skill:nth-child(2n+1) {
+    @apply bg-stone-100 dark:bg-dark-dusty md:bg-none;
+  }
+
+  .fallout-skill:nth-of-type(n+2) {
+    @apply border-t border-gray-200 dark:border-neutral-800;
+  }
+}
+
+@media (width >= 48rem) {
+  .fallout-skill:nth-child(4n+3), .fallout-skill:nth-child(4n+4) {
+    @apply md:bg-stone-100 md:dark:bg-dark-dusty;
+  }
+
+  .fallout-skill:nth-of-type(n+3) {
+    @apply border-t border-gray-200 dark:border-neutral-800;
+  }
+}
+
+.dice-text-box {
+  @apply absolute top-0 left-0 w-full h-full flex justify-center items-center;
+}
+
+.dc20-ability-title {
+  @apply text-sm uppercase text-center mb-2 dark:text-white;
+}
+
+.dc20-ability {
+  @apply mx-auto flex items-center justify-center;
+}
+
+.dc20-ability-savebox {
+  @apply absolute -bottom-2 -right-6;
+}
+
+.ancestry-item {
+  @apply even:bg-stone-100 dark:even:bg-dusty p-1;
+}
+
+.ancestry-item:nth-of-type(n+2) {
+  @apply border-t border-gray-200 dark:border-neutral-800;
 }
