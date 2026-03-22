@@ -3,7 +3,7 @@ import { createStore } from 'solid-js/store';
 import { createWindowSize } from '@solid-primitives/resize-observer';
 
 import { ItemsTableItem } from './ItemsTableItem';
-import { IconButton, createModal, DaggerheartItemUpgrade } from '../../components';
+import { IconButton, createModal, DaggerheartItemUpgrade, Dnd2024ItemUpgrade } from '../../components';
 import { useAppLocale } from '../../context';
 import { Hands, Equipment, Backpack, Storage, Dots } from '../../assets';
 import { clickOutside, localize } from '../../helpers';
@@ -20,6 +20,11 @@ const TRANSLATION = {
     change: 'Изменить',
     delete: 'Убрать',
     info: 'Информация'
+  },
+  es: {
+    change: 'Editar',
+    delete: 'Eliminar',
+    info: 'Información'
   }
 }
 const ITEMS_INFO = ['daggerheart', 'dnd2024', 'dnd5'];
@@ -72,7 +77,7 @@ export const ItemsTable = (props) => {
                     <Show when={item.info?.features && item.info.features.length > 0}>
                       <For each={item.info.features}>
                         {(item) =>
-                          <p class="equipment-item-notes">{item[locale()]}</p>
+                          <p class="equipment-item-notes">{localize(item, locale())}</p>
                         }
                       </For>
                     </Show>
@@ -136,6 +141,14 @@ export const ItemsTable = (props) => {
                 item={upgradingItem.item}
                 state={upgradingItem.state}
                 upgradeItems={props.upgradeItems}
+                completeUpgrade={completeUpgrade}
+              />
+            </Match>
+            <Match when={props.provider === 'dnd2024'}>
+              <Dnd2024ItemUpgrade
+                characterId={props.characterId}
+                item={upgradingItem.item}
+                state={upgradingItem.state}
                 completeUpgrade={completeUpgrade}
               />
             </Match>

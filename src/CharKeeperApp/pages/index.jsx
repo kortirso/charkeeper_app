@@ -27,7 +27,6 @@ export * from './Content/Character/Dnd5/Rest';
 export * from './Content/Character/Dnd5/ClassLevels';
 export * from './Content/Character/Dnd5/Professions';
 export * from './Content/Character/Dnd5/Skills';
-export * from './Content/Character/Dnd5/SavingThrows';
 export * from './Content/Character/Dnd5/Spells';
 export * from './Content/Character/Dnd5/SpellsTable';
 export * from './Content/Character/Dnd5/Proficiency';
@@ -45,6 +44,7 @@ export * from './Content/Character/Dnd2024/Spells/Attack';
 export * from './Content/Character/Dnd2024/Spells/Components';
 export * from './Content/Character/Dnd2024/Spells/Duration';
 export * from './Content/Character/Dnd2024/Spells/Effects';
+export * from './Content/Character/Dnd2024/Bonuses';
 
 export * from './Content/Character/Pathfinder2';
 export * from './Content/Character/Pathfinder2/Abilities';
@@ -53,6 +53,7 @@ export * from './Content/Character/Pathfinder2/Professions';
 export * from './Content/Character/Pathfinder2/Static';
 export * from './Content/Character/Pathfinder2/Skills';
 export * from './Content/Character/Pathfinder2/SavingThrows';
+export * from './Content/Character/Pathfinder2/Leveling';
 
 export * from './Content/Character/Daggerheart';
 export * from './Content/Character/Daggerheart/Traits';

@@ -4,12 +4,14 @@ import { createWindowSize } from '@solid-primitives/resize-observer';
 
 import {
   Pathfinder2Abilities, Pathfinder2Health, Pathfinder2Professions, Pathfinder2Static, Pathfinder2Skills,
-  Pathfinder2SavingThrows
+  Pathfinder2SavingThrows, Pathfinder2Leveling
 } from '../../../pages';
 import {
-  CharacterNavigation, Equipment, Notes, Avatar, ContentWrapper, Conditions, Gold, createDiceRoll, Combat
+  CharacterNavigation, Equipment, Notes, Avatar, ContentWrapper, Conditions, Gold, createDiceRoll, Combat, Feats
 } from '../../../components';
+import config from '../../../data/pathfinder2.json';
 import { useAppLocale } from '../../../context';
+import { translate } from '../../../helpers';
 
 export const Pathfinder2 = (props) => {
   const size = createWindowSize();
@@ -19,12 +21,32 @@ export const Pathfinder2 = (props) => {
   const [activeTab, setActiveTab] = createSignal('combat');
 
   const { DiceRoll, openDiceRoll, openAttackRoll } = createDiceRoll();
-  const [, dict] = useAppLocale();
+  const [locale, dict] = useAppLocale();
 
   const t = i18n.translator(dict);
 
   const weaponFilter = (item) => item.kind === 'weapon';
   const armorFilter = (item) => item.kind === 'armor';
+
+  const ancestryFilter = (item) => item.origin === 'ancestry';
+  const classFilter = (item) => item.origin === 'class';
+  const generalFilter = (item) => item.origin === 'general';
+  const skillFilter = (item) => item.origin === 'skill';
+
+  const featFilters = createMemo(() => {
+    return [
+      { title: 'ancestry', callback: ancestryFilter },
+      { title: 'class', callback: classFilter },
+      { title: 'general', callback: generalFilter },
+      { title: 'skill', callback: skillFilter }
+    ];
+  });
+
+  const configSkills = createMemo(() => {
+    const defaultSkills = translate(config.skills, locale());
+
+    return { ...defaultSkills, ...character().lores };
+  })
 
   const mobileView = createMemo(() => {
     if (size.width >= 1152) return <></>;
@@ -32,7 +54,7 @@ export const Pathfinder2 = (props) => {
     return (
       <>
         <CharacterNavigation
-          tabsList={['abilities', 'combat', 'equipment', 'notes', 'professions', 'avatar']}
+          tabsList={['abilities', 'combat', 'equipment', 'classLevels', 'professions', 'notes', 'avatar']}
           activeTab={activeMobileTab()}
           setActiveTab={setActiveMobileTab}
         />
@@ -52,14 +74,14 @@ export const Pathfinder2 = (props) => {
                 />
               </div>
               <div class="mt-4">
-                <Conditions character={character()} />
-              </div>
-              <div class="mt-4">
                 <Pathfinder2Skills
                   character={character()}
                   openDiceRoll={openDiceRoll}
                   onReplaceCharacter={props.onReplaceCharacter}
                 />
+              </div>
+              <div class="mt-4">
+                <Conditions character={character()} />
               </div>
             </Match>
             <Match when={activeMobileTab() === 'combat'}>
@@ -73,6 +95,15 @@ export const Pathfinder2 = (props) => {
                   openDiceRoll={openDiceRoll}
                   openAttackRoll={openAttackRoll}
                   onReplaceCharacter={props.onReplaceCharacter}
+                />
+              </div>
+              <div class="mt-4">
+                <Feats
+                  character={character()}
+                  filters={featFilters()}
+                  skills={configSkills()}
+                  onReplaceCharacter={props.onReplaceCharacter}
+                  onReloadCharacter={props.onReloadCharacter}
                 />
               </div>
             </Match>
@@ -90,6 +121,13 @@ export const Pathfinder2 = (props) => {
               >
                 <Gold character={character()} onReplaceCharacter={props.onReplaceCharacter} />
               </Equipment>
+            </Match>
+            <Match when={activeMobileTab() === 'classLevels'}>
+              <Pathfinder2Leveling
+                character={character()}
+                onReplaceCharacter={props.onReplaceCharacter}
+                onReloadCharacter={props.onReloadCharacter}
+              />
             </Match>
             <Match when={activeMobileTab() === 'notes'}>
               <Notes />
@@ -116,24 +154,22 @@ export const Pathfinder2 = (props) => {
           openDiceRoll={openDiceRoll}
           onReplaceCharacter={props.onReplaceCharacter}
         />
-        <div class="flex flex-col emd:flex-row emd:gap-4 emd:mt-4">
-          <div class="mt-4 emd:mt-0 flex-1">
-            <Pathfinder2SavingThrows
-              character={character()}
-              openDiceRoll={openDiceRoll}
-              onReplaceCharacter={props.onReplaceCharacter}
-            />
-            <div class="mt-4">
-              <Conditions character={character()} />
-            </div>
-          </div>
-          <div class="mt-4 emd:mt-0 flex-1">
-            <Pathfinder2Skills
-              character={character()}
-              openDiceRoll={openDiceRoll}
-              onReplaceCharacter={props.onReplaceCharacter}
-            />
-          </div>
+        <div class="mt-4">
+          <Pathfinder2SavingThrows
+            character={character()}
+            openDiceRoll={openDiceRoll}
+            onReplaceCharacter={props.onReplaceCharacter}
+          />
+        </div>
+        <div class="mt-4">
+          <Pathfinder2Skills
+            character={character()}
+            openDiceRoll={openDiceRoll}
+            onReplaceCharacter={props.onReplaceCharacter}
+          />
+        </div>
+        <div class="mt-4">
+          <Conditions character={character()} />
         </div>
       </>
     );
@@ -145,7 +181,7 @@ export const Pathfinder2 = (props) => {
     return (
       <>
         <CharacterNavigation
-          tabsList={['combat', 'equipment', 'notes', 'professions', 'avatar']}
+          tabsList={['combat', 'equipment', 'classLevels', 'professions', 'notes', 'avatar']}
           activeTab={activeTab()}
           setActiveTab={setActiveTab}
         />
@@ -164,6 +200,15 @@ export const Pathfinder2 = (props) => {
                   onReplaceCharacter={props.onReplaceCharacter}
                 />
               </div>
+              <div class="mt-4">
+                <Feats
+                  character={character()}
+                  filters={featFilters()}
+                  skills={configSkills()}
+                  onReplaceCharacter={props.onReplaceCharacter}
+                  onReloadCharacter={props.onReloadCharacter}
+                />
+              </div>
             </Match>
             <Match when={activeTab() === 'equipment'}>
               <Equipment
@@ -179,6 +224,13 @@ export const Pathfinder2 = (props) => {
               >
                 <Gold character={character()} onReplaceCharacter={props.onReplaceCharacter} />
               </Equipment>
+            </Match>
+            <Match when={activeTab() === 'classLevels'}>
+              <Pathfinder2Leveling
+                character={character()}
+                onReplaceCharacter={props.onReplaceCharacter}
+                onReloadCharacter={props.onReloadCharacter}
+              />
             </Match>
             <Match when={activeTab() === 'notes'}>
               <Notes />

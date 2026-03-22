@@ -47,6 +47,24 @@ const TRANSLATION = {
       sp: 'ОВ',
       'ap/sp': 'ОД/ОВ'
     }
+  },
+  es: {
+    activeFeat: 'Activo',
+    allFeatures: 'Todas las habilidades',
+    personalFeats: 'Las habilidades personales pueden ser agregadas a través de homebrew',
+    settings: 'Configuración del filtro',
+    showPersonal: 'Mostrar personales',
+    groupFeatures: 'Agrupar características',
+    showPassive: 'Mostrar pasivas',
+    expandAll: 'Expandir todo',
+    dc20Range: 'Rango',
+    enhancements: 'Mejoras',
+    repeatable: 'Repetible',
+    prices: {
+      ap: 'PA',
+      sp: 'PE',
+      'ap/sp': 'PA/PE'
+    }
   }
 }
 
@@ -234,11 +252,11 @@ export const Feats = (props) => {
                         <For each={feature().info.enhancements}>
                           {(enhancement) =>
                             <p class="feat-markdown text-sm mt-1">
-                              <span class="font-medium!">{enhancement.name[locale()]}</span>
+                              <span class="font-medium!">{localize(enhancement.name, locale())}</span>
                               <span>: ({renderFeatPrice(enhancement)}) </span>
                               <span
                                 class="feat-markdown"
-                                innerHTML={enhancement.description[locale()]} // eslint-disable-line solid/no-innerhtml
+                                innerHTML={localize(enhancement.description, locale())} // eslint-disable-line solid/no-innerhtml
                               />
                             </p>
                           }
@@ -265,20 +283,29 @@ export const Feats = (props) => {
                         </Button>
                       </div>
                     </Match>
-                    <Match when={feature().kind === 'static_list' || feature().kind === 'one_from_list'}>
+                    <Match when={(feature().kind === 'static_list' || feature().kind === 'one_from_list') && feature().options}>
                       <Select
                         withNull
                         containerClassList="w-full mt-2"
-                        items={Object.entries(feature().options).reduce((acc, [key, value]) => { acc[key] = value[locale()]; return acc; }, {})}
+                        items={Object.entries(feature().options).reduce((acc, [key, value]) => { acc[key] = localize(value, locale()); return acc; }, {})}
                         selectedValue={featValues()[feature().slug]}
                         onSelect={(option) => updateFeatureValue(feature(), option)}
                       />
                     </Match>
-                    <Match when={feature().kind === 'many_from_list'}>
+                    <Match when={feature().kind === 'many_from_list' && feature().options}>
                       <Select
                         multi
                         containerClassList="w-full mt-2"
-                        items={Object.entries(feature().options).reduce((acc, [key, value]) => { acc[key] = value[locale()]; return acc; }, {})}
+                        items={Object.entries(feature().options).reduce((acc, [key, value]) => { acc[key] = localize(value, locale()); return acc; }, {})}
+                        selectedValues={featValues()[feature().slug] || []}
+                        onSelect={(option) => updateMultiFeatureValue(feature(), option)}
+                      />
+                    </Match>
+                    <Match when={(feature().kind === 'one_from_list' || feature().kind === 'many_from_list') && !feature().options && feature().info.options_list && props[feature().info.options_list]}>
+                      <Select
+                        multi={feature().kind === 'many_from_list'}
+                        containerClassList="w-full mt-2"
+                        items={props[feature().info.options_list]}
                         selectedValues={featValues()[feature().slug] || []}
                         onSelect={(option) => updateMultiFeatureValue(feature(), option)}
                       />

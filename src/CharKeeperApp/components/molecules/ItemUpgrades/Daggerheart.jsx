@@ -29,7 +29,18 @@ const TRANSLATION = {
       armor_stone: 'Камень'
     },
     upgradeItem: 'Улучшить предмет'
-  }
+  },
+  es: {
+    title: 'Mejorando el objeto',
+    name: 'Nuevo nombre del objeto',
+    types: {
+      charm: 'Encanto',
+      stone: 'Piedra',
+      gem: 'Gema',
+      armor_stone: 'Piedra'
+    },
+    upgradeItem: 'Mejorar objeto'
+    }
 }
 
 export const DaggerheartItemUpgrade = (props) => {
@@ -91,7 +102,7 @@ export const DaggerheartItemUpgrade = (props) => {
               <Show
                 when={upgradeType === 'gem'}
                 fallback={
-                  <p class="text-sm mt-1">{props.upgradeItems.find(({ item_id }) => upgrades[upgradeType] === item_id).info.feature[locale()]}</p>
+                  <p class="text-sm mt-1">{localize(props.upgradeItems.find(({ item_id }) => upgrades[upgradeType] === item_id).info.feature, locale())}</p>
                 }
               >
                 <p class="text-sm mt-1">Характеристика для атак - {localize(config.traits[props.upgradeItems.find(({ item_id }) => upgrades[upgradeType] === item_id).info.trait].name, locale())}</p>

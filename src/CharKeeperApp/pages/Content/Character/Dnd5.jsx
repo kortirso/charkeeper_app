@@ -3,8 +3,8 @@ import * as i18n from '@solid-primitives/i18n';
 import { createWindowSize } from '@solid-primitives/resize-observer';
 
 import {
-  Dnd5Abilities, Dnd5Combat, Dnd5Rest, Dnd5ClassLevels, Dnd5Professions, Dnd5Spells, Dnd5Skills, Dnd5SavingThrows,
-  Dnd5Proficiency, Dnd2024WildShapes, BeastFeatures, Dnd5Craft, Dnd5Bonuses, Dnd2024Exhaustion, Dnd2024Spells, Dnd5Info
+  Dnd5Abilities, Dnd5Combat, Dnd5Rest, Dnd5ClassLevels, Dnd5Professions, Dnd5Spells, Dnd5Skills,
+  Dnd5Proficiency, Dnd2024WildShapes, BeastFeatures, Dnd5Craft, Dnd5Bonuses, Dnd2024Spells, Dnd5Info, Dnd2024Bonuses
 } from '../../../pages';
 import {
   CharacterNavigation, Equipment, Notes, Avatar, ContentWrapper, Feats, createDiceRoll, Conditions, Combat, Gold
@@ -21,6 +21,10 @@ const TRANSLATION = {
   ru: {
     equipmentHelpMessage: 'На этой вкладке вы можете выбрать снаряжение для вашего персонажа.',
     levelingHelpMessage: 'В будущем на этой вкладке вы сможете указывать уровень вашего персонажа.'
+  },
+  es: {
+    equipmentHelpMessage: 'Aquí puedes seleccionar el equipo para tu personaje.',
+    levelingHelpMessage: 'En el futuro en esta pestaña podrás subir de nivel a tu personaje.'
   }
 }
 
@@ -127,7 +131,13 @@ export const Dnd5 = (props) => {
                 <Dnd5Proficiency character={character()} onReplaceCharacter={props.onReplaceCharacter} />
               </div>
               <div class="mt-4">
-                <Dnd5SavingThrows character={character()} openDiceRoll={openDiceRoll} />
+                <Dnd5Skills
+                  character={character()}
+                  openDiceRoll={openDiceRoll}
+                  onReplaceCharacter={props.onReplaceCharacter}
+                  onReloadCharacter={props.onReloadCharacter}
+                  onNextGuideStepClick={() => setActiveMobileTab('equipment')}
+                />
               </div>
               <div class="mt-4">
                 <Conditions character={character()} />
@@ -137,15 +147,6 @@ export const Dnd5 = (props) => {
                   <Dnd2024WildShapes character={character()} onReplaceCharacter={props.onReplaceCharacter} />
                 </div>
               </Show>
-              <div class="mt-4">
-                <Dnd5Skills
-                  character={character()}
-                  openDiceRoll={openDiceRoll}
-                  onReplaceCharacter={props.onReplaceCharacter}
-                  onReloadCharacter={props.onReloadCharacter}
-                  onNextGuideStepClick={() => setActiveMobileTab('equipment')}
-                />
-              </div>
               <div class="mt-4">
                 <Feats
                   character={character()}
@@ -178,12 +179,18 @@ export const Dnd5 = (props) => {
               <Dnd5Rest character={character()} onReloadCharacter={props.onReloadCharacter} />
             </Match>
             <Match when={activeMobileTab() === 'bonuses'}>
-              <Dnd5Bonuses character={character()} onReloadCharacter={props.onReloadCharacter} />
+              <Show
+                when={character().provider === 'dnd5'}
+                fallback={<Dnd2024Bonuses character={character()} onReloadCharacter={props.onReloadCharacter} />}
+              >
+                <Dnd5Bonuses character={character()} onReloadCharacter={props.onReloadCharacter} />
+              </Show>
             </Match>
             <Match when={activeMobileTab() === 'equipment'}>
               <Equipment
                 withWeight
                 withPrice
+                upgrades={character().provider === 'dnd2024' ? ['weapon', 'armor', 'shield', 'item'] : null}
                 character={character()}
                 itemFilters={[
                   { title: t('equipment.itemsList'), callback: itemFilter },
@@ -268,35 +275,25 @@ export const Dnd5 = (props) => {
           />
         </div>
         <div class="mt-4">
-          <Dnd5SavingThrows character={character()} openDiceRoll={openDiceRoll} />
-        </div>
-        <div class="mt-4">
           <Dnd5Proficiency character={character()} onReplaceCharacter={props.onReplaceCharacter} />
         </div>
-        <div class="emd:gap-4 emd:mt-4 grid grid-cols-1 emd:grid-cols-2">
-          <div class="mt-4 emd:mt-0">
-            <Show when={character().provider === 'dnd2024'}>
-              <div class="mb-4">
-                <Dnd2024Exhaustion character={character()} onReplaceCharacter={props.onReplaceCharacter} />
-              </div>
-            </Show>
-            <Conditions character={character()} />
-            <Show when={character().provider === 'dnd2024' && Object.keys(character().classes).includes('druid')}>
-              <div class="mt-4">
-                <Dnd2024WildShapes character={character()} onReplaceCharacter={props.onReplaceCharacter} />
-              </div>
-            </Show>
-          </div>
-          <div class="mt-4 emd:mt-0">
-            <Dnd5Skills
-              character={character()}
-              openDiceRoll={openDiceRoll}
-              onReplaceCharacter={props.onReplaceCharacter}
-              onReloadCharacter={props.onReloadCharacter}
-              onNextGuideStepClick={() => setActiveTab('equipment')}
-            />
-          </div>
+        <div class="mt-4">
+          <Dnd5Skills
+            character={character()}
+            openDiceRoll={openDiceRoll}
+            onReplaceCharacter={props.onReplaceCharacter}
+            onReloadCharacter={props.onReloadCharacter}
+            onNextGuideStepClick={() => setActiveTab('equipment')}
+          />
         </div>
+        <div class="mt-4">
+          <Conditions character={character()} />
+        </div>
+        <Show when={character().provider === 'dnd2024' && Object.keys(character().classes).includes('druid')}>
+          <div class="mt-4">
+            <Dnd2024WildShapes character={character()} onReplaceCharacter={props.onReplaceCharacter} />
+          </div>
+        </Show>
       </>
     );
   });
@@ -349,6 +346,7 @@ export const Dnd5 = (props) => {
               <Equipment
                 withWeight
                 withPrice
+                upgrades={character().provider === 'dnd2024' ? ['weapon', 'armor', 'shield', 'item'] : null}
                 character={character()}
                 itemFilters={[
                   { title: t('equipment.itemsList'), callback: itemFilter },
@@ -388,7 +386,12 @@ export const Dnd5 = (props) => {
               <Notes />
             </Match>
             <Match when={activeTab() === 'bonuses'}>
-              <Dnd5Bonuses character={character()} onReloadCharacter={props.onReloadCharacter} />
+              <Show
+                when={character().provider === 'dnd5'}
+                fallback={<Dnd2024Bonuses character={character()} onReloadCharacter={props.onReloadCharacter} />}
+              >
+                <Dnd5Bonuses character={character()} onReloadCharacter={props.onReloadCharacter} />
+              </Show>
             </Match>
             <Match when={activeTab() === 'classLevels'}>
               <Dnd5ClassLevels
