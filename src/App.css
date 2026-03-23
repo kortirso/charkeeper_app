@@ -202,7 +202,7 @@ body.dark-theme {
 }
 
 .form-field .form-dropdown {
-  @apply w-full bg-white border-r border-l border-b border-gray-200 overflow-y-auto shadow;
+  @apply absolute z-10 w-full bg-white border-r border-l border-b border-gray-200 overflow-y-auto shadow;
   @apply dark:bg-neutral-800 dark:border-gray-500;
 
   max-height: 9rem;
