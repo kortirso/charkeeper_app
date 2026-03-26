@@ -95,20 +95,22 @@ export const Dnd2024Spells = (props) => {
 
     const spellLevels = Object.keys(character().spells_slots || {});
 
-    const fetchSpells = async () => await fetchSpellsRequest(
+    const fetchSpells = async (homebrew) => await fetchSpellsRequest(
       appState.accessToken,
       props.character.provider,
-      { max_level: spellLevels.length === 0 ? 3 : Math.max(...spellLevels) }
+      Object.fromEntries(Object.entries({
+        max_level: spellLevels.length === 0 ? 3 : Math.max(...spellLevels), homebrew: homebrew
+      }).filter(([, value]) => value))
     );
     const fetchCharacterSpells = async () => await fetchCharacterSpellsRequest(
       appState.accessToken, character().provider, character().id
     );
 
-    Promise.all([fetchCharacterSpells(), fetchSpells()]).then(
-      ([characterSpellsData, spellsData]) => {
+    Promise.all([fetchCharacterSpells(), fetchSpells(), fetchSpells(true)]).then(
+      ([characterSpellsData, spellsData, homebrewSpellsData]) => {
         batch(() => {
           setCharacterSpells(characterSpellsData.spells);
-          setSpells(spellsData.spells);
+          setSpells(spellsData.spells.concat(homebrewSpellsData.spells).sort((a, b) => a.title > b.title));
         });
       }
     );
@@ -419,6 +421,11 @@ export const Dnd2024Spells = (props) => {
                 </div>
               </div>
             </Show>
+            <Show when={activeSpellClass() !== undefined && activeSpellClass() !== 'static'}>
+              <Button default textable classList="mb-2" onClick={() => setSpellsSelectingMode(true)}>
+                {localize(TRANSLATION, locale()).knownSpells}
+              </Button>
+            </Show>
             <div class="flex justify-between items-center mb-2">
               <Show when={activeSpellClass() !== undefined && activeSpellClass() !== 'static'} fallback={<span />}>
                 <Checkbox
@@ -446,17 +453,13 @@ export const Dnd2024Spells = (props) => {
                 </div>
               </Show>
             </div>
-            <Show when={activeSpellClass() !== undefined && activeSpellClass() !== 'static'}>
-              <Button default textable classList="mb-2" onClick={() => setSpellsSelectingMode(true)}>
-                {localize(TRANSLATION, locale()).knownSpells}
-              </Button>
-            </Show>
             <SpellsToggleList
               level={0}
               character={character()}
               activeSpellClass={activeSpellClass()}
               spells={filteredCharacterSpells().filter((item) => item.spell.level === 0)}
               canPrepareSpells={canPrepareSpells()}
+              preparedSpellFilter={preparedSpellFilter()}
               onEnableSpell={enableSpell}
               onDisableSpell={disableSpell}
               onUpdateCharacterSpell={updateCharacterSpell}
@@ -472,6 +475,7 @@ export const Dnd2024Spells = (props) => {
                   spells={filteredCharacterSpells().filter((item) => item.spell.level === level)}
                   spentSpellSlots={character().spent_spell_slots}
                   canPrepareSpells={canPrepareSpells()}
+                  preparedSpellFilter={preparedSpellFilter()}
                   slotsAmount={character().spells_slots[level]}
                   onEnableSpell={enableSpell}
                   onDisableSpell={disableSpell}
