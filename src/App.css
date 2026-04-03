@@ -639,7 +639,7 @@ body.dark-theme {
 }
 
 .select-input::placeholder {
-  @apply text-gray-200 opacity-100 text-sm;
+  @apply text-gray-400 opacity-100 text-sm;
 }
 
 .default-input {
