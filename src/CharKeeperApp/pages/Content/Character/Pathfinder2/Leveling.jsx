@@ -69,9 +69,11 @@ export const Pathfinder2Leveling = (props) => {
 
     Promise.all([fetchTalents()]).then(
       ([talentsData]) => {
-        setTags(Object.fromEntries(Object.entries(talentsData.tags).sort(([, a], [, b]) => a.localeCompare(b))));
-        setFeats(talentsData.feats);
-        setSelectedFeats(talentsData.character_feats);
+        batch(() => {
+          setTags(Object.fromEntries(Object.entries(talentsData.tags).sort(([, a], [, b]) => a.localeCompare(b))));
+          setFeats(talentsData.feats);
+          setSelectedFeats(talentsData.character_feats);
+        });
       }
     );
 
@@ -148,7 +150,7 @@ export const Pathfinder2Leveling = (props) => {
     const result = await fetchTalents();
     performResponse(
       result,
-      function() { // eslint-disable-line solid/reactivity
+      function() {
         setSelectedFeats(result.character_feats);
       },
       function() { renderAlerts(result.errors_list) }
@@ -233,7 +235,7 @@ export const Pathfinder2Leveling = (props) => {
               <Show when={GENERAL_FEAT_LEVELS.includes(index)}>
                 {renderSelectedFeatValue('general', index)}
               </Show>
-              <Show when={SKILL_FEAT_LEVELS.includes(index)}>
+              <Show when={character().main_class === 'rogue' || SKILL_FEAT_LEVELS.includes(index)}>
                 {renderSelectedFeatValue('skill', index)}
               </Show>
               {renderAdditionalFeatValues(index)}

@@ -3,8 +3,8 @@ import * as i18n from '@solid-primitives/i18n';
 import { createWindowSize } from '@solid-primitives/resize-observer';
 
 import {
-  Pathfinder2Abilities, Pathfinder2Health, Pathfinder2Professions, Pathfinder2Static, Pathfinder2Skills,
-  Pathfinder2SavingThrows, Pathfinder2Leveling
+  Pathfinder2Abilities, Pathfinder2Health, Pathfinder2Professions, Pathfinder2Static, Pathfinder2Skills, Pathfinder2Companion,
+  Pathfinder2SavingThrows, Pathfinder2Leveling, Pathfinder2Spells, Pathfinder2Rest, Pathfinder2Bonuses
 } from '../../../pages';
 import {
   CharacterNavigation, Equipment, Notes, Avatar, ContentWrapper, Conditions, Gold, createDiceRoll, Combat, Feats
@@ -28,25 +28,34 @@ export const Pathfinder2 = (props) => {
   const weaponFilter = (item) => item.kind === 'weapon';
   const armorFilter = (item) => item.kind === 'armor';
 
-  const ancestryFilter = (item) => item.origin === 'ancestry';
-  const classFilter = (item) => item.origin === 'class';
+  const ancestryFilter = (item) => item.origin === 'ancestry' || item.origin === 'static_race' || item.origin === 'static_subrace';
+  const classFilter = (item) => item.origin === 'class' || item.origin === 'static_class' || item.origin === 'static_subclass';
   const generalFilter = (item) => item.origin === 'general';
   const skillFilter = (item) => item.origin === 'skill';
+  const companionFilter = (item) => item.origin === 'pet' || item.origin === 'familiar';
 
   const featFilters = createMemo(() => {
-    return [
+    const result = [
       { title: 'ancestry', callback: ancestryFilter },
       { title: 'class', callback: classFilter },
       { title: 'general', callback: generalFilter },
       { title: 'skill', callback: skillFilter }
     ];
+    if (character().can_have_pet || character().can_have_familiar) result.push({ title: 'companion', callback: companionFilter });
+    return result;
   });
 
   const configSkills = createMemo(() => {
     const defaultSkills = translate(config.skills, locale());
 
     return { ...defaultSkills, ...character().lores };
-  })
+  });
+
+  const characterTabs = createMemo(() => {
+    const result = ['combat', 'equipment', 'spells', 'classLevels'];
+    if (character().can_have_pet || character().can_have_familiar) result.push('companion');
+    return result.concat('professions', 'rest', 'bonuses', 'notes', 'avatar');
+  });
 
   const mobileView = createMemo(() => {
     if (size.width >= 1152) return <></>;
@@ -54,7 +63,7 @@ export const Pathfinder2 = (props) => {
     return (
       <>
         <CharacterNavigation
-          tabsList={['abilities', 'combat', 'equipment', 'classLevels', 'professions', 'notes', 'avatar']}
+          tabsList={['abilities'].concat(characterTabs())}
           activeTab={activeMobileTab()}
           setActiveTab={setActiveMobileTab}
         />
@@ -107,6 +116,13 @@ export const Pathfinder2 = (props) => {
                 />
               </div>
             </Match>
+            <Match when={activeMobileTab() === 'spells'}>
+              <Pathfinder2Spells
+                character={character()}
+                openDiceRoll={openDiceRoll}
+                onReplaceCharacter={props.onReplaceCharacter}
+              />
+            </Match>
             <Match when={activeMobileTab() === 'equipment'}>
               <Equipment
                 withWeight
@@ -128,6 +144,19 @@ export const Pathfinder2 = (props) => {
                 onReplaceCharacter={props.onReplaceCharacter}
                 onReloadCharacter={props.onReloadCharacter}
               />
+            </Match>
+            <Match when={activeMobileTab() === 'companion'}>
+              <Pathfinder2Companion
+                character={character()}
+                onReloadCharacter={props.onReloadCharacter}
+                openDiceRoll={openDiceRoll}
+              />
+            </Match>
+            <Match when={activeMobileTab() === 'rest'}>
+              <Pathfinder2Rest character={character()} onReloadCharacter={props.onReloadCharacter} />
+            </Match>
+            <Match when={activeMobileTab() === 'bonuses'}>
+              <Pathfinder2Bonuses character={character()} onReloadCharacter={props.onReloadCharacter} />
             </Match>
             <Match when={activeMobileTab() === 'notes'}>
               <Notes />
@@ -181,7 +210,7 @@ export const Pathfinder2 = (props) => {
     return (
       <>
         <CharacterNavigation
-          tabsList={['combat', 'equipment', 'classLevels', 'professions', 'notes', 'avatar']}
+          tabsList={characterTabs()}
           activeTab={activeTab()}
           setActiveTab={setActiveTab}
         />
@@ -210,6 +239,13 @@ export const Pathfinder2 = (props) => {
                 />
               </div>
             </Match>
+            <Match when={activeTab() === 'spells'}>
+              <Pathfinder2Spells
+                character={character()}
+                openDiceRoll={openDiceRoll}
+                onReplaceCharacter={props.onReplaceCharacter}
+              />
+            </Match>
             <Match when={activeTab() === 'equipment'}>
               <Equipment
                 withWeight
@@ -231,6 +267,19 @@ export const Pathfinder2 = (props) => {
                 onReplaceCharacter={props.onReplaceCharacter}
                 onReloadCharacter={props.onReloadCharacter}
               />
+            </Match>
+            <Match when={activeTab() === 'companion'}>
+              <Pathfinder2Companion
+                character={character()}
+                onReloadCharacter={props.onReloadCharacter}
+                openDiceRoll={openDiceRoll}
+              />
+            </Match>
+            <Match when={activeTab() === 'rest'}>
+              <Pathfinder2Rest character={character()} onReloadCharacter={props.onReloadCharacter} />
+            </Match>
+            <Match when={activeTab() === 'bonuses'}>
+              <Pathfinder2Bonuses character={character()} onReloadCharacter={props.onReloadCharacter} />
             </Match>
             <Match when={activeTab() === 'notes'}>
               <Notes />
