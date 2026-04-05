@@ -5,10 +5,10 @@ import { localize } from '../../../../helpers';
 
 const TRANSLATION = {
   en: {
-    warning: "Formula can contain math expressions and some variables. For example, '2', '-1', '2 * level'. There are integrated functions: 'if (condition, true_result, false_result)', 'SUM(a, b, c)', MAX(a, b, c)."
+    warning: "Formula can contain math expressions and some variables. For example, '2', '-1', '2 * level'. There are integrated functions: 'if (condition, true_result, false_result)', 'SUM(a, b, c)', MAX(a, b, c). For secondary speeds, if set 0 - speed will be equal base speed."
   },
   ru: {
-    warning: "Формула может содержать математические выражения и переменные. Например, '2', '-1', '2 * level'. Также есть встроенные функции: 'if (condition, true_result, false_result)', 'SUM(a, b, c)', MAX(a, b, c)."
+    warning: "Формула может содержать математические выражения и переменные. Например, '2', '-1', '2 * level'. Также есть встроенные функции: 'if (condition, true_result, false_result)', 'SUM(a, b, c)', MAX(a, b, c). Для вторичных скоростей, если указать 0 - скорость будет равна базовой скорости."
   }
 }
 
@@ -26,6 +26,10 @@ const MAPPING = {
     'armor_class': 'Armor Class',
     'perception': 'Perception',
     'speed': 'Speed',
+    'speeds.swim': 'Swim speed',
+    'speeds.fly': 'Fly speed',
+    'speeds.climb': 'Climb speeds',
+    'speeds.burrow': 'Burrow speed',
     'attack': 'Attack',
     'unarmed_attacks': 'Unarmed attacks',
     'melee_attacks': 'Melee attacks',
@@ -35,7 +39,8 @@ const MAPPING = {
     'unarmed_damage': 'Unarmed damage',
     'melee_damage': 'Melee damage',
     'thrown_damage': 'Thrown damage',
-    'range_damage': 'Range damage'
+    'range_damage': 'Range damage',
+    'health.max': 'Health'
   },
   ru: {
     'str': 'Сила',
@@ -50,6 +55,10 @@ const MAPPING = {
     'armor_class': 'Класс брони',
     'perception': 'Восприятие',
     'speed': 'Скорость',
+    'speeds.swim': 'Скорость плавания',
+    'speeds.fly': 'Скорость полёта',
+    'speeds.climb': 'Скорость лазания',
+    'speeds.burrow': 'Скорость рытья',
     'attack': 'Атака',
     'unarmed_attacks': 'Безоружные атаки',
     'melee_attacks': 'Рукопашные атаки',
@@ -59,11 +68,12 @@ const MAPPING = {
     'unarmed_damage': 'Безоружный урон',
     'melee_damage': 'Рукопашный урон',
     'thrown_damage': 'Метательный урон',
-    'range_damage': 'Дистанционный урон'
+    'range_damage': 'Дистанционный урон',
+    'health.max': 'Здоровье'
   }
 }
 const NO_VARIABLES = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
-const ONLY_ADD = ['str', 'dex', 'con', 'int', 'wis', 'cha', 'attack', 'damage'];
+const ONLY_ADD = ['str', 'dex', 'con', 'int', 'wis', 'cha', 'attack', 'damage', 'health.max'];
 const VARIABLES_LIST = ['str', 'dex', 'con', 'int', 'wis', 'cha', 'level', 'no_body_armor', 'no_armor'];
 
 export const Pathfinder2Bonuses = (props) => {
