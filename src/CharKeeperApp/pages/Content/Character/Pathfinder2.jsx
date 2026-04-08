@@ -4,7 +4,8 @@ import { createWindowSize } from '@solid-primitives/resize-observer';
 
 import {
   Pathfinder2Abilities, Pathfinder2Health, Pathfinder2Professions, Pathfinder2Static, Pathfinder2Skills, Pathfinder2Companion,
-  Pathfinder2SavingThrows, Pathfinder2Leveling, Pathfinder2Spells, Pathfinder2Rest, Pathfinder2Bonuses, Pathfinder2Info
+  Pathfinder2SavingThrows, Pathfinder2Leveling, Pathfinder2Spells, Pathfinder2Rest, Pathfinder2Bonuses, Pathfinder2Info,
+  Pathfinder2Damages
 } from '../../../pages';
 import {
   CharacterNavigation, Equipment, Notes, Avatar, ContentWrapper, Conditions, Gold, createDiceRoll, Combat, Feats
@@ -102,6 +103,9 @@ export const Pathfinder2 = (props) => {
                 <Pathfinder2Health character={character()} onReplaceCharacter={props.onReplaceCharacter} />
               </div>
               <div class="mt-4">
+                <Pathfinder2Damages character={character()} />
+              </div>
+              <div class="mt-4">
                 <Combat
                   character={character()}
                   openDiceRoll={openDiceRoll}
@@ -114,6 +118,10 @@ export const Pathfinder2 = (props) => {
                   character={character()}
                   filters={featFilters()}
                   skills={configSkills()}
+                  spellLists={translate(config.skills, locale())}
+                  classes={translate(config.classes, locale())}
+                  races={translate(config.races, locale())}
+                  subclasses={translate((config.classes[character().main_class].subclasses || {}), locale())}
                   onReplaceCharacter={props.onReplaceCharacter}
                   onReloadCharacter={props.onReloadCharacter}
                 />
@@ -228,6 +236,9 @@ export const Pathfinder2 = (props) => {
                 <Pathfinder2Health character={character()} onReplaceCharacter={props.onReplaceCharacter} />
               </div>
               <div class="mt-4">
+                <Pathfinder2Damages character={character()} />
+              </div>
+              <div class="mt-4">
                 <Combat
                   character={character()}
                   openDiceRoll={openDiceRoll}
@@ -240,6 +251,10 @@ export const Pathfinder2 = (props) => {
                   character={character()}
                   filters={featFilters()}
                   skills={configSkills()}
+                  spellLists={translate(config.spellLists, locale())}
+                  classes={translate(config.classes, locale())}
+                  races={translate(config.races, locale())}
+                  subclasses={translate((config.classes[character().main_class].subclasses || {}), locale())}
                   onReplaceCharacter={props.onReplaceCharacter}
                   onReloadCharacter={props.onReloadCharacter}
                 />
