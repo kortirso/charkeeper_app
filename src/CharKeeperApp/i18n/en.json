@@ -48,7 +48,7 @@
       "abilities": "Abilities",
       "professions": "Mastery",
       "spells": "Spells",
-      "companion": "Companion",
+      "companion": "Pet/Familiar",
       "ancestry": "Ancestry",
       "community": "Community",
       "class": "Class",
@@ -67,7 +67,9 @@
       "campaignCharacters": "Characters",
       "perks": "Perks",
       "general": "General",
-      "skill": "Skill"
+      "skill": "Skill",
+      "archetype": "Archetype",
+      "animalCompanion": "Animal companion"
     },
     "campaignsPage": {
       "title": "Campaigns",

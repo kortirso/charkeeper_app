@@ -48,7 +48,7 @@
       "abilities": "Способности",
       "professions": "Владения",
       "spells": "Заклинания",
-      "companion": "Компаньон",
+      "companion": "Любимец/Фамильяр",
       "ancestry": "Раса",
       "community": "Общество",
       "class": "Класс",
@@ -67,7 +67,9 @@
       "campaignCharacters": "Персонажи",
       "perks": "Перки",
       "general": "Общие",
-      "skill": "Навыки"
+      "skill": "Навыки",
+      "archetype": "Архетип",
+      "animalCompanion": "Верный зверь"
     },
     "campaignsPage": {
       "title": "Кампании",
