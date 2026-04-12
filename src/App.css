@@ -843,3 +843,20 @@ body.dark-theme {
 .pet-feat:nth-of-type(n+2) {
   @apply border-t border-gray-200 dark:border-neutral-800;
 }
+
+.archetype-key {
+  @apply px-1 border rounded bg-neutral-800 border-neutral-800 cursor-pointer text-sm md:text-base text-snow;
+  @apply dark:bg-white dark:border-gray-500 dark:text-black;
+}
+
+.archetype-key.active {
+  @apply dark:bg-fuzzy-red dark:text-snow;
+}
+
+.companion-ability-title {
+  @apply text-sm uppercase text-center mb-2;
+}
+
+.companion-ability-dice {
+  @apply text-2xl font-normal!;
+}
