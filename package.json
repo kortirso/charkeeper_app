@@ -1,6 +1,6 @@
 {
   "name": "Charkeeper",
-  "version": "0.4.28",
+  "version": "0.4.29",
   "description": "",
   "type": "module",
   "scripts": {
@@ -12,6 +12,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@rails/actioncable": "^8.1.300",
     "@solid-primitives/i18n": "^2.1.1",
     "@solid-primitives/keyed": "^1.5.1",
     "@solid-primitives/resize-observer": "^2.1.1",
