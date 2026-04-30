@@ -1,7 +1,7 @@
 import { createEffect, createSignal, createMemo, For, Show, batch } from 'solid-js';
 import { Key } from '@solid-primitives/keyed';
 
-import { ErrorWrapper, Levelbox, Input, EditWrapper, Button, Select } from '../../../../components';
+import { ErrorWrapper, Levelbox, Input, EditWrapper, Button, Select, Dice } from '../../../../components';
 import config from '../../../../data/cosmere.json';
 import { useAppState, useAppLocale, useAppAlert } from '../../../../context';
 import { Minus, Plus } from '../../../../assets';
@@ -29,7 +29,7 @@ const TRANSLATION = {
 export const CosmereSkills = (props) => {
   const character = () => props.character;
 
-  const [lastActiveCharacterId, setLastActiveCharacterId] = createSignal(undefined);
+  const [lastTimestamp, setLastTimestamp] = createSignal(undefined);
   const [editMode, setEditMode] = createSignal(false);
   const [skillsData, setSkillsData] = createSignal(character().skills);
   const [loresData, setLoresData] = createSignal(character().additional_skills);
@@ -43,18 +43,16 @@ export const CosmereSkills = (props) => {
   const [locale] = useAppLocale();
 
   createEffect(() => {
-    if (lastActiveCharacterId() === character().id && character().guide_step !== 1) {
-      setEditMode(character().guide_step === 2);
-      return;
-    }
+    if (lastTimestamp() === character().updated_at) return;
 
     batch(() => {
       setSkillsData(character().skills);
       setSkillPoints(character().skill_points)
       setLoresData(character().additional_skills);
       setEditMode(character().guide_step === 2);
-      setLastActiveCharacterId(character().id);
     });
+
+    setLastTimestamp(character().updated_at);
   });
 
   const maxSkillLevel = createMemo(() => Math.min(5, character().tier + 1));
@@ -150,7 +148,12 @@ export const CosmereSkills = (props) => {
                           <p class={`flex-1 flex items-center ${skill.level > 0 ? 'font-medium!' : ''}`}>
                             {config.skills[skill.slug] ? localize(config.skills[skill.slug].name, locale()) : character().additional_skills[skill.slug].name}
                           </p>
-                          <p>{modifier(skill.modifier)}</p>
+                          <Dice
+                            width="28"
+                            height="28"
+                            text={modifier(skill.modifier)}
+                            onClick={() => props.openCosmereTest(`/check skill "${skill.slug}"`, null, skill.modifier)}
+                          />
                         </div>
                       }
                     </For>

@@ -172,9 +172,9 @@ export const Combat = (props) => {
     }, []);
 
     if (dices.length > 0) {
-      props.openAttackRoll(`/check attack "${attack.name}"`, attackBonus, attack.name, dices, attack.damage_bonus);
+      props.openD20Attack(`/check attack "${attack.name}"`, attack.name, attackBonus, dices, attack.damage_bonus);
     } else {
-      props.openDiceRoll(`/check attack "${attack.name}"`, attackBonus, attack.name);
+      props.openD20Test(`/check attack "${attack.name}"`, attack.name, attackBonus);
     }
   }
 
@@ -191,7 +191,7 @@ export const Combat = (props) => {
 
     if (provider === 'daggerheart') distance = [DH_SQUARE_DISTANCES[attack.range] * 5];
     if (provider === 'pathfinder2') distance = [distance];
-    if (provider === 'dnd5' || provider === 'dnd2024' || provider === 'dc20') distance = distance.toString().includes('/') ? distance.split('/').map((item) => parseInt(item)) : [distance];
+    if (provider === 'dnd5' || provider === 'dnd2024' || provider === 'dc20' || provider === 'cosmere') distance = distance.toString().includes('/') ? distance.split('/').map((item) => parseInt(item)) : [distance];
 
     const result = distance.map((item) => {
       if (settings()[provider] === 'imperial') return item;
