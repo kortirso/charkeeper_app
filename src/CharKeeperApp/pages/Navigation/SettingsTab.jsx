@@ -38,7 +38,7 @@ export const SettingsTab = () => {
 
   const readHostData = async () => {
     const cacheValue = await readFromCache(CHARKEEPER_HOST_CACHE_NAME);
-    setHost(cacheValue === null || cacheValue === undefined ? 'charkeeper.org' : cacheValue);
+    setHost(cacheValue === null || cacheValue === undefined ? appState.rootHost : cacheValue);
   }
 
   createEffect(() => {
@@ -114,7 +114,7 @@ export const SettingsTab = () => {
             </p>
           </Show>
         </div>
-        <p class="py-3 px-4 dark:text-snow">{t('pages.settingsPage.version')} 0.4.31, 2026.04.29</p>
+        <p class="py-3 px-4 dark:text-snow">{t('pages.settingsPage.version')} 0.4.32, 2026.05.01</p>
       </div>
     </>
   );
