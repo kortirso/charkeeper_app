@@ -20,6 +20,7 @@
       "fate": "Fate",
       "cosmere": "Cosmere",
       "fallout": "Fallout 2D20",
+      "cthulhu7": "Call of Cthulhu 7",
       "aspects": "Аспекты",
       "skills": "Навыки",
       "vitals": "Здоровье",
@@ -82,19 +83,6 @@
     "terms": {
       "traits": "Способности",
       "thresholds": "Пороги урона"
-    },
-    "health": {
-      "armorScore": "Очки Доспеха",
-      "armorSlots": "Слоты Доспеха",
-      "minor": "Малый урон",
-      "major": "Ощутимый урон",
-      "severe": "Тяжёлый урон",
-      "minorDamage": "1 рана",
-      "majorDamage": "2 раны",
-      "severeDamage": "3 раны",
-      "health": "Раны",
-      "stress": "Стресс",
-      "hope": "Надежда"
     },
     "domainCards": {
       "limit": "Лимит карт",

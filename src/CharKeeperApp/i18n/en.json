@@ -20,6 +20,7 @@
       "fate": "Fate",
       "cosmere": "Cosmere",
       "fallout": "Fallout 2D20",
+      "cthulhu7": "Call of Cthulhu 7",
       "aspects": "Aspects",
       "skills": "Skills",
       "vitals": "Vitals",
@@ -82,19 +83,6 @@
     "terms": {
       "traits": "Traits",
       "thresholds": "Damage thresholds"
-    },
-    "health": {
-      "armorScore": "Armor Score",
-      "armorSlots": "Armor Slots",
-      "minor": "Minor damage",
-      "major": "Major damage",
-      "severe": "Severe damage",
-      "minorDamage": "Mark 1 HP",
-      "majorDamage": "Mark 2 HP",
-      "severeDamage": "Mark 3 HP",
-      "health": "Health",
-      "stress": "Stress",
-      "hope": "Hope"
     },
     "domainCards": {
       "limit": "Cards limit",

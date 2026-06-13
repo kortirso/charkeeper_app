@@ -91,6 +91,7 @@ export * from './Content/Character/Daggerheart/DomainCardsTable';
 export * from './Content/Character/Daggerheart/Rest';
 export * from './Content/Character/Daggerheart/Beastform';
 export * from './Content/Character/Daggerheart/Companion';
+export * from './Content/Character/Daggerheart/CompanionBonuses';
 export * from './Content/Character/Daggerheart/Transformation';
 export * from './Content/Character/Daggerheart/Stances';
 export * from './Content/Character/Daggerheart/Bonuses';
@@ -125,6 +126,11 @@ export * from './Content/Character/Fallout/Abilities';
 export * from './Content/Character/Fallout/Skills';
 export * from './Content/Character/Fallout/Leveling';
 
+export * from './Content/Character/Cthulhu7';
+export * from './Content/Character/Cthulhu7/Abilities';
+export * from './Content/Character/Cthulhu7/Skills';
+export * from './Content/Character/Cthulhu7/Combat';
+
 export * from './Navigation/Characters/ListItem';
 export * from './Navigation/Characters/CharacterForm';
 export * from './Navigation/Characters/Forms/Dc20';
@@ -135,4 +141,5 @@ export * from './Navigation/Characters/Forms/Dnd2024';
 export * from './Navigation/Characters/Forms/Fate';
 export * from './Navigation/Characters/Forms/Fallout';
 export * from './Navigation/Characters/Forms/Cosmere';
+export * from './Navigation/Characters/Forms/Cthulhu7';
 export * from './Navigation/Campaigns/ListItem';

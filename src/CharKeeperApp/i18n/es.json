@@ -20,6 +20,7 @@
       "fate": "Fate",
       "cosmere": "Cosmere",
       "fallout": "Fallout 2D20",
+      "cthulhu7": "Call of Cthulhu 7",
       "aspects": "Aspectos",
       "skills": "Habilidades",
       "vitals": "Vitals",
@@ -82,19 +83,6 @@
     "terms": {
       "traits": "Atributos",
       "thresholds": "Umbrales de daño"
-    },
-    "health": {
-      "armorScore": "Puntuación de armadura",
-      "armorSlots": "Ranuras de armadura",
-      "minor": "Daño menor",
-      "major": "Daño mayor",
-      "severe": "Daño severo",
-      "minorDamage": "Marca 1 PV",
-      "majorDamage": "Marca 2 PV",
-      "severeDamage": "Marca 3 PV",
-      "health": "Salud",
-      "stress": "Estrés",
-      "hope": "Esperanza"
     },
     "domainCards": {
       "limit": "Límite de cartas",
