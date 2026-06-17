@@ -59,7 +59,8 @@
       "archetype": "Архетип",
       "animalCompanion": "Верный зверь",
       "rolls": "История бросков",
-      "goals": "Цели"
+      "goals": "Цели",
+      "backstory": "Биография"
     },
     "campaignsPage": {
       "title": "Кампании",
@@ -115,7 +116,7 @@
   "equipment": {
     "weight": "Вес",
     "cost": "Цена",
-    "addItems": "Найти предметы",
+    "addItems": "Добавить предметы",
     "itemNote": "Заметка",
     "weaponsList": "Оружие",
     "primaryWeapon": "Основное оружие",

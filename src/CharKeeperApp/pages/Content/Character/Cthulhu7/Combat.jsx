@@ -88,7 +88,7 @@ export const Cthulhu7Combat = (props) => {
       <Show when={withTitle}><p class="text-sm/4">{localize(TRANSLATION, locale())[slug]}</p></Show>
       <div class="flex items-center gap-4">
         <Button default size="small" onClick={() => updateResource(slug, -1)}><Minus /></Button>
-        <p>{current} / {max}</p>
+        <Show when={withTitle}><p>{current} / {max}</p></Show>
         <Button default size="small" onClick={() => updateResource(slug, 1)}><PlusSmall /></Button>
       </div>
     </div>
@@ -101,7 +101,7 @@ export const Cthulhu7Combat = (props) => {
           <Show
             when={!editMode()}
             fallback={
-              <div class="blockable py-4 px-2 md:px-4">
+              <div class="blockable blockable-padding">
                 <div class="cthulhu-abilities-box">
                   <div>
                     <p class="ability-title">{localize(TRANSLATION, locale()).luck}</p>

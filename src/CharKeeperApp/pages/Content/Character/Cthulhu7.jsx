@@ -1,8 +1,8 @@
 import { createSignal, createMemo, Switch, Match } from 'solid-js';
 import { createWindowSize } from '@solid-primitives/resize-observer';
 
-import { Cthulhu7Abilities, Cthulhu7Skills, Cthulhu7Combat } from '../../../pages';
-import { CharacterNavigation, Notes, Avatar, ContentWrapper, createRoll } from '../../../components';
+import { Cthulhu7Abilities, Cthulhu7Skills, Cthulhu7Combat, Cthulhu7Backstory, Cthulhu7Equipment } from '../../../pages';
+import { CharacterNavigation, Notes, Avatar, ContentWrapper, createRoll, Equipment, Combat } from '../../../components';
 
 export const Cthulhu7 = (props) => {
   const size = createWindowSize();
@@ -14,7 +14,7 @@ export const Cthulhu7 = (props) => {
   const { Roll, openCthulhuTest } = createRoll();
 
   const characterTabs = createMemo(() => {
-    return ['combat', 'notes', 'avatar'];
+    return ['combat', 'backstory', 'equipment', 'notes', 'avatar'];
   });
 
   const mobileView = createMemo(() => {
@@ -52,6 +52,25 @@ export const Cthulhu7 = (props) => {
                 character={character()}
                 openCthulhuTest={openCthulhuTest}
                 onReplaceCharacter={props.onReplaceCharacter}
+              />
+              <div class="mt-4">
+                <Combat
+                  character={character()}
+                  openCthulhuTest={openCthulhuTest}
+                />
+              </div>
+            </Match>
+            <Match when={activeMobileTab() === 'backstory'}>
+              <Cthulhu7Backstory
+                character={character()}
+                onReplaceCharacter={props.onReplaceCharacter}
+              />
+            </Match>
+            <Match when={activeMobileTab() === 'equipment'}>
+              <Equipment
+                character={character()}
+                selectingComponent={Cthulhu7Equipment}
+                onReloadCharacter={props.onReloadCharacter}
               />
             </Match>
             <Match when={activeMobileTab() === 'notes'}>
@@ -108,6 +127,25 @@ export const Cthulhu7 = (props) => {
                 character={character()}
                 openCthulhuTest={openCthulhuTest}
                 onReplaceCharacter={props.onReplaceCharacter}
+              />
+              <div class="mt-4">
+                <Combat
+                  character={character()}
+                  openCthulhuTest={openCthulhuTest}
+                />
+              </div>
+            </Match>
+            <Match when={activeTab() === 'backstory'}>
+              <Cthulhu7Backstory
+                character={character()}
+                onReplaceCharacter={props.onReplaceCharacter}
+              />
+            </Match>
+            <Match when={activeTab() === 'equipment'}>
+              <Equipment
+                character={character()}
+                selectingComponent={Cthulhu7Equipment}
+                onReloadCharacter={props.onReloadCharacter}
               />
             </Match>
             <Match when={activeTab() === 'notes'}>
