@@ -1,6 +1,6 @@
 [package]
 name = "Charkeeper"
-version = "0.4.35"
+version = "0.4.36"
 description = "Interactive character sheets for tabletop games"
 authors = ["Bogdanov Anton (kortirso)"]
 edition = "2021"
