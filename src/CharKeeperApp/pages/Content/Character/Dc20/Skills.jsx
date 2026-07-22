@@ -1,8 +1,11 @@
 import { createSignal, createEffect, createMemo, For, Show, batch } from 'solid-js';
 import { createStore } from 'solid-js/store';
 
-import { ErrorWrapper, Checkbox, Levelbox, EditWrapper, GuideWrapper, Input, Select, Button, Dice } from '../../../../components';
+import {
+  ErrorWrapper, Checkbox, Levelbox, EditWrapper, GuideWrapper, Input, Select, Button, Dice, IconButton
+} from '../../../../components';
 import config from '../../../../data/dc20.json';
+import { Star } from '../../../../assets';
 import { useAppState, useAppLocale, useAppAlert } from '../../../../context';
 import { updateCharacterRequest } from '../../../../requests/updateCharacterRequest';
 import { modifier, translate, localize, performResponse } from '../../../../helpers';
@@ -143,7 +146,11 @@ export const Dc20Skills = (props) => {
             }
           </For>
         </Show>
-        <Checkbox filled classList="ml-2 rotate-45" checked={object.expertise} onToggle={() => toggleCallback(object.slug)} />
+        <IconButton classList="hover:bg-transparent!" onClick={() => toggleCallback(object.slug)}>
+          <Show when={object.expertise} fallback={<Star width="20" height="20" />}>
+            <Star filled width="20" height="20" />
+          </Show>
+        </IconButton>
       </div>
     );
   }
@@ -284,7 +291,7 @@ export const Dc20Skills = (props) => {
   const saveTradeKnowledge = () => {
     if (tradeKnowledgeForm.name.length === 0) return;
 
-    const trade = { slug: tradeKnowledgeForm.name, ability: tradeKnowledgeForm.ability, level: 0, expertise: false, modifier: 0 }
+    const trade = { slug: tradeKnowledgeForm.name, name: tradeKnowledgeForm.name, ability: tradeKnowledgeForm.ability, level: 0, expertise: false, modifier: 0 }
     batch(() => {
       setTradeKnowledge({ ...tradeKnowledge(), [tradeKnowledgeForm.name]: tradeKnowledgeForm.ability });
       setTradesData([trade].concat(tradesData()));
@@ -302,7 +309,7 @@ export const Dc20Skills = (props) => {
   }
 
   const updateCharacterSkills = () => {
-    const overQualified = skillsData().filter((item) => item.level > maxSkillLevel() + (item.expertise ? 1 : 0)).map((item) => localize(config.skills[item.slug].name, locale()));
+    const overQualified = skillsData().filter((item) => item.level > maxSkillLevel() + (item.expertise ? 1 : 0)).map((item) => item.name);
     if (overQualified.length > 0) return renderAlert(`${localize(TRANSLATION, locale()).overQualified}: ${overQualified.join(', ')}`);
 
     const skillLevels = skillsData().reduce((acc, item) => { acc[item.slug] = item.level; return acc }, {});
@@ -389,13 +396,13 @@ export const Dc20Skills = (props) => {
                                 <Levelbox classList="mr-2" value={skill.level} />
                                 <p class="uppercase mr-4">{skill.ability === 'prime' ? 'prm' : skill.ability}</p>
                                 <p class="flex-1" classList={{ 'font-medium!': skill.expertise }}>
-                                  {localize(config.skills[skill.slug].name, locale())}
+                                  {skill.name}
                                 </p>
                                 <Dice
                                   width="28"
                                   height="28"
                                   text={modifier(skill.modifier)}
-                                  onClick={() => props.openD20Test(`/check skill "${skill.slug}"`, localize(config.skills[skill.slug].name, locale()), skill.modifier, 10)}
+                                  onClick={() => props.openD20Test(`/check skill "${skill.slug}"`, skill.name, skill.modifier, 10)}
                                 />
                               </div>
                             }
@@ -406,7 +413,7 @@ export const Dc20Skills = (props) => {
                           {(skill) =>
                             <div class="dc20-skill justify-between">
                               <p class="flex-1 text-sm line-clamp-1" classList={{ 'font-medium!': skill.expertise }}>
-                                {localize(config.skills[skill.slug].name, locale())}
+                                {skill.name}
                               </p>
                               {renderSkillBoxes(skill, updateSkill, toggleSkillExpertise)}
                             </div>
@@ -456,7 +463,7 @@ export const Dc20Skills = (props) => {
                                 <Levelbox classList="mr-2" value={trade.level} />
                                 <p class="uppercase mr-4">{trade.ability}</p>
                                 <p class="flex-1" classList={{ 'font-medium!': trade.expertise }}>
-                                  {config.trades[trade.slug] ? localize(config.trades[trade.slug].name, locale()) : trade.slug}
+                                  {trade.name}
                                 </p>
                                 <Dice
                                   width="28"
@@ -473,7 +480,7 @@ export const Dc20Skills = (props) => {
                           {(trade) =>
                             <div class="dc20-skill">
                               <p class="flex-1 text-sm md:text-base" classList={{ 'font-medium!': trade.expertise }}>
-                                {config.trades[trade.slug] ? localize(config.trades[trade.slug].name, locale()) : trade.slug}
+                                {trade.name}
                               </p>
                               {renderSkillBoxes(trade, updateTrade, toggleTradeExpertise)}
                             </div>

@@ -14,7 +14,7 @@ import { modifier, localize } from '../../../../helpers';
 
 const TRANSLATION = {
   en: {
-    mana_spend_limit: 'Mana spend limit',
+    mana_spend_limit: 'Spend limit',
     spells: 'Spells',
     selectSpells: 'Select spells',
     back: 'Back',
@@ -34,13 +34,23 @@ const TRANSLATION = {
       mp: 'MP'
     },
     features: {
-      'Long-Ranged': 'Long-Ranged'
+      'Long-Ranged': 'Long-Ranged',
+      'Channeling': 'Channeling',
+      'Close Quarters': 'Close Quarters',
+      'Muffled': 'Muffled',
+      'Powerful': 'Powerful',
+      'Protective': 'Protective',
+      'Reach': 'Reach',
+      'Reactive': 'Reactive',
+      'Two-Handed': 'Two-Handed',
+      'Vicious': 'Vicious',
+      'Warded': 'Warded'
     },
     attack: 'Spell Check',
     repeatable: 'Repeatable'
   },
   ru: {
-    mana_spend_limit: 'Предел траты маны',
+    mana_spend_limit: 'Предел траты',
     spells: 'Заклинания',
     selectSpells: 'Выбрать заклинания',
     back: 'Назад',
@@ -60,13 +70,23 @@ const TRANSLATION = {
       mp: 'ОМ'
     },
     features: {
-      'Long-Ranged': 'Дальнобойное'
+      'Long-Ranged': 'Дальнобойное',
+      'Channeling': 'Направляющее',
+      'Close Quarters': 'Ближний бой',
+      'Muffled': 'Приглушенное',
+      'Powerful': 'Мощное',
+      'Protective': 'Защитное',
+      'Reach': 'Досягаемое',
+      'Reactive': 'Реактивное',
+      'Two-Handed': 'Двуручное',
+      'Vicious': 'Беспощадное',
+      'Warded': 'Ограждающее'
     },
     attack: 'Бонус атаки',
     repeatable: 'Многократное'
   },
   es: {
-    mana_spend_limit: 'Límite de gasto de maná',
+    mana_spend_limit: 'Límite de gasto',
     spells: 'Hechizos',
     selectSpells: 'Seleccionar hechizos',
     back: 'Atrás',
@@ -86,7 +106,17 @@ const TRANSLATION = {
       mp: 'PM'
     },
     features: {
-      'Long-Ranged': 'Largo Alcance'
+      'Long-Ranged': 'Long-Ranged',
+      'Channeling': 'Channeling',
+      'Close Quarters': 'Close Quarters',
+      'Muffled': 'Muffled',
+      'Powerful': 'Powerful',
+      'Protective': 'Protective',
+      'Reach': 'Reach',
+      'Reactive': 'Reactive',
+      'Two-Handed': 'Two-Handed',
+      'Vicious': 'Vicious',
+      'Warded': 'Warded'
     },
     attack: 'Tirada de Hechizo',
     repeatable: 'Repetible'
@@ -295,8 +325,8 @@ export const Dc20Spells = (props) => {
                     <Dice
                       width="36"
                       height="36"
-                      text={modifier(character().attack)}
-                      onClick={() => props.openD20Test('/check attack spell', null, character().attack, 10)}
+                      text={modifier(character().spell_attack)}
+                      onClick={() => props.openD20Test('/check attack spell', null, character().spell_attack, 10)}
                     />
                 }
               ]}
