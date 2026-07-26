@@ -4,7 +4,7 @@ import { createWindowSize } from '@solid-primitives/resize-observer';
 
 import {
   Dc20Abilities, Dc20Skills, Dc20CombatStatic, Dc20Leveling, Dc20Resources, Dc20Spells, Dc20Rest,
-  Dc20BonusesV2, Dc20Damages, Dc20Conditions, Dc20Info
+  Dc20BonusesV2, Dc20Damages, Dc20Conditions, Dc20Info, Dc20Trainings
 } from '../../../pages';
 import {
   CharacterNavigation, Notes, Avatar, ContentWrapper, createRoll, Equipment, Combat, Feats
@@ -31,7 +31,7 @@ export const Dc20 = (props) => {
   const size = createWindowSize();
   const character = () => props.character;
 
-  const { Roll, openD20Test } = createRoll();
+  const { Roll, openDC20Test } = createRoll();
 
   const [activeMobileTab, setActiveMobileTab] = createSignal('abilities');
   const [activeTab, setActiveTab] = createSignal('combat');
@@ -45,7 +45,7 @@ export const Dc20 = (props) => {
   const shieldFilter = (item) => item.kind.includes('shield');
   const focusFilter = (item) => item.kind.includes('focus');
 
-  const ancestryFilter = (item) => item.origin === 'ancestry';
+  const ancestryFilter = (item) => item.origin === 'ancestry' || item.origin === 'base_ancestry';
   const classFilter = (item) => item.origin === 'class' || item.origin === 'class_flavor' || item.origin === 'talent';
   const subclassFilter = (item) => item.origin === 'subclass' || item.origin === 'subclass_flavor';
   const maneuverFilter = (item) => item.origin === 'maneuver';
@@ -63,7 +63,7 @@ export const Dc20 = (props) => {
   const characterTabs = createMemo(() => {
     const result = ['combat', 'equipment'];
     if (character().mana_points.max > 0) result.push('spells');
-    return result.concat(['classLevels', 'rest', 'bonuses', 'notes', 'avatar']);
+    return result.concat(['classLevels', 'professions', 'rest', 'bonuses', 'notes', 'avatar']);
   });
 
   const mobileView = createMemo(() => {
@@ -85,13 +85,10 @@ export const Dc20 = (props) => {
               <div class="mt-4">
                 <Dc20Abilities
                   character={character()}
-                  openD20Test={openD20Test}
+                  openD20Test={openDC20Test}
                   onReplaceCharacter={props.onReplaceCharacter}
                   onReloadCharacter={props.onReloadCharacter}
                 />
-              </div>
-              <div class="mt-4">
-                <Dc20CombatStatic character={character()} openD20Test={openD20Test} />
               </div>
               <div class="mt-4">
                 <Dc20Conditions character={character()} onReloadCharacter={props.onReloadCharacter} />
@@ -99,10 +96,26 @@ export const Dc20 = (props) => {
               <div class="mt-4">
                 <Dc20Skills
                   character={character()}
-                  openD20Test={openD20Test}
+                  openD20Test={openDC20Test}
                   onReplaceCharacter={props.onReplaceCharacter}
                   onReloadCharacter={props.onReloadCharacter}
                   onNextGuideStepClick={() => setActiveMobileTab('equipment')}
+                />
+              </div>
+            </Match>
+            <Match when={activeMobileTab() === 'combat'}>
+              <Dc20Resources character={character()} onReplaceCharacter={props.onReplaceCharacter} />
+              <div class="mt-4">
+                <Dc20CombatStatic character={character()} openD20Test={openDC20Test} />
+              </div>
+              <div class="mt-4">
+                <Dc20Damages character={character()} onReloadCharacter={props.onReloadCharacter} />
+              </div>
+              <div class="mt-4">
+                <Combat
+                  character={character()}
+                  openD20Test={openDC20Test}
+                  onReplaceCharacter={props.onReplaceCharacter}
                 />
               </div>
               <div class="mt-4">
@@ -111,19 +124,6 @@ export const Dc20 = (props) => {
                   filters={featFilters()}
                   onReplaceCharacter={props.onReplaceCharacter}
                   onReloadCharacter={props.onReloadCharacter}
-                />
-              </div>
-            </Match>
-            <Match when={activeMobileTab() === 'combat'}>
-              <Dc20Resources character={character()} onReplaceCharacter={props.onReplaceCharacter} />
-              <div class="mt-4">
-                <Dc20Damages character={character()} onReloadCharacter={props.onReloadCharacter} />
-              </div>
-              <div class="mt-4">
-                <Combat
-                  character={character()}
-                  openD20Test={openD20Test}
-                  onReplaceCharacter={props.onReplaceCharacter}
                 />
               </div>
             </Match>
@@ -152,10 +152,11 @@ export const Dc20 = (props) => {
                 helpMessage={localize(TRANSLATION, locale())['levelingHelpMessage']}
               />
             </Match>
+            <Match when={activeMobileTab() === 'professions'}>
+              <Dc20Trainings character={character()} />
+            </Match>
             <Match when={activeMobileTab() === 'spells'}>
-              <Dc20Spells
-                character={character()} openD20Test={openD20Test}
-              />
+              <Dc20Spells character={character()} openD20Test={openDC20Test} />
             </Match>
             <Match when={activeMobileTab() === 'rest'}>
               <Dc20Rest character={character()} onReloadCharacter={props.onReloadCharacter} />
@@ -184,13 +185,13 @@ export const Dc20 = (props) => {
         <div class="mt-4">
           <Dc20Abilities
             character={character()}
-            openD20Test={openD20Test}
+            openD20Test={openDC20Test}
             onReplaceCharacter={props.onReplaceCharacter}
             onReloadCharacter={props.onReloadCharacter}
           />
         </div>
         <div class="mt-4">
-          <Dc20CombatStatic character={character()} openD20Test={openD20Test} />
+          <Dc20CombatStatic character={character()} openD20Test={openDC20Test} />
         </div>
         <div class="mt-4">
           <Dc20Conditions character={character()} onReloadCharacter={props.onReloadCharacter} />
@@ -198,7 +199,7 @@ export const Dc20 = (props) => {
         <div class="mt-4">
           <Dc20Skills
             character={character()}
-            openD20Test={openD20Test}
+            openD20Test={openDC20Test}
             onReplaceCharacter={props.onReplaceCharacter}
             onReloadCharacter={props.onReloadCharacter}
             onNextGuideStepClick={() => setActiveTab('equipment')}
@@ -230,7 +231,7 @@ export const Dc20 = (props) => {
               <div class="mt-4">
                 <Combat
                   character={character()}
-                  openD20Test={openD20Test}
+                  openD20Test={openDC20Test}
                   onReplaceCharacter={props.onReplaceCharacter}
                 />
               </div>
@@ -268,10 +269,11 @@ export const Dc20 = (props) => {
                 helpMessage={localize(TRANSLATION, locale())['levelingHelpMessage']}
               />
             </Match>
+            <Match when={activeTab() === 'professions'}>
+              <Dc20Trainings character={character()} />
+            </Match>
             <Match when={activeTab() === 'spells'}>
-              <Dc20Spells
-                character={character()} openD20Test={openD20Test}
-              />
+              <Dc20Spells character={character()} openD20Test={openDC20Test} />
             </Match>
             <Match when={activeTab() === 'rest'}>
               <Dc20Rest character={character()} onReloadCharacter={props.onReloadCharacter} />
