@@ -1,69 +1,103 @@
 import { createSignal, createMemo, Switch, Match } from 'solid-js';
-import * as i18n from '@solid-primitives/i18n';
 import { createWindowSize } from '@solid-primitives/resize-observer';
 
 import {
-  Dc20Abilities, Dc20Skills, Dc20CombatStatic, Dc20Leveling, Dc20Resources, Dc20Spells, Dc20Rest,
-  Dc20BonusesV2, Dc20Damages, Dc20Conditions, Dc20Info, Dc20Trainings
+  NimbleAbilities, NimbleSkills, NimbleBonuses, NimbleInfo, NimbleHealth, NimbleLeveling, NimbleRest, Dc20Conditions
 } from '../../../pages';
-import {
-  CharacterNavigation, Notes, Avatar, ContentWrapper, createRoll, Equipment, Combat, Feats
-} from '../../../components';
+import { CharacterNavigation, Notes, Avatar, ContentWrapper, Equipment, Combat, Feats, createRoll } from '../../../components';
 import { useAppLocale } from '../../../context';
 import { localize } from '../../../helpers';
 
 const TRANSLATION = {
   en: {
     equipmentHelpMessage: 'Here you can select equipment for your character.',
-    levelingHelpMessage: 'In the future on this tab you can level up your character.'
+    levelingHelpMessage: 'In the future on this tab you can level up your character.',
+    meleeStrFilter: 'Melee STR weapons',
+    meleeDexFilter: 'Melee DEX weapons',
+    rangeStrFilter: 'Range STR weapons',
+    rangeDexFilter: 'Range DEX weapons',
+    clothFilter: 'Cloth armor',
+    leatherFilter: 'Leather armor',
+    mailFilter: 'Mail armor',
+    plateFilter: 'Plate armor',
+    shieldFilter: 'Shields',
+    itemsFilter: 'Items',
+    consumablesFilter: 'Consumables'
   },
   ru: {
     equipmentHelpMessage: 'На этой вкладке вы можете выбрать снаряжение для вашего персонажа.',
-    levelingHelpMessage: 'В будущем на этой вкладке вы сможете указывать уровень вашего персонажа.'
+    levelingHelpMessage: 'В будущем на этой вкладке вы сможете указывать уровень вашего персонажа.',
+    meleeStrFilter: 'Ближнее STR оружие',
+    meleeDexFilter: 'Ближнее DEX оружие',
+    rangeStrFilter: 'Дистанционное STR оружие',
+    rangeDexFilter: 'Дистанционное DEX оружие',
+    clothFilter: 'Тканевые доспехи',
+    leatherFilter: 'Кожаные доспехи',
+    mailFilter: 'Кольчуги',
+    plateFilter: 'Латы',
+    shieldFilter: 'Щиты',
+    itemsFilter: 'Предметы',
+    consumablesFilter: 'Зелья'
   },
   es: {
     equipmentHelpMessage: 'Aquí puedes seleccionar el equipo para tu personaje.',
-    levelingHelpMessage: 'En el futuro en esta pestaña podrás subir de nivel a tu personaje.'
+    levelingHelpMessage: 'En el futuro en esta pestaña podrás subir de nivel a tu personaje.',
+    meleeStrFilter: 'Melee STR weapons',
+    meleeDexFilter: 'Melee DEX weapons',
+    rangeStrFilter: 'Range STR weapons',
+    rangeDexFilter: 'Range DEX weapons',
+    clothFilter: 'Cloth armor',
+    leatherFilter: 'Leather armor',
+    mailFilter: 'Mail armor',
+    plateFilter: 'Plate armor',
+    shieldFilter: 'Shields',
+    itemsFilter: 'Items',
+    consumablesFilter: 'Consumables'
   }
 }
 
-export const Dc20 = (props) => {
+export const Nimble = (props) => {
   const size = createWindowSize();
   const character = () => props.character;
 
-  const { Roll, openDC20Test } = createRoll();
+  const { Roll, openDC20Test, openNimbleAttack } = createRoll();
 
   const [activeMobileTab, setActiveMobileTab] = createSignal('abilities');
   const [activeTab, setActiveTab] = createSignal('combat');
 
-  const [locale, dict] = useAppLocale();
+  const [locale] = useAppLocale();
 
-  const t = i18n.translator(dict);
+  const i18n = createMemo(() => localize(TRANSLATION, locale()));
 
-  const weaponFilter = (item) => item.kind.includes('weapon');
-  const armorFilter = (item) => item.kind.includes('armor');
-  const shieldFilter = (item) => item.kind.includes('shield');
-  const focusFilter = (item) => item.kind.includes('focus');
+  const sortCallback = (a, b) => a.data.price > b.data.price;
+  const meleeStrFilter = (item) => item.kind === 'weapon' && item.info.weapon_skill === 'str' && item.info.type === 'melee';
+  const meleeDexFilter = (item) => item.kind === 'weapon' && item.info.weapon_skill === 'dex' && item.info.type === 'melee';
+  const rangeStrFilter = (item) => item.kind === 'weapon' && item.info.weapon_skill === 'str' && item.info.type === 'range';
+  const rangeDexFilter = (item) => item.kind === 'weapon' && item.info.weapon_skill === 'dex' && item.info.type === 'range';
+  const clothFilter = (item) => item.kind === 'armor' && item.info.armor_skill === 'cloth';
+  const leatherFilter = (item) => item.kind === 'armor' && item.info.armor_skill === 'leather';
+  const mailFilter = (item) => item.kind === 'armor' && item.info.armor_skill === 'mail';
+  const plateFilter = (item) => item.kind === 'armor' && item.info.armor_skill === 'plate';
+  const shieldFilter = (item) => item.kind === 'shield';
+  const itemsFilter = (item) => item.kind === 'item';
+  const consumablesFilter = (item) => item.kind === 'consumables';
 
-  const ancestryFilter = (item) => item.origin === 'ancestry' || item.origin === 'base_ancestry';
-  const classFilter = (item) => item.origin === 'class' || item.origin === 'class_additional' || item.origin === 'class_flavor' || item.origin === 'talent';
-  const subclassFilter = (item) => item.origin === 'subclass' || item.origin === 'subclass_flavor';
-  const maneuverFilter = (item) => item.origin === 'maneuver';
+  const ancestryFilter = (item) => item.origin === 'ancestry';
+  const classFilter = (item) => item.origin === 'class';
+  const subclassFilter = (item) => item.origin === 'subclass';
 
   const featFilters = createMemo(() => {
     const result = [
       { title: 'ancestry', callback: ancestryFilter },
       { title: 'class', callback: classFilter },
-      { title: 'subclass', callback: subclassFilter },
-      { title: 'maneuver', callback: maneuverFilter }
+      { title: 'subclass', callback: subclassFilter }
     ];
     return result;
   });
 
   const characterTabs = createMemo(() => {
-    const result = ['combat', 'equipment'];
-    if (character().mana_points.max > 0) result.push('spells');
-    return result.concat(['classLevels', 'professions', 'rest', 'bonuses', 'notes', 'avatar']);
+    const result = ['combat', 'equipment', 'classLevels', 'rest'];
+    return result.concat(['bonuses', 'notes', 'avatar']);
   });
 
   const mobileView = createMemo(() => {
@@ -81,9 +115,9 @@ export const Dc20 = (props) => {
         <div class="p-2 pb-16 flex-1 overflow-y-auto">
           <Switch>
             <Match when={activeMobileTab() === 'abilities'}>
-              <Dc20Info character={character()} />
+              <NimbleInfo character={character()} />
               <div class="mt-4">
-                <Dc20Abilities
+                <NimbleAbilities
                   character={character()}
                   openD20Test={openDC20Test}
                   onReplaceCharacter={props.onReplaceCharacter}
@@ -94,7 +128,7 @@ export const Dc20 = (props) => {
                 <Dc20Conditions character={character()} onReloadCharacter={props.onReloadCharacter} />
               </div>
               <div class="mt-4">
-                <Dc20Skills
+                <NimbleSkills
                   character={character()}
                   openD20Test={openDC20Test}
                   onReplaceCharacter={props.onReplaceCharacter}
@@ -104,19 +138,9 @@ export const Dc20 = (props) => {
               </div>
             </Match>
             <Match when={activeMobileTab() === 'combat'}>
-              <Dc20Resources character={character()} onReplaceCharacter={props.onReplaceCharacter} />
+              <NimbleHealth character={character()} openD20Test={openDC20Test} onReplaceCharacter={props.onReplaceCharacter} />
               <div class="mt-4">
-                <Dc20CombatStatic character={character()} openD20Test={openDC20Test} />
-              </div>
-              <div class="mt-4">
-                <Dc20Damages character={character()} onReloadCharacter={props.onReloadCharacter} />
-              </div>
-              <div class="mt-4">
-                <Combat
-                  character={character()}
-                  openD20Test={openDC20Test}
-                  onReplaceCharacter={props.onReplaceCharacter}
-                />
+                <Combat character={character()} openD20Test={openNimbleAttack} onReplaceCharacter={props.onReplaceCharacter} />
               </div>
               <div class="mt-4">
                 <Feats
@@ -130,43 +154,40 @@ export const Dc20 = (props) => {
             <Match when={activeMobileTab() === 'equipment'}>
               <Equipment
                 character={character()}
+                sortCallback={sortCallback}
                 itemFilters={[
-                  { title: t('equipment.weaponsList'), callback: weaponFilter },
-                  { title: t('equipment.armorList'), callback: armorFilter },
-                  { title: t('equipment.shieldList'), callback: shieldFilter },
-                  { title: t('equipment.focusList'), callback: focusFilter }
+                  { title: i18n().meleeStrFilter, callback: meleeStrFilter },
+                  { title: i18n().meleeDexFilter, callback: meleeDexFilter },
+                  { title: i18n().rangeStrFilter, callback: rangeStrFilter },
+                  { title: i18n().rangeDexFilter, callback: rangeDexFilter },
+                  { title: i18n().clothFilter, callback: clothFilter },
+                  { title: i18n().leatherFilter, callback: leatherFilter },
+                  { title: i18n().mailFilter, callback: mailFilter },
+                  { title: i18n().plateFilter, callback: plateFilter },
+                  { title: i18n().shieldFilter, callback: shieldFilter },
+                  { title: i18n().itemsFilter, callback: itemsFilter },
+                  { title: i18n().consumablesFilter, callback: consumablesFilter }
                 ]}
                 onReplaceCharacter={props.onReplaceCharacter}
                 onReloadCharacter={props.onReloadCharacter}
                 guideStep={3}
-                helpMessage={localize(TRANSLATION, locale())['equipmentHelpMessage']}
+                helpMessage={i18n().equipmentHelpMessage}
                 onNextGuideStepClick={() => setActiveMobileTab('classLevels')}
               />
             </Match>
             <Match when={activeMobileTab() === 'classLevels'}>
-              <Dc20Leveling
+              <NimbleLeveling
                 character={character()}
                 onReplaceCharacter={props.onReplaceCharacter}
                 onReloadCharacter={props.onReloadCharacter}
-                helpMessage={localize(TRANSLATION, locale())['levelingHelpMessage']}
-              />
-            </Match>
-            <Match when={activeMobileTab() === 'professions'}>
-              <Dc20Trainings character={character()} />
-            </Match>
-            <Match when={activeMobileTab() === 'spells'}>
-              <Dc20Spells
-                character={character()}
-                openD20Test={openDC20Test}
-                onReplaceCharacter={props.onReplaceCharacter}
-                onReloadCharacter={props.onReloadCharacter}
+                helpMessage={i18n().levelingHelpMessage}
               />
             </Match>
             <Match when={activeMobileTab() === 'rest'}>
-              <Dc20Rest character={character()} onReloadCharacter={props.onReloadCharacter} />
+              <NimbleRest character={character()} onReplaceCharacter={props.onReplaceCharacter} />
             </Match>
             <Match when={activeMobileTab() === 'bonuses'}>
-              <Dc20BonusesV2 character={character()} onReloadCharacter={props.onReloadCharacter} />
+              <NimbleBonuses character={character()} onReloadCharacter={props.onReloadCharacter} />
             </Match>
             <Match when={activeMobileTab() === 'notes'}>
               <Notes />
@@ -185,9 +206,9 @@ export const Dc20 = (props) => {
 
     return (
       <>
-        <Dc20Info character={character()} />
+        <NimbleInfo character={character()} />
         <div class="mt-4">
-          <Dc20Abilities
+          <NimbleAbilities
             character={character()}
             openD20Test={openDC20Test}
             onReplaceCharacter={props.onReplaceCharacter}
@@ -195,13 +216,10 @@ export const Dc20 = (props) => {
           />
         </div>
         <div class="mt-4">
-          <Dc20CombatStatic character={character()} openD20Test={openDC20Test} />
-        </div>
-        <div class="mt-4">
           <Dc20Conditions character={character()} onReloadCharacter={props.onReloadCharacter} />
         </div>
         <div class="mt-4">
-          <Dc20Skills
+          <NimbleSkills
             character={character()}
             openD20Test={openDC20Test}
             onReplaceCharacter={props.onReplaceCharacter}
@@ -228,16 +246,9 @@ export const Dc20 = (props) => {
         <div class="p-2 pb-16 flex-1">
           <Switch>
             <Match when={activeTab() === 'combat'}>
-              <Dc20Resources character={character()} onReplaceCharacter={props.onReplaceCharacter} />
+              <NimbleHealth character={character()} openD20Test={openDC20Test} onReplaceCharacter={props.onReplaceCharacter} />
               <div class="mt-4">
-                <Dc20Damages character={character()} onReloadCharacter={props.onReloadCharacter} />
-              </div>
-              <div class="mt-4">
-                <Combat
-                  character={character()}
-                  openD20Test={openDC20Test}
-                  onReplaceCharacter={props.onReplaceCharacter}
-                />
+                <Combat character={character()} openD20Test={openNimbleAttack} onReplaceCharacter={props.onReplaceCharacter} />
               </div>
               <div class="mt-4">
                 <Feats
@@ -252,43 +263,38 @@ export const Dc20 = (props) => {
               <Equipment
                 character={character()}
                 itemFilters={[
-                  { title: t('equipment.weaponsList'), callback: weaponFilter },
-                  { title: t('equipment.armorList'), callback: armorFilter },
-                  { title: t('equipment.shieldList'), callback: shieldFilter },
-                  { title: t('equipment.focusList'), callback: focusFilter }
+                  { title: i18n().meleeStrFilter, callback: meleeStrFilter },
+                  { title: i18n().meleeDexFilter, callback: meleeDexFilter },
+                  { title: i18n().rangeStrFilter, callback: rangeStrFilter },
+                  { title: i18n().rangeDexFilter, callback: rangeDexFilter },
+                  { title: i18n().clothFilter, callback: clothFilter },
+                  { title: i18n().leatherFilter, callback: leatherFilter },
+                  { title: i18n().mailFilter, callback: mailFilter },
+                  { title: i18n().plateFilter, callback: plateFilter },
+                  { title: i18n().shieldFilter, callback: shieldFilter },
+                  { title: i18n().itemsFilter, callback: itemsFilter },
+                  { title: i18n().consumablesFilter, callback: consumablesFilter }
                 ]}
                 onReplaceCharacter={props.onReplaceCharacter}
                 onReloadCharacter={props.onReloadCharacter}
                 guideStep={3}
-                helpMessage={localize(TRANSLATION, locale())['equipmentHelpMessage']}
+                helpMessage={i18n().equipmentHelpMessage}
                 onNextGuideStepClick={() => setActiveTab('classLevels')}
               />
             </Match>
             <Match when={activeTab() === 'classLevels'}>
-              <Dc20Leveling
+              <NimbleLeveling
                 character={character()}
                 onReplaceCharacter={props.onReplaceCharacter}
                 onReloadCharacter={props.onReloadCharacter}
-                currentGuideStep={character().guide_step}
-                helpMessage={localize(TRANSLATION, locale())['levelingHelpMessage']}
-              />
-            </Match>
-            <Match when={activeTab() === 'professions'}>
-              <Dc20Trainings character={character()} />
-            </Match>
-            <Match when={activeTab() === 'spells'}>
-              <Dc20Spells
-                character={character()}
-                openD20Test={openDC20Test}
-                onReplaceCharacter={props.onReplaceCharacter}
-                onReloadCharacter={props.onReloadCharacter}
+                helpMessage={i18n().levelingHelpMessage}
               />
             </Match>
             <Match when={activeTab() === 'rest'}>
-              <Dc20Rest character={character()} onReloadCharacter={props.onReloadCharacter} />
+              <NimbleRest character={character()} onReplaceCharacter={props.onReplaceCharacter} />
             </Match>
             <Match when={activeTab() === 'bonuses'}>
-              <Dc20BonusesV2 character={character()} onReloadCharacter={props.onReloadCharacter} />
+              <NimbleBonuses character={character()} onReloadCharacter={props.onReloadCharacter} />
             </Match>
             <Match when={activeTab() === 'notes'}>
               <Notes />
@@ -305,7 +311,7 @@ export const Dc20 = (props) => {
   return (
     <>
       <ContentWrapper mobileView={mobileView()} leftView={leftView()} rightView={rightView()} />
-      <Roll provider="dc20" characterId={character().id} />
+      <Roll provider="nimble" characterId={character().id} />
     </>
   );
 }

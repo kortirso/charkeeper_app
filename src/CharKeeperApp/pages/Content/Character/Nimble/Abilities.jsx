@@ -1,7 +1,7 @@
-import { createEffect, createSignal, createMemo, For, Show, batch } from 'solid-js';
+import { createEffect, createSignal, For, Show, batch } from 'solid-js';
 
 import { ErrorWrapper, Button, EditWrapper, GuideWrapper, Dice } from '../../../../components';
-import config from '../../../../data/dc20.json';
+import config from '../../../../data/nimble.json';
 import { useAppState, useAppLocale, useAppAlert } from '../../../../context';
 import { Minus, Plus } from '../../../../assets';
 import { updateCharacterRequest } from '../../../../requests/updateCharacterRequest';
@@ -9,29 +9,17 @@ import { modifier, localize } from '../../../../helpers';
 
 const TRANSLATION = {
   en: {
-    attributePoints: 'Free attribute points',
-    helpMessage: 'You start with a -2 in all of your Attributes. You then gain Attribute Points to increase whichever Attributes you want, up to the Attribute Limit (3).',
-    save: 'Save',
-    physical_save: 'Physical save',
-    mental_save: 'Mental save'
+    helpMessage: 'You start with a +2/+2/0/-1 or +2/+2/+1/0 or +3/+1/-1/-1 in all of your Attributes'
   },
   ru: {
-    attributePoints: 'Очки атрибутов для распределения',
-    helpMessage: 'Ваш персонаж начинает с -2 во всех атрибутах. Вы можете потратить Очки Атрибутов для увеличения любых атрибутов вплоть до максимума (3).',
-    save: 'Спас',
-    physical_save: 'Физический спас',
-    mental_save: 'Ментальный спас'
+    helpMessage: 'Ваш персонаж начинает с +2/+2/0/-1 or +2/+2/+1/0 or +3/+1/-1/-1 во всех атрибутах.'
   },
   es: {
-    attributePoints: 'Puntos de atributo gratis',
-    helpMessage: 'Comienzas con un -2 en todos tus Atributos. Luego ganas Puntos de Atributo para aumentar los Atributos que quieras, hasta el Límite de Atributo (3).',
-    save: 'Guardar',
-    physical_save: 'Physical save',
-    mental_save: 'Mental save'
+    helpMessage: 'Comienzas con un +2/+2/0/-1 or +2/+2/+1/0 or +3/+1/-1/-1 en todos tus Atributos.',
   }
 }
 
-export const Dc20Abilities = (props) => {
+export const NimbleAbilities = (props) => {
   const character = () => props.character;
 
   const [lastActiveCharacterId, setLastActiveCharacterId] = createSignal(undefined);
@@ -48,30 +36,22 @@ export const Dc20Abilities = (props) => {
     batch(() => {
       setAbilitiesData(character().abilities);
       setEditMode(character().guide_step === 1);
-      setLastActiveCharacterId(character().id);
     });
+
+    setLastActiveCharacterId(character().id);
   });
 
   const decreaseAbilityValue = (slug) => {
-    if (abilitiesData()[slug] === -2) return;
+    if (abilitiesData()[slug] === -1) return;
 
     setAbilitiesData({ ...abilitiesData(), [slug]: abilitiesData()[slug] - 1 });
   }
 
   const increaseAbilityValue = (slug) => {
-    if (abilitiesData()[slug] === Math.floor(character().level / 5) + 3) return;
+    if (abilitiesData()[slug] === 7) return;
 
     setAbilitiesData({ ...abilitiesData(), [slug]: abilitiesData()[slug] + 1 });
   }
-
-  const attributePointsLeft = createMemo(() => {
-    if (character().attribute_points === 0) return 0;
-
-    const initialSum = Object.values(character().abilities).reduce((acc, value) => acc + value, 0);
-    const currentSum = Object.values(abilitiesData()).reduce((acc, value) => acc + value, 0);
-
-    return character().attribute_points - (currentSum - initialSum);
-  });
 
   const cancelEditing = () => {
     batch(() => {
@@ -93,19 +73,21 @@ export const Dc20Abilities = (props) => {
     } else renderAlerts(result.errors_list);
   }
 
+  const saveAdv = (slug) => {
+    if (character().saves[0] === slug) return 1;
+    if (character().saves[1] === slug) return -1;
+
+    return 0;
+  }
+
   return (
-    <ErrorWrapper payload={{ character_id: character().id, key: 'Dc20Abilities' }}>
+    <ErrorWrapper payload={{ character_id: character().id, key: 'NimbleAbilities' }}>
       <GuideWrapper
         character={character()}
         guideStep={1}
         helpMessage={localize(TRANSLATION, locale()).helpMessage}
         onReloadCharacter={props.onReloadCharacter}
       >
-        <Show when={character().attribute_points > 0}>
-          <div class="warning">
-            <p class="text-sm">{localize(TRANSLATION, locale()).attributePoints} - {attributePointsLeft()}</p>
-          </div>
-        </Show>
         <EditWrapper
           editMode={editMode()}
           onSetEditMode={setEditMode}
@@ -113,7 +95,7 @@ export const Dc20Abilities = (props) => {
           onSaveChanges={updateCharacter}
         >
           <div class="character-info-block">
-            <div class="grid grid-cols-2 emd:grid-cols-4 gap-x-2 gap-y-4 mb-4">
+            <div class="grid grid-cols-2 emd:grid-cols-4 gap-x-2 gap-y-4">
               <For each={Object.entries(config.abilities).map(([key, values]) => [key, localize(values.name, locale())])}>
                 {([slug, ability]) =>
                   <div>
@@ -127,15 +109,8 @@ export const Dc20Abilities = (props) => {
                               height="64"
                               text={modifier(character().modified_abilities[slug])}
                               textClassList="text-4xl"
-                              onClick={() => props.openD20Test(`/check attr ${slug}`, ability, character().modified_abilities[slug])}
+                              onClick={() => props.openD20Test(`/check save ${slug}`, ability, character().modified_abilities[slug], saveAdv(slug))}
                             />
-                            <div class="dc20-ability-savebox">
-                              <Dice
-                                text={modifier(character().attribute_saves[slug])}
-                                onClick={() => props.openD20Test(`/check save ${slug}`, null, character().attribute_saves[slug])}
-                              />
-                              <p class="text-xs text-center">{localize(TRANSLATION, locale()).save}</p>
-                            </div>
                           </div>
                         </Show>
                       </p>
@@ -146,23 +121,6 @@ export const Dc20Abilities = (props) => {
                         <Button default size="small" onClick={() => increaseAbilityValue(slug)}><Plus /></Button>
                       </div>
                     </Show>
-                  </div>
-                }
-              </For>
-            </div>
-            <div class="grid grid-cols-2 gap-x-2">
-              <For each={['physical_save', 'mental_save']}>
-                {(slug) =>
-                  <div>
-                    <p class="dc20-ability-title">{localize(TRANSLATION, locale())[slug]}</p>
-                    <div class="dc20-ability">
-                      <p class="text-2xl font-normal!">
-                        <Dice
-                          text={modifier(character()[slug])}
-                          onClick={() => props.openD20Test(`/check attr ${slug}`, localize(TRANSLATION, locale())[slug], character()[slug])}
-                        />
-                      </p>
-                    </div>
                   </div>
                 }
               </For>

@@ -1,0 +1,69 @@
+{
+  "sizes": {
+    "small": { "name": { "en": "Small", "ru": "Маленький" } },
+    "medium": { "name": { "en": "Medium", "ru": "Средний" } },
+    "large": { "name": { "en": "Large", "ru": "Большой" } }
+  },
+  "ancestries": {
+    "human": { "name": { "en": "Human", "ru": "Человек" }, "size": "medium" },
+    "dwarf": { "name": { "en": "Dwarf", "ru": "Дварф" }, "size": "medium" },
+    "elf": { "name": { "en": "Elf", "ru": "Эльф" }, "size": "medium" },
+    "halfling": { "name": { "en": "Halfling", "ru": "Полурослик" }, "size": "small" },
+    "gnome": { "name": { "en": "Gnome", "ru": "Гном" }, "size": "small" }
+  },
+  "classes": {
+    "berserker": {
+      "name": { "en": "Berserker", "ru": "Берсерк" },
+      "subclasses": {
+        "mountainheart": { "name": { "en": "Path of The Mountainheart", "ru": "Путь стойкости" } },
+        "red_mist": { "name": { "en": "Path of The Red Mist", "ru": "Путь слепой ярости" } }
+      }
+    },
+    "cheat": {
+      "name": { "en": "cheat", "ru": "Жулик" },
+      "subclasses": {
+        "silent_blade": { "name": { "en": "Tools of the Silent Blade", "ru": "Инструменты бесшумного клинка" } },
+        "scoundrel": { "name": { "en": "Tools of the Scoundrel", "ru": "Инструменты подлеца" } }
+      }
+    },
+    "commander": {
+      "name": { "en": "Commander", "ru": "Командир" },
+      "subclasses": {
+        "bulwark": { "name": { "en": "Champion of the Bulwark", "ru": "Чемпион защиты" } },
+        "vanguard": { "name": { "en": "Champion of the Vanguard", "ru": "Чемпион авангарда" } }
+      }
+    },
+    "hunter": {
+      "name": { "en": "Hunter", "ru": "Охотник" },
+      "subclasses": {
+        "shadowpath": { "name": { "en": "Keeper of the Shadowpath", "ru": "Хранитель теневого пути" } },
+        "wild_heart": { "name": { "en": "Keeper of the Wild Heart", "ru": "Хранитель дикого сердца" } }
+      }
+    },
+    "zephyr": {
+      "name": { "en": "Zephyr", "ru": "Зефир" },
+      "subclasses": {
+        "pain": { "name": { "en": "Way of Pain", "ru": "Путь боли" } },
+        "flame": { "name": { "en": "Way of Flame", "ru": "Путь пламени" } }
+      }
+    }
+  },
+  "abilities": {
+    "str": { "name": { "en": "Strength", "ru": "Сила" } },
+    "dex": { "name": { "en": "Dexterity", "ru": "Ловкость" } },
+    "int": { "name": { "en": "Intelligence", "ru": "Интеллект" } },
+    "wil": { "name": { "en": "Will", "ru": "Воля" } }
+  },
+  "languages": {
+    "common": { "name": { "en": "Common", "ru": "Общий", "es": "Común" } },
+    "dwarvish": { "name": { "en": "Dwarvish", "ru": "Дварфский", "es": "Enano" } },
+    "elvish": { "name": { "en": "Elvish", "ru": "Эльфийский", "es": "Élfico" } },
+    "goblin": { "name": { "en": "Goblin", "ru": "Гоблинский", "es": "Goblin" } },
+    "infernal": { "name": { "en": "Infernal", "ru": "Инфернальный", "es": "Infernal" } },
+    "draconic": { "name": { "en": "Draconic", "ru": "Драконий", "es": "Draconico" } },
+    "thieves_cunt": { "name": { "en": "Thieves' Cunt", "ru": "Воровской жаргон" } },
+    "celestial": { "name": { "en": "Celestial", "ru": "Небесный" } },
+    "primordial": { "name": { "en": "Primordial", "ru": "Изначальный" } },
+    "deep_speak": { "name": { "en": "Deep Speak", "ru": "Глубинный" } }
+  }
+}

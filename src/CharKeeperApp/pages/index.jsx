@@ -135,6 +135,15 @@ export * from './Content/Character/Cthulhu7/Combat';
 export * from './Content/Character/Cthulhu7/Backstory';
 export * from './Content/Character/Cthulhu7/Equipment';
 
+export * from './Content/Character/Nimble';
+export * from './Content/Character/Nimble/Abilities';
+export * from './Content/Character/Nimble/Skills';
+export * from './Content/Character/Nimble/Bonuses';
+export * from './Content/Character/Nimble/Info';
+export * from './Content/Character/Nimble/Health';
+export * from './Content/Character/Nimble/Leveling';
+export * from './Content/Character/Nimble/Rest';
+
 export * from './Navigation/Characters/ListItem';
 export * from './Navigation/Characters/CharacterForm';
 export * from './Navigation/Characters/Forms/Dc20';
@@ -146,4 +155,5 @@ export * from './Navigation/Characters/Forms/Fate';
 export * from './Navigation/Characters/Forms/Fallout';
 export * from './Navigation/Characters/Forms/Cosmere';
 export * from './Navigation/Characters/Forms/Cthulhu7';
+export * from './Navigation/Characters/Forms/Nimble';
 export * from './Navigation/Campaigns/ListItem';

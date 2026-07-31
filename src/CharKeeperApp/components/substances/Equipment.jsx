@@ -203,15 +203,17 @@ export const Equipment = (props) => {
     const promises = [fetchCharacterItems(), fetchItems(false)];
     if (HOMEBREWED_PROVIDERS.includes(character().provider)) promises.push(fetchItems(true));
 
+    const sortCallback = (a, b) => a.name > b.name;
+
     Promise.all(promises).then(
       ([characterItemsData, itemsData, homebrewItemsData]) => {
         batch(() => {
           setCharacterItems(characterItemsData.items);
           setCharacterCampaigns(characterItemsData.character_campaigns);
           if (homebrewItemsData) {
-            setItems(itemsData.items.concat(homebrewItemsData.items).sort((a, b) => a.name > b.name));
+            setItems(itemsData.items.concat(homebrewItemsData.items).sort(props.sortCallback || sortCallback));
           } else {
-            setItems(itemsData.items.sort((a, b) => a.name > b.name));
+            setItems(itemsData.items.sort(props.sortCallback || sortCallback));
           }
         });
       }
@@ -479,6 +481,7 @@ export const Equipment = (props) => {
       <GuideWrapper
         character={character()}
         guideStep={props.guideStep}
+        finishGuideStep={props.finishGuideStep}
         helpMessage={props.helpMessage}
         onReloadCharacter={props.onReloadCharacter}
         onNextClick={props.onNextGuideStepClick}
@@ -498,7 +501,7 @@ export const Equipment = (props) => {
                       onInput={setFilterByName}
                     />
                     <Button default size="small" classList="px-2" onClick={() => setFilterByName('')}>
-                      {localize(TRANSLATION, locale()).clear}
+                      <span>{localize(TRANSLATION, locale()).clear}</span>
                     </Button>
                   </div>
                   <For each={props.itemFilters}>
@@ -552,7 +555,7 @@ export const Equipment = (props) => {
                       </Show>
                     }
                   </For>
-                  <Button default textable onClick={() => setItemsSelectingMode(false)}>{t('back')}</Button>
+                  <Button default textable onClick={() => setItemsSelectingMode(false)}><span>{t('back')}</span></Button>
                 </>
               }
             >
@@ -570,7 +573,7 @@ export const Equipment = (props) => {
             <LootTableComponent buyItem={buyItem} />
           </Show>
           <Show when={characterItems() !== undefined}>
-            <Button default textable classList="mb-2" onClick={() => setItemsSelectingMode(true)}>{t('equipment.addItems')}</Button>
+            <Button default textable classList="mb-2" onClick={() => setItemsSelectingMode(true)}><span>{t('equipment.addItems')}</span></Button>
             <For each={storages()}>
               {(state) =>
                 <ItemsTable

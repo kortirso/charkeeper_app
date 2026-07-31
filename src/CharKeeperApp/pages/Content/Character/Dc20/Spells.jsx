@@ -1,7 +1,9 @@
-import { createSignal, createEffect, createMemo, For, Show, batch } from 'solid-js';
+import { createSignal, createEffect, createMemo, For, Show, Switch, Match, batch } from 'solid-js';
 
 import config from '../../../../data/dc20.json';
-import { ErrorWrapper, GuideWrapper, Toggle, Button, Checkbox, createModal, StatsBlock, Dice } from '../../../../components';
+import {
+  ErrorWrapper, GuideWrapper, Toggle, Button, Checkbox, createModal, StatsBlock, Dice, Select, Input
+} from '../../../../components';
 import { useAppState, useAppLocale, useAppAlert } from '../../../../context';
 import { PlusSmall, Minus } from '../../../../assets';
 import { fetchSpellsRequest } from '../../../../requests/fetchSpellsRequest';
@@ -10,10 +12,14 @@ import { createCharacterSpellRequest } from '../../../../requests/createCharacte
 import { removeCharacterSpellRequest } from '../../../../requests/removeCharacterSpellRequest';
 import { fetchCharacterItemsRequest } from '../../../../requests/fetchCharacterItemsRequest';
 import { fetchTagInfoRequest } from '../../../../requests/fetchTagInfoRequest';
-import { modifier, localize } from '../../../../helpers';
+import { updateCharacterRequest } from '../../../../requests/updateCharacterRequest';
+import { clearCharacterSpellsRequest } from '../../../../requests/clearCharacterSpellsRequest';
+import { modifier, localize, translate } from '../../../../helpers';
 
 const TRANSLATION = {
   en: {
+    searchByName: 'Search by name (from 3 characters)',
+    clearSearch: 'Clear',
     mana_spend_limit: 'Spend limit',
     spells: 'Spells',
     selectSpells: 'Select spells',
@@ -47,9 +53,28 @@ const TRANSLATION = {
       'Warded': 'Warded'
     },
     attack: 'Spell Check',
-    repeatable: 'Repeatable'
+    repeatable: 'Repeatable',
+    selectSpellclass: 'Choose spellcaster class',
+    spellclasses: {
+      bard: 'Bard',
+      cleric: 'Cleric',
+      druid: 'Druid',
+      sorcerer: 'Sorcerer',
+      spellblade: 'Spellblade',
+      warlock: 'Warlock',
+      wizard: 'Wizard'
+    },
+    saveButton: 'Save',
+    selectBard: 'Choose 1 school for bard',
+    selectSpellblade: 'Choose 2 schools for spellblade',
+    selectWarlock: 'Choose 3 schools for warlock',
+    selectSorcerer: 'Choose spell source for sorcerer',
+    focuses: 'Focuses',
+    clear: 'Clear'
   },
   ru: {
+    searchByName: 'Поиск по названию (от 3 символов)',
+    clearSearch: 'Очистить',
     mana_spend_limit: 'Предел траты',
     spells: 'Заклинания',
     selectSpells: 'Выбрать заклинания',
@@ -83,9 +108,28 @@ const TRANSLATION = {
       'Warded': 'Ограждающее'
     },
     attack: 'Бонус атаки',
-    repeatable: 'Многократное'
+    repeatable: 'Многократное',
+    selectSpellclass: 'Выберите заклинательный класс',
+    spellclasses: {
+      bard: 'Бард',
+      cleric: 'Жрец',
+      druid: 'Друид',
+      sorcerer: 'Чародей',
+      spellblade: 'Маг клинка',
+      warlock: 'Колдун',
+      wizard: 'Волшебник'
+    },
+    saveButton: 'Сохранить',
+    selectBard: 'Выберите 1 школу для барда',
+    selectSpellblade: 'Выберите 2 школы для мага клинка',
+    selectWarlock: 'Выберите 3 школы для колдуна',
+    selectSorcerer: 'Выберите список для чародея',
+    focuses: 'Фокусировка',
+    clear: 'Сбросить'
   },
   es: {
+    searchByName: 'Buscar por nombre (desde 3 caracteres)',
+    clearSearch: 'Limpiar',
     mana_spend_limit: 'Límite de gasto',
     spells: 'Hechizos',
     selectSpells: 'Seleccionar hechizos',
@@ -119,7 +163,24 @@ const TRANSLATION = {
       'Warded': 'Warded'
     },
     attack: 'Tirada de Hechizo',
-    repeatable: 'Repetible'
+    repeatable: 'Repetible',
+    selectSpellclass: 'Choose spellcaster class',
+    spellclasses: {
+      bard: 'Bard',
+      cleric: 'Cleric',
+      druid: 'Druid',
+      sorcerer: 'Sorcerer',
+      spellblade: 'Spellblade',
+      warlock: 'Warlock',
+      wizard: 'Wizard'
+    },
+    saveButton: 'Save',
+    selectBard: 'Choose 1 school for bard',
+    selectSpellblade: 'Choose 2 schools for spellblade',
+    selectWarlock: 'Choose 3 schools for warlock',
+    selectSorcerer: 'Choose spell source for sorcerer',
+    focuses: 'Focuses',
+    clear: 'Clear'
   }
 }
 
@@ -135,6 +196,11 @@ export const Dc20Spells = (props) => {
   const [availableListFilter, setAvailableListFilter] = createSignal(true);
   const [characterItems, setCharacterItems] = createSignal(undefined);
   const [tagInfo, setTagInfo] = createSignal([]);
+
+  const [spellclass, setSpellclass] = createSignal(undefined);
+  const [spellschools, setSpellschools] = createSignal([]);
+  const [source, setSource] = createSignal([]);
+  const [filterByName, setFilterByName] = createSignal('');
 
   const { Modal, openModal } = createModal();
   const [appState] = useAppState();
@@ -162,13 +228,38 @@ export const Dc20Spells = (props) => {
   });
 
   const renderingLists = createMemo(() => {
-    if (availableListFilter()) {
-      if (character().spell_list.length > 0) {
-        return Object.keys(spellLists()).filter((item) => character().spell_list.includes(item));
-      }
+    if (filterByName().length >= 3) return Object.keys(config.spell_lists);
+    if (availableListFilter() && character().spell_filter.source) {
+      return Object.keys(config.spell_lists).filter((item) => character().spell_filter.source === item);
     }
 
-    return Object.keys(spellLists());
+    return Object.keys(config.spell_lists);
+  });
+
+  const filteredSpells = createMemo(() => {
+    if (!spells()) return [];
+    if (filterByName().length >= 3) {
+      const searchPattern = filterByName().toLowerCase();
+      return spells().filter((item) => {
+        if (item.title.toLowerCase().includes(searchPattern)) return true;
+        if (item.origin_values.find((value) => value.toLowerCase().includes(searchPattern))) return true;
+
+        return false;
+      }).sort((a, b) => a.title.localeCompare(b.title));
+    }
+    if (!availableListFilter()) return spells().sort((a, b) => a.title.localeCompare(b.title));
+
+    const checkSchools = character().spell_filter.schools && character().spell_filter.schools.length > 0;
+    const checkSource = character().spell_filter.source;
+    const checkTags = character().spell_filter.tags && character().spell_filter.tags.length > 0 && (new Set(character().spell_filter.tags));
+
+    return spells().filter((item) => {
+      if (checkSchools && character().spell_filter.schools.includes(item.school)) return true;
+      if (checkSource && item.origin_value.includes(checkSource)) return true;
+      if (checkTags && [...checkTags.intersection(new Set(item.base_origin_values))].length > 0) return true;
+
+      return false;
+    }).sort((a, b) => a.title.localeCompare(b.title));
   });
 
   const learnedSpellIds = createMemo(() => {
@@ -245,6 +336,23 @@ export const Dc20Spells = (props) => {
     if (result.errors_list === undefined) setCharacterSpells(characterSpells().filter((item) => item.spell_id !== spellId));
   }
 
+  const setMultiSchools = (value) => {
+    const newValue = spellschools().includes(value) ? spellschools().filter((item) => item !== value) : spellschools().concat([value]);
+    setSpellschools(newValue);
+  }
+
+  const updateCharacter = async (payload) => {
+    const result = await updateCharacterRequest(appState.accessToken, character().provider, character().id, { character: payload, only_head: true });
+
+    if (result.errors_list === undefined) props.onReplaceCharacter(payload);
+  }
+
+  const clearSpells = async () => {
+    const result = await clearCharacterSpellsRequest(appState.accessToken, character().provider, character().id);
+
+    if (result.errors_list === undefined) props.onReloadCharacter();
+  }
+
   return (
     <ErrorWrapper payload={{ character_id: character().id, key: 'Dc20Spells' }}>
       <GuideWrapper character={character()}>
@@ -252,33 +360,43 @@ export const Dc20Spells = (props) => {
           when={!spellsSelectingMode()}
           fallback={
             <>
-              <div class="flex justify-between items-center mb-2">
-                <Checkbox
-                  labelText={localize(TRANSLATION, locale()).onlyAvailableSpells}
-                  labelPosition="right"
-                  labelClassList="ml-2"
-                  checked={availableListFilter()}
-                  onToggle={() => setAvailableListFilter(!availableListFilter())}
+              <div class="mb-2 flex">
+                <Input
+                  containerClassList="mr-2 flex-1"
+                  placeholder={localize(TRANSLATION, locale()).searchByName}
+                  value={filterByName()}
+                  onInput={setFilterByName}
                 />
+                <Button default size="small" classList="px-2" onClick={() => setFilterByName('')}>
+                  <span>{localize(TRANSLATION, locale()).clearSearch}</span>
+                </Button>
               </div>
+              <Show when={filterByName().length < 3}>
+                <div class="flex justify-between items-center mb-2">
+                  <Checkbox
+                    labelText={localize(TRANSLATION, locale()).onlyAvailableSpells}
+                    labelPosition="right"
+                    labelClassList="ml-2"
+                    checked={availableListFilter()}
+                    onToggle={() => setAvailableListFilter(!availableListFilter())}
+                  />
+                </div>
+              </Show>
               <For each={renderingLists()}>
                 {(list) =>
                   <Toggle title={localize(spellLists()[list].name, locale())}>
                     <div>
-                      <For each={spells().filter((spell) => spell.origin_value.includes(list)).sort((a, b) => a.title.localeCompare(b.title))}>
+                      <For each={filteredSpells().filter((spell) => spell.origin_value.includes(list))}>
                         {(spell) =>
-                          <div
-                            class="even:bg-stone-100 dark:even:bg-dusty p-1"
-                            classList={{ 'opacity-50': learnedSpellIds().includes(spell.id) }}
-                          >
-                            <div class="flex items-center justify-between mb-1">
+                          <div class="dc20-spell" classList={{ 'opacity-50': learnedSpellIds().includes(spell.id) }}>
+                            <div class="dc20-spell-title">
                               <p class="font-normal! text-lg">{spell.title}</p>
                               <p>{localize(schools()[spell.school].name, locale())}</p>
                             </div>
-                            <div class="flex gap-2 flex-wrap mb-2">
+                            <div class="dc20-spell-tags">
                               <For each={spell.origin_values}>
                                 {(tag) =>
-                                  <span class="text-sm tag">{tag}</span>
+                                  <span class="text-sm! tag">{tag}</span>
                                 }
                               </For>
                             </div>
@@ -289,18 +407,12 @@ export const Dc20Spells = (props) => {
                               class="feat-markdown text-xs"
                               innerHTML={spell.description} // eslint-disable-line solid/no-innerhtml
                             />
-                            <div class="flex flex-row justify-end">
+                            <div class="dc20-spell-action">
                               <Show
                                 when={!learnedSpellIds().includes(spell.id)}
-                                fallback={
-                                  <Button default size="small" onClick={() => forgetSpell(spell.id)}>
-                                    <Minus />
-                                  </Button>
-                                }
+                                fallback={<Button default size="small" onClick={() => forgetSpell(spell.id)}><Minus /></Button>}
                               >
-                                <Button default size="small" onClick={() => learnSpell(spell.id)}>
-                                  <PlusSmall />
-                                </Button>
+                                <Button default size="small" onClick={() => learnSpell(spell.id)}><PlusSmall /></Button>
                               </Show>
                             </div>
                           </div>
@@ -310,7 +422,7 @@ export const Dc20Spells = (props) => {
                   </Toggle>
                 }
               </For>
-              <Button default textable onClick={() => setSpellsSelectingMode(false)}>{localize(TRANSLATION, locale()).back}</Button>
+              <Button default textable onClick={() => setSpellsSelectingMode(false)}><span>{localize(TRANSLATION, locale()).back}</span></Button>
             </>
           }
         >
@@ -326,19 +438,19 @@ export const Dc20Spells = (props) => {
                       width="36"
                       height="36"
                       text={modifier(character().spell_attack)}
-                      onClick={() => props.openD20Test('/check attack spell', null, character().spell_attack, 10)}
+                      onClick={() => props.openD20Test('/check attack spell', null, character().spell_attack)}
                     />
                 }
               ]}
             />
             <Show when={characterItems().length > 0}>
               <div class="blockable p-4 mt-2">
-                <h2 class="text-lg flex items-center gap-x-2">Фокусировка</h2>
+                <h2 class="text-lg">{localize(TRANSLATION, locale()).focuses}</h2>
                 <For each={characterItems()}>
                   {(item) =>
                     <div class="mt-2">
                       <p>{item.name}</p>
-                      <div class="flex flex-wrap gap-x-2 gap-y-1 mt-1">
+                      <div class="dc20-focus-features">
                         <For each={item.info.features}>
                           {(feature) =>
                             <p class="tag" onClick={() => showTagInfo(feature, localize(TRANSLATION, locale()).features[feature])}>
@@ -352,6 +464,97 @@ export const Dc20Spells = (props) => {
                 </For>
               </div>
             </Show>
+            <Switch
+              fallback={
+                <div class="mt-2 flex gap-2">
+                  <Button default textable classList="flex-1" onClick={() => setSpellsSelectingMode(true)}>
+                    <span>{localize(TRANSLATION, locale()).selectSpells}</span>
+                    <Show when={character().spell_class !== character().main_class}>
+                      <span class="ml-2">({localize(config.classes[character().spell_class].name, locale())})</span>
+                    </Show>
+                  </Button>
+                  <Button default textable onClick={clearSpells}><span>{localize(TRANSLATION, locale()).clear}</span></Button>
+                </div>
+              }
+            >
+              <Match when={!character().spell_class}>
+                <div class="character-info-block mb-2">
+                  <Select
+                    labelText={localize(TRANSLATION, locale()).selectSpellclass}
+                    items={localize(TRANSLATION, locale()).spellclasses}
+                    selectedValue={spellclass()}
+                    onSelect={setSpellclass}
+                  />
+                  <Show when={spellclass()}>
+                    <Button default textable classList="inline-block mt-2" onClick={() => updateCharacter({ spell_class: spellclass(), spell_filter: { source: null, schools: [] } })}>
+                      <span>{localize(TRANSLATION, locale()).saveButton}</span>
+                    </Button>
+                  </Show>
+                </div>
+              </Match>
+              <Match when={character().spell_class === 'bard' && character().spell_filter.schools && character().spell_filter.schools.length !== 1}>
+                <div class="character-info-block mb-2">
+                  <Select
+                    labelText={localize(TRANSLATION, locale()).selectBard}
+                    items={translate(config.schools, locale())}
+                    selectedValue={spellschools()[0]}
+                    onSelect={(value) => setSpellschools([value])}
+                  />
+                  <Show when={spellschools().length === 1}>
+                    <Button default textable classList="inline-block mt-2" onClick={() => updateCharacter({ spell_filter: { schools: spellschools() } })}>
+                      <span>{localize(TRANSLATION, locale()).saveButton}</span>
+                    </Button>
+                  </Show>
+                </div>
+              </Match>
+              <Match when={character().spell_class === 'spellblade' && character().spell_filter.schools && character().spell_filter.schools.length !== 2}>
+                <div class="character-info-block mb-2">
+                  <Select
+                    multi
+                    labelText={localize(TRANSLATION, locale()).selectSpellblade}
+                    items={translate(config.schools, locale())}
+                    selectedValues={spellschools()}
+                    onSelect={setMultiSchools}
+                  />
+                  <Show when={spellschools().length === 2}>
+                    <Button default textable classList="inline-block mt-2" onClick={() => updateCharacter({ spell_filter: { schools: spellschools() } })}>
+                      <span>{localize(TRANSLATION, locale()).saveButton}</span>
+                    </Button>
+                  </Show>
+                </div>
+              </Match>
+              <Match when={character().spell_class === 'warlock' && character().spell_filter.schools && character().spell_filter.schools.length !== 3}>
+                <div class="character-info-block mb-2">
+                  <Select
+                    multi
+                    labelText={localize(TRANSLATION, locale()).selectWarlock}
+                    items={translate(config.schools, locale())}
+                    selectedValues={spellschools()}
+                    onSelect={setMultiSchools}
+                  />
+                  <Show when={spellschools().length === 3}>
+                    <Button default textable classList="inline-block mt-2" onClick={() => updateCharacter({ spell_filter: { schools: spellschools() } })}>
+                      <span>{localize(TRANSLATION, locale()).saveButton}</span>
+                    </Button>
+                  </Show>
+                </div>
+              </Match>
+              <Match when={character().spell_class === 'sorcerer' && !character().spell_filter.source}>
+                <div class="character-info-block mb-2">
+                  <Select
+                    labelText={localize(TRANSLATION, locale()).selectSorcerer}
+                    items={translate(config.spell_lists, locale())}
+                    selectedValue={source()}
+                    onSelect={setSource}
+                  />
+                  <Show when={source()}>
+                    <Button default textable classList="inline-block mt-2" onClick={() => updateCharacter({ spell_filter: { source: source() } })}>
+                      <span>{localize(TRANSLATION, locale()).saveButton}</span>
+                    </Button>
+                  </Show>
+                </div>
+              </Match>
+            </Switch>
             <Show when={learnedSpellIds().length > 0}>
               <div class="mt-2">
                 <For each={learnedSpells().sort((a, b) => a.title.localeCompare(b.title))}>
@@ -368,22 +571,22 @@ export const Dc20Spells = (props) => {
                         <div class="flex gap-2 flex-wrap mb-1">
                           <For each={spell.origin_values}>
                             {(tag) =>
-                              <span class="text-sm tag cursor-default!">{tag}</span>
+                              <span class="text-sm! tag cursor-default!">{tag}</span>
                             }
                           </For>
                         </div>
                         <Show when={spell.price}>
-                          <p class="text-sm mt-1">{localize(TRANSLATION, locale()).price}: {renderSpellPrice(spell)}</p>
+                          <p class="text-xs mt-1">{localize(TRANSLATION, locale()).price}: {renderSpellPrice(spell)}</p>
                         </Show>
                         <Show when={spell.info.range}>
-                          <p class="text-sm mt-1">{localize(TRANSLATION, locale()).range}: {renderSpellRange(spell.info.range)}</p>
+                          <p class="text-xs mt-1">{localize(TRANSLATION, locale()).range}: {renderSpellRange(spell.info.range)}</p>
                         </Show>
                         <Show when={spell.info.duration}>
-                          <p class="text-sm mt-1">{renderSpellDuration(spell.info.duration)}</p>
+                          <p class="text-xs mt-1">{renderSpellDuration(spell.info.duration)}</p>
                         </Show>
                       </div>
                       <p
-                        class="feat-markdown text-xs mt-4"
+                        class="feat-markdown text-sm! mt-4"
                         innerHTML={spell.description} // eslint-disable-line solid/no-innerhtml
                       />
                       <Show when={spell.info.enhancements.length > 0}>
@@ -391,7 +594,7 @@ export const Dc20Spells = (props) => {
                           <p class="font-normal!">{localize(TRANSLATION, locale()).enhancements}</p>
                           <For each={spell.info.enhancements}>
                             {(enhancement) =>
-                              <p class="feat-markdown text-sm mt-1">
+                              <p class="feat-markdown text-xs! mt-1">
                                 <span class="font-medium!">{localize(enhancement.name, locale())}</span>
                                 : ({renderSpellPrice(enhancement)}) {localize(enhancement.description, locale())}
                               </p>
@@ -405,9 +608,6 @@ export const Dc20Spells = (props) => {
                 </For>
               </div>
             </Show>
-            <Button default textable classList="mt-2" onClick={() => setSpellsSelectingMode(true)}>
-              {localize(TRANSLATION, locale()).selectSpells}
-            </Button>
           </Show>
         </Show>
         <Modal classList="md:max-w-md!">
