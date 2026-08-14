@@ -1,9 +1,9 @@
-import { createSignal, createMemo, Switch, Match } from 'solid-js';
+import { createSignal, createMemo, Switch, Match, Show } from 'solid-js';
 import { createWindowSize } from '@solid-primitives/resize-observer';
 
 import {
-  Dc20Abilities, Dc20Skills, Dc20CombatStatic, Dc20Leveling, Dc20Resources, Dc20Spells, Dc20Rest,
-  Dc20BonusesV2, Dc20Damages, Dc20Conditions, Dc20Info, Dc20Trainings, Dc20Equipment
+  Dc20Abilities, Dc20Skills, Dc20CombatStatic, Dc20Leveling, Dc20Resources, Dc20Spells, Dc20Rest, Dc20Summons,
+  Dc20BonusesV2, Dc20Damages, Dc20Conditions, Dc20Info, Dc20Trainings, Dc20Equipment, Dc20WildForms, Dc20WildForm
 } from '../../../pages';
 import { CharacterNavigation, Notes, Avatar, ContentWrapper, createRoll, Combat, Feats } from '../../../components';
 import { useAppLocale } from '../../../context';
@@ -53,7 +53,8 @@ export const Dc20 = (props) => {
   const characterTabs = createMemo(() => {
     const result = ['combat', 'equipment'];
     if (character().mana_points.max > 0) result.push('spells');
-    return result.concat(['classLevels', 'professions', 'rest', 'bonuses', 'notes', 'avatar']);
+    if (character().wild_form_available) result.push('wildForms');
+    return result.concat(['classLevels', 'professions', 'rest', 'summons', 'bonuses', 'notes', 'avatar']);
   });
 
   const mobileView = createMemo(() => {
@@ -83,6 +84,11 @@ export const Dc20 = (props) => {
               <div class="mt-4">
                 <Dc20Conditions character={character()} onReloadCharacter={props.onReloadCharacter} />
               </div>
+              <Show when={character().wild_form_available}>
+                <div class="mt-4">
+                  <Dc20WildForm character={character()} onReplaceCharacter={props.onReplaceCharacter} />
+                </div>
+              </Show>
               <div class="mt-4">
                 <Dc20Skills
                   character={character()}
@@ -128,6 +134,11 @@ export const Dc20 = (props) => {
                 onNextGuideStepClick={() => setActiveMobileTab('classLevels')}
               />
             </Match>
+            <Match when={activeMobileTab() === 'wildForms'}>
+              <Dc20WildForms
+                character={character()} onReplaceCharacter={props.onReplaceCharacter}
+              />
+            </Match>
             <Match when={activeMobileTab() === 'classLevels'}>
               <Dc20Leveling
                 character={character()}
@@ -149,6 +160,9 @@ export const Dc20 = (props) => {
             </Match>
             <Match when={activeMobileTab() === 'rest'}>
               <Dc20Rest character={character()} onReloadCharacter={props.onReloadCharacter} />
+            </Match>
+            <Match when={activeMobileTab() === 'summons'}>
+              <Dc20Summons character={character()} />
             </Match>
             <Match when={activeMobileTab() === 'bonuses'}>
               <Dc20BonusesV2 character={character()} onReloadCharacter={props.onReloadCharacter} />
@@ -182,6 +196,11 @@ export const Dc20 = (props) => {
         <div class="mt-4">
           <Dc20CombatStatic character={character()} openD20Test={openDC20Test} />
         </div>
+        <Show when={character().wild_form_available}>
+          <div class="mt-4">
+            <Dc20WildForm character={character()} onReplaceCharacter={props.onReplaceCharacter} />
+          </div>
+        </Show>
         <div class="mt-4">
           <Dc20Conditions character={character()} onReloadCharacter={props.onReloadCharacter} />
         </div>
@@ -244,6 +263,11 @@ export const Dc20 = (props) => {
                 onNextGuideStepClick={() => setActiveMobileTab('classLevels')}
               />
             </Match>
+            <Match when={activeTab() === 'wildForms'}>
+              <Dc20WildForms
+                character={character()} onReplaceCharacter={props.onReplaceCharacter}
+              />
+            </Match>
             <Match when={activeTab() === 'classLevels'}>
               <Dc20Leveling
                 character={character()}
@@ -266,6 +290,9 @@ export const Dc20 = (props) => {
             </Match>
             <Match when={activeTab() === 'rest'}>
               <Dc20Rest character={character()} onReloadCharacter={props.onReloadCharacter} />
+            </Match>
+            <Match when={activeTab() === 'summons'}>
+              <Dc20Summons character={character()} />
             </Match>
             <Match when={activeTab() === 'bonuses'}>
               <Dc20BonusesV2 character={character()} onReloadCharacter={props.onReloadCharacter} />

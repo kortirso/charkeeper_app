@@ -43,6 +43,7 @@
       "class": "Class",
       "subclass": "Subclass",
       "beastform": "Beastform",
+      "wildForms": "Wild Form",
       "race": "Race",
       "subrace": "Subrace",
       "species": "Species",
@@ -62,7 +63,8 @@
       "rolls": "Rolls history",
       "goals": "Goals",
       "backstory": "Backstory",
-      "mechanic": "Mechanics"
+      "mechanic": "Mechanics",
+      "summons": "Summons"
     },
     "campaignsPage": {
       "title": "Campaigns",

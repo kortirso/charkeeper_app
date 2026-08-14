@@ -1,8 +1,11 @@
 {
   "sizes": {
+    "micro": { "name": { "en": "Micro", "ru": "Микро" } },
+    "tiny": { "name": { "en": "Tiny", "ru": "Крошечный" } },
     "small": { "name": { "en": "Small", "ru": "Маленький" } },
     "medium": { "name": { "en": "Medium", "ru": "Средний" } },
-    "large": { "name": { "en": "Large", "ru": "Большой" } }
+    "large": { "name": { "en": "Large", "ru": "Большой" } },
+    "huge": { "name": { "en": "Huge", "ru": "Огромный" } }
   },
   "ancestries": {
     "human": { "name": { "en": "Human", "ru": "Человек" } },
@@ -15,14 +18,14 @@
     "giantborn": { "name": { "en": "Giantborn", "ru": "Великанорожденный" } },
     "angelborn": { "name": { "en": "Angelborn", "ru": "Ангелорожденный" } },
     "fiendborn": { "name": { "en": "Fiendborn", "ru": "Демонорожденный" } },
-    "beastborn": { "name": { "en": "Beastborn", "ru": "Зверорожденный" } }
+    "beastborn": { "name": { "en": "Beastborn", "ru": "Зверорожденный" }, "default": false }
   },
   "classes": {
     "barbarian": {
       "name": { "en": "Barbarian", "ru": "Варвар" },
       "subclasses": {
         "spirit_guardian": { "name": { "en": "Spirit Guardian", "ru": "Духовный защитник" } },
-        "elemental_fury": { "name": { "en": "Elemental Fury", "ru": "" } }
+        "elemental_fury": { "name": { "en": "Elemental Fury", "ru": "Чистая ярость" } }
       }
     },
     "bard": {
@@ -157,5 +160,7 @@
     "physical": { "name": { "en": "Physical", "ru": "Физический" } },
     "elemental": { "name": { "en": "Elemental", "ru": "Элементальный" } },
     "mystical": { "name": { "en": "Mystical", "ru": "Мистический" } }
+  },
+  "summons": {
   }
 }

@@ -43,6 +43,7 @@
       "class": "Класс",
       "subclass": "Подкласс",
       "beastform": "Звериная форма",
+      "wildForms": "Дикая форма",
       "race": "Раса",
       "subrace": "Подраса",
       "species": "Вид",
@@ -62,7 +63,8 @@
       "rolls": "История бросков",
       "goals": "Цели",
       "backstory": "Биография",
-      "mechanic": "Механики"
+      "mechanic": "Механики",
+      "summons": "Прислужники"
     },
     "campaignsPage": {
       "title": "Кампании",
