@@ -957,3 +957,15 @@ body.dark-theme {
 .dc20-focus-features {
   @apply flex flex-wrap gap-x-2 gap-y-1 mt-1;
 }
+
+.primary_rolls {
+  color: #22c55e;
+}
+
+.crit_rolls {
+  color: #ef4444;
+}
+
+.vicious_rolls {
+  color: #a855f7;
+}
