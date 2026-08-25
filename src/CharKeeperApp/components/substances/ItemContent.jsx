@@ -181,8 +181,8 @@ const DaggerheartArmor = (props) => {
       <div class="flex items-center gap-x-2 mt-4">
         <p>{TRANSLATION[props.locale].armor}, {TRANSLATION[props.locale].tier} {[item().info.tier]}</p>
       </div>
-      <p class="mt-2">{TRANSLATION[props.locale].thresholds} - {item().info.bonuses.thresholds.major} / {item().info.bonuses.thresholds.severe}</p>
-      <p class="mt-2">{TRANSLATION[props.locale].score} - {item().info.base_score}</p>
+      <p class="mt-2">{TRANSLATION[props.locale].thresholds} - {item().modifiers['damage_thresholds.major']} / {item().modifiers['damage_thresholds.severe']}</p>
+      <p class="mt-2">{TRANSLATION[props.locale].score} - {item().modifiers.armor_score}</p>
       <Show when={item().features && item().features.length > 0}>
         <For each={item().features}>
           {(feature) =>
@@ -323,7 +323,10 @@ export const ItemContent = (props) => {
     <>
       <p class="text-xl">{item().name}</p>
       <Show when={props.description}>
-        <p class="text-sm mt-4">{props.description}</p>
+        <p
+          class="feat-markdown mt-4 text-sm!"
+          innerHTML={props.description} // eslint-disable-line solid/no-innerhtml
+        />
       </Show>
       {ItemComponent()}
     </>

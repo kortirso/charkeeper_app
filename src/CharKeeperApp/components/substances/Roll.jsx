@@ -33,6 +33,7 @@ const TRANSLATION = {
     nimbleMissable: 'Can miss',
     bonus: 'Bonus',
     critbonus: 'Crit bonus',
+    primarybonus: 'Primary roll bonus',
     diceAmount: 'Dice amount'
   },
   ru: {
@@ -59,6 +60,7 @@ const TRANSLATION = {
     nimbleMissable: 'Может промахнуться',
     bonus: 'Бонус',
     critbonus: 'Бонус крита',
+    primarybonus: 'Бонус основного куба',
     diceAmount: 'Кол-во кубов'
   },
   es: {
@@ -85,6 +87,7 @@ const TRANSLATION = {
     nimbleMissable: 'Can miss',
     bonus: 'Bonus',
     critbonus: 'Crit bonus',
+    primarybonus: 'Primary roll bonus',
     diceAmount: 'Dice amount'
   }
 }
@@ -184,13 +187,13 @@ export const createRoll = () => {
         setPlotResult(undefined);
       });
     },
-    openNimbleAttack(command, title, dices, bonus, damage, crit) {
+    openNimbleAttack(command, title, dices, bonus, damage, crit, vicious) {
       const splitted_dice = dices.split('d');
       const diceAmount = parseInt(splitted_dice[0]);
       const diceSize = splitted_dice[1];
 
       batch(() => {
-        setNimbleTest({ command: command, title: title, diceAmount: diceAmount, diceSize: diceSize, bonus: bonus, maxAdv: 10, adv: 0, addBonus: 0, damage: damage, crit: crit, miss: true, critBonus: 0 });
+        setNimbleTest({ command: command, title: title, diceAmount: diceAmount, diceSize: diceSize, bonus: bonus, maxAdv: 10, adv: 0, addBonus: 0, damage: damage, crit: crit, miss: true, critBonus: 0, primaryBonus: 0, vicious: vicious });
         setNimbleTestResult(undefined);
       });
     },
@@ -249,7 +252,7 @@ export const createRoll = () => {
 
       const openNimbleTest = () => {
         batch(() => {
-          setNimbleTest({ command: '/nimbleAttack', title: null, diceAmount: 1, diceSize: null, bonus: 0, maxAdv: 10, adv: 0, addBonus: 0, crit: true, miss: true, critBonus: 0 });
+          setNimbleTest({ command: '/nimbleAttack', title: null, diceAmount: 1, diceSize: null, bonus: 0, maxAdv: 10, adv: 0, addBonus: 0, crit: true, miss: true, critBonus: 0, primaryBonus: 0, vicious: false });
           setNimbleTestResult(undefined);
         });
       }
@@ -408,13 +411,14 @@ export const createRoll = () => {
       }
 
       const generateNimbleTest = () => {
-        const options = [`--crit ${nimbleTest.crit}`, `--miss ${nimbleTest.miss}`];
+        const options = [`--crit ${nimbleTest.crit}`, `--miss ${nimbleTest.miss}`, `--vicious ${nimbleTest.vicious}`];
         if (nimbleTest.adv > 0) options.push(`--adv ${nimbleTest.adv}`);
         if (nimbleTest.adv < 0) options.push(`--dis ${Math.abs(nimbleTest.adv)}`);
         if (nimbleTest.bonus + nimbleTest.addBonus > 0) options.push(`--bonus ${nimbleTest.bonus + nimbleTest.addBonus}`);
         if (nimbleTest.bonus + nimbleTest.addBonus < 0) options.push(`--penalty ${Math.abs(nimbleTest.bonus + nimbleTest.addBonus)}`);
         if (nimbleTest.damage) options.push(`--damage ${nimbleTest.damage}`);
         if (nimbleTest.critBonus > 0) options.push(`--critbonus ${nimbleTest.critBonus}`);
+        if (nimbleTest.primaryBonus !== 0) options.push(`--primarybonus ${nimbleTest.primaryBonus}`);
 
         return options.length > 0 ? `${nimbleTest.command} ${nimbleTest.diceAmount}d${nimbleTest.diceSize} ${options.join(' ')}` : nimbleTest.command;
       }
@@ -590,6 +594,27 @@ export const createRoll = () => {
         if (value === 'heavy_complication') return '+4';
         if (value === 'opportunity') return 'OP';
         return '-';
+      }
+
+      const rerollNimble = (kind, index) => {
+        if (kind === 'primary_rolls') return;
+
+        const currentValue = nimbleTestResult()[kind].reduce((acc, item) => acc + item, 0);
+        const newValue = Math.floor(Math.random() * nimbleTest.diceSize) + 1;
+        const newValues = [...nimbleTestResult()[kind].slice(0, index), newValue, ...nimbleTestResult()[kind].slice(index + 1)];
+
+        rollNimbleCrit(kind, newValue, newValues);
+        const total = newValues.reduce((acc, item) => acc + item, 0);
+        setNimbleTestResult({ ...nimbleTestResult(), total: nimbleTestResult().total - currentValue + total, [kind]: newValues });
+      }
+
+      const rollNimbleCrit = (kind, currentValue, newValues) => {
+        if (kind !== 'crit_rolls') return;
+        if (currentValue !== parseInt(nimbleTest.diceSize)) return;
+
+        const newValue = Math.floor(Math.random() * nimbleTest.diceSize) + 1;
+        newValues.push(newValue);
+        rollNimbleCrit(kind, newValue, newValues);
       }
 
       return (
@@ -824,10 +849,16 @@ export const createRoll = () => {
                         <Show
                           when={nimbleTestResult() === undefined}
                           fallback={
-                            <div class="flex gap-2">
-                              <For each={nimbleTestResult().rolls}>
-                                {(roll) =>
-                                  <span class="text-xl">[{roll}]</span>
+                            <div class="flex flex-wrap gap-2">
+                              <For each={['primary_rolls', 'crit_rolls', 'vicious_rolls', 'secondary_rolls']}>
+                                {(kind) =>
+                                  <Show when={nimbleTestResult()[kind].length > 0}>
+                                    <For each={nimbleTestResult()[kind]}>
+                                      {(roll, index) =>
+                                        <span class={`text-xl ${kind}`} classList={{ 'cursor-pointer': ['vicious_rolls', 'secondary_rolls'].includes(kind) || kind === 'crit_rolls' && index() === nimbleTestResult()[kind].length - 1 }} onClick={() => rerollNimble(kind, index())}>[{roll}]</span>
+                                      }
+                                    </For>
+                                  </Show>
                                 }
                               </For>
                             </div>
@@ -859,33 +890,41 @@ export const createRoll = () => {
                         <p class="dice-button flex-1" onClick={() => nimbleTest.adv <= -nimbleTest.maxAdv ? null : updateAdvantage(-1)}>{i18n().disadvantage}</p>
                         <p class="dice-button flex-1" onClick={() => nimbleTest.adv >= nimbleTest.maxAdv ? null : updateAdvantage(1)}>{i18n().advantage}</p>
                       </div>
-                      <div class="flex items-center gap-4">
-                        <p>{i18n().bonus}</p>
-                        <Button default size="small" onClick={() => setNimbleTest({ ...nimbleTest, addBonus: nimbleTest.addBonus - 1 })}><Minus /></Button>
-                        {nimbleTest.addBonus}
-                        <Button default size="small" onClick={() => setNimbleTest({ ...nimbleTest, addBonus: nimbleTest.addBonus + 1 })}><Plus /></Button>
-                      </div>
-                      <div class="flex items-center gap-4">
-                        <p>{i18n().critbonus}</p>
-                        <Button default size="small" disable={nimbleTest.critBonus === 0} onClick={() => setNimbleTest({ ...nimbleTest, critBonus: nimbleTest.critBonus - 1 })}><Minus /></Button>
-                        {nimbleTest.critBonus}
-                        <Button default size="small" onClick={() => setNimbleTest({ ...nimbleTest, critBonus: nimbleTest.critBonus + 1 })}><Plus /></Button>
-                      </div>
                       <div class="flex flex-col gap-2">
-                        <Checkbox
-                          labelText={i18n().nimbleCritable}
-                          labelPosition="right"
-                          labelClassList="ml-2"
-                          checked={nimbleTest.crit}
-                          onToggle={() => setNimbleTest({ ...nimbleTest, crit: !nimbleTest.crit })}
-                        />
-                        <Checkbox
-                          labelText={i18n().nimbleMissable}
-                          labelPosition="right"
-                          labelClassList="ml-2"
-                          checked={nimbleTest.miss}
-                          onToggle={() => setNimbleTest({ ...nimbleTest, miss: !nimbleTest.miss })}
-                        />
+                        <div class="flex items-center gap-4">
+                          <p class="text-sm">{i18n().bonus}</p>
+                          <Button default size="small" onClick={() => setNimbleTest({ ...nimbleTest, addBonus: nimbleTest.addBonus - 1 })}><Minus /></Button>
+                          {nimbleTest.addBonus}
+                          <Button default size="small" onClick={() => setNimbleTest({ ...nimbleTest, addBonus: nimbleTest.addBonus + 1 })}><Plus /></Button>
+                        </div>
+                        <div class="flex items-center gap-4">
+                          <p class="text-sm">{i18n().critbonus}</p>
+                          <Button default size="small" disable={nimbleTest.critBonus === 0} onClick={() => setNimbleTest({ ...nimbleTest, critBonus: nimbleTest.critBonus - 1 })}><Minus /></Button>
+                          {nimbleTest.critBonus}
+                          <Button default size="small" onClick={() => setNimbleTest({ ...nimbleTest, critBonus: nimbleTest.critBonus + 1 })}><Plus /></Button>
+                        </div>
+                        <div class="flex items-center gap-4">
+                          <p class="text-sm">{i18n().primarybonus}</p>
+                          <Button default size="small" onClick={() => setNimbleTest({ ...nimbleTest, primaryBonus: nimbleTest.primaryBonus - 1 })}><Minus /></Button>
+                          {nimbleTest.primaryBonus}
+                          <Button default size="small" onClick={() => setNimbleTest({ ...nimbleTest, primaryBonus: nimbleTest.primaryBonus + 1 })}><Plus /></Button>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                          <Checkbox
+                            labelText={i18n().nimbleCritable}
+                            labelPosition="right"
+                            labelClassList="ml-2"
+                            checked={nimbleTest.crit}
+                            onToggle={() => setNimbleTest({ ...nimbleTest, crit: !nimbleTest.crit })}
+                          />
+                          <Checkbox
+                            labelText={i18n().nimbleMissable}
+                            labelPosition="right"
+                            labelClassList="ml-2"
+                            checked={nimbleTest.miss}
+                            onToggle={() => setNimbleTest({ ...nimbleTest, miss: !nimbleTest.miss })}
+                          />
+                        </div>
                       </div>
                     </div>
                   </Show>
