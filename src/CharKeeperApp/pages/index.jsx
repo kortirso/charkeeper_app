@@ -49,7 +49,6 @@ export * from './Content/Character/Dnd5/Proficiency';
 export * from './Content/Character/Dnd5/WildShapes';
 export * from './Content/Character/Dnd5/BeastFeatures';
 export * from './Content/Character/Dnd5/Craft';
-export * from './Content/Character/Dnd5/Exhaustion';
 export * from './Content/Character/Dnd5/Info';
 export * from './Content/Character/Dnd5/Equipment';
 
@@ -115,7 +114,6 @@ export * from './Content/Character/Dc20/Rest';
 export * from './Content/Character/Dc20/BonusesV2';
 export * from './Content/Character/Dc20/Ancestries';
 export * from './Content/Character/Dc20/Damages';
-export * from './Content/Character/Dc20/Conditions';
 export * from './Content/Character/Dc20/Info';
 export * from './Content/Character/Dc20/Trainings';
 export * from './Content/Character/Dc20/Equipment';
