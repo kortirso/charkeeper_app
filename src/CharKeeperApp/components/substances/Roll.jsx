@@ -370,8 +370,8 @@ export const createRoll = () => {
         else if (dualityTest.command) rolls.push(generateDualityTest());
         else if (cthulhuTest.command) rolls.push(generateCthulhuTest());
         else if (nimbleTest.command && nimbleTest.diceSize) rolls.push(generateNimbleTest());
-        else if (plotDices() > 0) rolls.push(generatePlotTest());
 
+        if (plotDices() > 0) rolls.push(generatePlotTest());
         if (!pf2Attack() && !dndAttack() && dices.dices) rolls.push(generateDiceRoll());
 
         const result = await createCharacterBotRequest(appState.accessToken, props.characterId, { values: rolls });
@@ -393,11 +393,12 @@ export const createRoll = () => {
             } else if (nimbleTest.command && nimbleTest.diceSize) {
               setNimbleTestResult(result.result[resultsIndex].result);
               resultsIndex += 1;
-            } else if (plotDices() > 0) {
+            }
+            
+            if (plotDices() > 0) {
               setPlotResult(result.result[resultsIndex].result);
               resultsIndex += 1;
             }
-
             if (!pf2Attack() && !dndAttack() && dices.dices) {
               if (dualityTest.command && result.result[0].result.status === 'crit_success') {
                 calculateDualityCritDamage(result.result[resultsIndex].result);
@@ -416,8 +417,8 @@ export const createRoll = () => {
         if (d20Test.adv < 0) options.push(`--dis ${Math.abs(d20Test.adv)}`);
         if (d20Test.bonus + d20Test.addBonus > 0) options.push(`--bonus ${d20Test.bonus + d20Test.addBonus}`);
         if (d20Test.bonus + d20Test.addBonus < 0) options.push(`--penalty ${Math.abs(d20Test.bonus + d20Test.addBonus)}`);
-        options.push(`--dices ${dices.dices.join(' ').toLowerCase()}`);
-        if (dices.damageBonus !== 0) options.push(`--dicesBonus ${dices.damageBonus}`);
+        options.push(`--dices ${dices.dices.join(',').toLowerCase()}`);
+        if (dices.damageBonus !== 0) options.push(`--dicesBonus=${dices.damageBonus}`);
         if (d20Test.crit) options.push('--crit true');
         if (pf2Attack()) {
           if (d20Test.deadly) options.push(`--deadly ${d20Test.deadly}`);

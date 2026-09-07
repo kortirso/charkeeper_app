@@ -14,7 +14,7 @@ import { clickOutside, copyToClipboard, localize } from '../../../helpers';
 
 const AVAILABLE_COPY = ['cthulhu7'];
 const AVAILABLE_JSON = ['daggerheart', 'pathfinder2'];
-const AVAILABLE_PDF = ['daggerheart', 'dnd5', 'dnd2024', 'pathfinder2', 'dc20'];
+const AVAILABLE_PDF = ['daggerheart', 'dnd5', 'dnd2024', 'pathfinder2', 'dc20', 'cosmere'];
 const AVAILABLE_RESET = ['daggerheart'];
 const TRANSLATION = {
   en: {
@@ -91,19 +91,13 @@ export const CharactersListItem = (props) => {
     if (character().provider === 'pathfinder2') {
       return `${t('charactersPage.level')} ${character().level} | ${character().subrace ? localize(pathfinder2Config.races[character().race].subraces[character().subrace].name, locale()) : localize(pathfinder2Config.races[character().race].name, locale())}`;
     }
-    if (character().provider === 'daggerheart') {
-      return `${t('charactersPage.level')} ${character().level} | ${character().names.ancestry_name}`;
-    }
     if (character().provider === 'fallout') {
       return `${t('charactersPage.level')} ${character().level} | ${localize(falloutConfig.origins[character().origin].name, locale())}`;
-    }
-    if (character().provider === 'cosmere') {
-      return `${t('charactersPage.level')} ${character().level}`;
     }
     if (character().provider === 'dc20') {
       return `${t('charactersPage.level')} ${character().level} | ${character().ancestries.map((item) => localize(dc20Config.ancestries[item].name, locale())).join(' * ')}`;
     }
-    if (character().provider === 'nimble') {
+    if (character().provider === 'nimble' || character().provider === 'cosmere' || character().provider === 'daggerheart') {
       return `${t('charactersPage.level')} ${character().level} | ${character().names.ancestry_name}`;
     }
   });
@@ -126,6 +120,9 @@ export const CharactersListItem = (props) => {
     }
     if (character().provider === 'nimble') {
       return localize(nimbleConfig.classes[character().main_class].name, locale());
+    }
+    if (character().provider === 'cosmere') {
+      return character().names.setting_name;
     }
   });
 
