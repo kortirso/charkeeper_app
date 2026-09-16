@@ -3,9 +3,11 @@ import { createWindowSize } from '@solid-primitives/resize-observer';
 
 import {
   CosmereAbilities, CosmereSkills, CosmereDefenses, CosmereHealth, CosmereInfo, CosmereRest, CosmereLeveling, CosmereBonuses,
-  CosmereGoals, CosmereSingerForm, CosmereEquipment
+  CosmereGoals, CosmereSingerForm, CosmereEquipment, CosmerePowers
 } from '../../../pages';
-import { CharacterNavigation, Notes, Avatar, ContentWrapper, Combat, createRoll, Feats } from '../../../components';
+import {
+  CharacterNavigation, Notes, Avatar, ContentWrapper, Combat, createRoll, Feats, GoldSingle, ConditionsV2
+} from '../../../components';
 import { useAppLocale } from '../../../context';
 import { localize } from '../../../helpers';
 
@@ -14,13 +16,15 @@ const TRANSLATION = {
     radiantFilter: 'Invested Path',
     ancestry: 'Ancestry',
     path: 'Heroic Path',
-    surge: 'Invested Art'
+    surge: 'Invested Power',
+    personal: 'Personal'
   },
   ru: {
     radiantFilter: 'Инвестированный путь',
     ancestry: 'Наследие',
     path: 'Путь',
-    surge: 'Инвестированное искусство'
+    surge: 'Инвестированная сила',
+    personal: 'Личные'
   }
 }
 
@@ -38,9 +42,11 @@ export const Cosmere = (props) => {
   const pathFilter = (item) => item.origin === 'path' || item.origin === 'specialization';
   const radiantFilter = (item) => item.origin === 'radiant_path';
   const surgeFilter = (item) => item.origin === 'surge';
+  const personalFilter = (item) => item.origin === 'character';
 
   const featFilters = createMemo(() => {
     return [
+      { title: 'personal', translation: localize(TRANSLATION, locale()).personal, callback: personalFilter },
       { title: 'ancestry', translation: localize(TRANSLATION, locale()).ancestry, callback: ancestryFilter },
       { title: 'path', translation: localize(TRANSLATION, locale()).path, callback: pathFilter },
       { title: 'radiant_path', translation: localize(TRANSLATION, locale()).radiantFilter, callback: radiantFilter },
@@ -79,6 +85,9 @@ export const Cosmere = (props) => {
                 </div>
               </Show>
               <div class="mt-4">
+                <ConditionsV2 character={character()} onReloadCharacter={props.onReloadCharacter} />
+              </div>
+              <div class="mt-4">
                 <CosmereSkills
                   character={character()}
                   openCosmereTest={openCosmereTest}
@@ -99,6 +108,11 @@ export const Cosmere = (props) => {
                   onReplaceCharacter={props.onReplaceCharacter}
                 />
               </div>
+              <Show when={character().powers.length > 0}>
+                <div class="mt-4">
+                  <CosmerePowers character={character()} />
+                </div>
+              </Show>
               <div class="mt-4">
                 <Feats
                   directTranslation
@@ -113,7 +127,9 @@ export const Cosmere = (props) => {
               <CosmereEquipment
                 character={character()}
                 onReloadCharacter={props.onReloadCharacter}
-              />
+              >
+                <GoldSingle character={character()} onReplaceCharacter={props.onReplaceCharacter} />
+              </CosmereEquipment>
             </Match>
             <Match when={activeMobileTab() === 'goals'}>
               <CosmereGoals character={character()} onReplaceCharacter={props.onReplaceCharacter} />
@@ -162,6 +178,9 @@ export const Cosmere = (props) => {
           </div>
         </Show>
         <div class="mt-4">
+          <ConditionsV2 character={character()} onReloadCharacter={props.onReloadCharacter} />
+        </div>
+        <div class="mt-4">
           <CosmereSkills
             character={character()}
             openCosmereTest={openCosmereTest}
@@ -197,6 +216,11 @@ export const Cosmere = (props) => {
                   onReplaceCharacter={props.onReplaceCharacter}
                 />
               </div>
+              <Show when={character().powers.length > 0}>
+                <div class="mt-4">
+                  <CosmerePowers character={character()} />
+                </div>
+              </Show>
               <div class="mt-4">
                 <Feats
                   directTranslation
@@ -211,7 +235,9 @@ export const Cosmere = (props) => {
               <CosmereEquipment
                 character={character()}
                 onReloadCharacter={props.onReloadCharacter}
-              />
+              >
+                <GoldSingle character={character()} onReplaceCharacter={props.onReplaceCharacter} />
+              </CosmereEquipment>
             </Match>
             <Match when={activeTab() === 'goals'}>
               <CosmereGoals character={character()} onReplaceCharacter={props.onReplaceCharacter} />
