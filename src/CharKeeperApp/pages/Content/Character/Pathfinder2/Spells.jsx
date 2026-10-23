@@ -92,26 +92,29 @@ export const Pathfinder2Spells = (props) => {
 
   const [spellsSelectingMode, setSpellsSelectingMode] = createSignal(null);
   const [renderMode, setRenderMode] = createSignal(true);
+  const [currentLevel, setCurrentLevel] = createSignal(0);
 
   const [appState] = useAppState();
   const [{ renderAlerts, renderAlert }] = useAppAlert();
   const [locale] = useAppLocale();
 
-  const fetchSpells = async () => await fetchSpellsRequest(
+  const fetchSpells = async (homebrew) => await fetchSpellsRequest(
     appState.accessToken,
     character().provider,
-    { max_level: props.spellsInfo?.max_spell_level || 10 }
+    Object.fromEntries(Object.entries({
+      max_level: props.spellsInfo?.max_spell_level || 10, homebrew: homebrew
+    }).filter(([, value]) => value))
   );
   const fetchCharacterSpells = async () => await fetchCharacterSpellsRequest(appState.accessToken, character().provider, character().id);
 
   createEffect(() => {
     if (lastActiveCharacterId() === character().id) return;
 
-    Promise.all([fetchSpells(), fetchCharacterSpells()]).then(
-      ([spellsData, characterSpellsData]) => {
+    Promise.all([fetchSpells(), fetchSpells(true), fetchCharacterSpells()]).then(
+      ([spellsData, homebrewSpellsData, characterSpellsData]) => {
         batch(() => {
           setSpells(
-            spellsData.spells.sort((a, b) => {
+            spellsData.spells.concat(homebrewSpellsData.spells).sort((a, b) => {
               const levelCompare = a.info.level - b.info.level;
               return levelCompare || a.title.localeCompare(b.title);
             })
@@ -437,7 +440,17 @@ export const Pathfinder2Spells = (props) => {
                 onToggle={() => setRenderMode(!renderMode())}
               />
             </Show>
-            <Show when={renderMode() && props.spellsInfo}>
+            <div class="flex gap-4 my-2">
+              <Show when={renderMode() && props.spellsInfo}>
+                <p classList={{ 'active': currentLevel() === 'F' }} class="spell-toggle" onClick={() => setCurrentLevel('F')}>F</p>
+              </Show>
+              <For each={Array.from([...Array(maxSpellLevel() + 1).keys()])}>
+                {(level) =>
+                  <p classList={{ 'active': currentLevel() === level }} class="spell-toggle" onClick={() => setCurrentLevel(level)}>{level}</p>
+                }
+              </For>
+            </div>
+            <Show when={renderMode() && props.spellsInfo && currentLevel() === 'F'}>
               <div class="flex justify-between items-center">
                 <h2 class="text-lg dark:text-snow mb-2">
                   {i18n().focusSpells}
@@ -462,7 +475,7 @@ export const Pathfinder2Spells = (props) => {
             </Show>
             <For each={Array.from([...Array(maxSpellLevel() + 1).keys()])}>
               {(level) =>
-                <>
+                <Show when={currentLevel() === level}>
                   <div class="flex justify-between items-center">
                     <h2 class="text-lg dark:text-snow mb-2">
                       <Show when={level !== 0} fallback={i18n().cantrips}>
@@ -600,7 +613,7 @@ export const Pathfinder2Spells = (props) => {
                       </For>
                     </div>
                   </Show>
-                </>
+                </Show>
               }
             </For>
           </Show>

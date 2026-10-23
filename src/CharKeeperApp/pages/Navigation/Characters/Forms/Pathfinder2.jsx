@@ -65,11 +65,11 @@ export const Pathfinder2CharacterForm = (props) => {
   const mainAbilityOptions = createMemo(() => {
     if (form.main_class === undefined) return {};
 
-    const classOptions = pathfinder2Config.classes[form.main_class].main_ability_options;
+    const classOptions = pf2Classes()[form.main_class].main_ability_options;
 
     let subclassOptions = [];
     if (form.subclass !== undefined) {
-      subclassOptions = pathfinder2Config.classes[form.main_class].subclasses[form.subclass].main_ability_options || [];
+      subclassOptions = pf2Classes()[form.main_class].subclasses[form.subclass].main_ability_options || [];
     }
     const allOptions = subclassOptions.concat(classOptions);
 
@@ -95,6 +95,18 @@ export const Pathfinder2CharacterForm = (props) => {
     if (props.homebrews() === undefined) return {};
 
     return props.homebrews().pathfinder2.backgrounds;
+  });
+
+  const pf2Classes = createMemo(() => {
+    if (props.homebrews() === undefined) return pathfinder2Config.classes;
+
+    const hbClasses = Object.entries(props.homebrews().pathfinder2.classes).map(([key, value]) => {
+      if (!value.subclass_title) return [key, value];
+
+      return [key, { ...value, subclasses: props.homebrews().pathfinder2.subclasses[key] }]
+    });
+
+    return { ...pathfinder2Config.classes, ...Object.fromEntries(hbClasses) };
   });
 
   return (
@@ -138,16 +150,16 @@ export const Pathfinder2CharacterForm = (props) => {
         <Select
           searchable
           labelText={t('newCharacterPage.pathfinder2.mainClass')}
-          items={translate(pathfinder2Config.classes, locale(), true)}
+          items={translate(pf2Classes(), locale(), true)}
           selectedValue={form.main_class}
-          onSelect={(value) => setForm({ ...form, main_class: value, main_ability: pathfinder2Config.classes[value].main_ability_options[0], subclass: undefined })}
+          onSelect={(value) => setForm({ ...form, main_class: value, main_ability: pf2Classes()[value].main_ability_options[0], subclass: undefined })}
         />
-        <Show when={pathfinder2Config.classes[form.main_class]?.subclasses}>
+        <Show when={pf2Classes()[form.main_class]?.subclasses}>
           <Select
-            labelText={localize(pathfinder2Config.classes[form.main_class].subclass_title, locale())}
-            items={translate(pathfinder2Config.classes[form.main_class].subclasses, locale())}
+            labelText={localize(pf2Classes()[form.main_class].subclass_title, locale())}
+            items={translate(pf2Classes()[form.main_class].subclasses, locale())}
             selectedValue={form.subclass}
-            onSelect={(value) => setForm({ ...form, subclass: value, main_ability: pathfinder2Config.classes[form.main_class].main_ability_options[0] })}
+            onSelect={(value) => setForm({ ...form, subclass: value, main_ability: pf2Classes()[form.main_class].main_ability_options[0] })}
           />
         </Show>
         <Show when={Object.keys(mainAbilityOptions()).length > 1}>
