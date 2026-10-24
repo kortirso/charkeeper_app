@@ -1,5 +1,7 @@
 import { createSignal, createEffect, createMemo, For, Switch, Match, Show, batch } from 'solid-js';
 import * as i18n from '@solid-primitives/i18n';
+import { DragDropProvider } from '@dnd-kit/solid';
+import { isSortable, useSortable } from '@dnd-kit/solid/sortable';
 
 import {
   CharactersListItem, Dc20CharacterForm, DaggerheartCharacterForm, Dnd5CharacterForm, Dnd2024CharacterForm,
@@ -7,7 +9,6 @@ import {
   NimbleForm
 } from '../../pages';
 import { CharacterNavigation, createModal, PageHeader, Select, Input, Button, Loading } from '../../components';
-import { Plus } from '../../assets';
 import dnd2024Config from '../../data/dnd2024.json';
 import { useAppState, useAppLocale, useAppAlert } from '../../context';
 import { fetchCharactersRequest } from '../../requests/fetchCharactersRequest';
@@ -18,6 +19,7 @@ import { removeCharacterRequest } from '../../requests/removeCharacterRequest';
 import { fetchHomebrewsRequest } from '../../requests/fetchHomebrewsRequest';
 import { resetCharacterRequest } from '../../requests/resetCharacterRequest';
 import { copyCharacterRequest } from '../../requests/copyCharacterRequest';
+import { createReorderRequest } from '../../requests/createReorderRequest';
 import { localize } from '../../helpers';
 
 const TRANSLATION = {
@@ -28,7 +30,8 @@ const TRANSLATION = {
     resetCharacterConfirm1: 'Are you sure need to reset this character to 1 level?',
     resetCharacterConfirm2: "Only character's equipment will not be reset.",
     resetCharacterTitle: 'Reseting character',
-    reset: 'Reset'
+    reset: 'Reset',
+    add: 'New character'
   },
   ru: {
     deleteCharacterConfirm: 'Вы точно хотите избавиться от этого персонажа?',
@@ -37,7 +40,8 @@ const TRANSLATION = {
     resetCharacterConfirm1: 'Вы точно хотите сбросить от этого персонажа до 1 уровня?',
     resetCharacterConfirm2: "Только снаряжение персонажа не будет сброшено.",
     resetCharacterTitle: 'Сброс персонажа',
-    reset: 'Сбросить'
+    reset: 'Сбросить',
+    add: 'Новый персонаж'
   },
   es: {
     deleteCharacterConfirm: '¿Estás seguro de que quieres eliminar este personaje?',
@@ -46,8 +50,21 @@ const TRANSLATION = {
     resetCharacterConfirm1: '¿Estás seguro de que quieres restablecer este personaje a nivel 1?',
     resetCharacterConfirm2: "Solo el equipo del personaje no será restablecido.",
     resetCharacterTitle: 'Restableciendo personaje',
-    reset: 'Restablecer'
+    reset: 'Restablecer',
+    add: 'New character'
   }
+}
+
+const SortableCharacterListItem = (props) => {
+  const { ref, handleRef, isDragSource } = useSortable({
+    get id() { return props.character.id; },
+    get index() { return props.index; },
+    get disabled() { return !props.draggable; }
+  });
+
+  return (
+    <CharactersListItem {...props} sortableRef={ref} dragHandleRef={handleRef} isDragging={isDragSource()} />
+  );
 }
 
 export const CharactersTab = () => {
@@ -109,6 +126,29 @@ export const CharactersTab = () => {
 
     return characters().filter((item) => item.provider === activeFilter());
   });
+
+  const reorderCharacters = (event) => {
+    if (activeFilter() !== 'allFilter') return;
+    if (event.canceled) return;
+    if (!isSortable(event.operation.source)) return;
+
+    const { initialIndex, index } = event.operation.source;
+    if (initialIndex === index) return;
+    if (!characters()?.[initialIndex] || !characters()[index]) return;
+
+    const reorderedCharacters = [...characters()];
+
+    // удаляет перемещаемый элемент с начальной позиции
+    const [movedCharacter] = reorderedCharacters.splice(initialIndex, 1);
+    // добавляет перемещаемый элемент на конечную позицию
+    reorderedCharacters.splice(index, 0, movedCharacter);
+
+    setCharacters(reorderedCharacters);
+
+    createReorderRequest(appState.accessToken, {
+      character_ids: reorderedCharacters.map((character) => character.id)
+    });
+  }
 
   const characterComponent = createMemo(() => {
     if (!platform()) return (
@@ -228,16 +268,6 @@ export const CharactersTab = () => {
           </PageHeader>
         </Match>
         <Match when={currentTab() === 'characters'}>
-          <Show when={filteredCharacters()}>
-            <Button
-              default
-              classList="absolute right-4 bottom-4 rounded-full! w-12 h-12 z-10"
-              onClick={() => setCurrentTab('newCharacter')}
-              dataTestId="new-character-button"
-            >
-              <Plus />
-            </Button>
-          </Show>
           <CharacterNavigation
             tabsList={['allFilter'].concat(['dnd2024', 'dnd5', 'daggerheart', 'pathfinder2', 'cosmere', 'dc20', 'nimble', 'fate', 'cthulhu7', 'fallout'].filter((item) => characterProviders().includes(item)))}
             activeTab={activeFilter()}
@@ -249,19 +279,32 @@ export const CharactersTab = () => {
         <Match when={currentTab() === 'characters'}>
           <div class="flex-1 overflow-y-auto">
             <Show when={filteredCharacters()} fallback={<Loading />}>
-              <For each={filteredCharacters()}>
-                {(character) =>
-                  <CharactersListItem
-                    character={character}
-                    isActive={character.id == appState.activePageParams.id}
-                    onClick={() => navigate('character', { id: character.id })}
-                    onViewClick={() => navigate('characterView', { id: character.id })}
-                    onDeleteCharacter={(e) => deleteCharacter(e, character.id)}
-                    onResetCharacter={(e) => resetCharacter(e, character.id)}
-                    onCopyCharacter={(e) => copyCharacter(e, character)}
-                  />
-                }
-              </For>
+              <Button
+                default
+                textable
+                classList="my-1"
+                onClick={() => setCurrentTab('newCharacter')}
+                dataTestId="new-character-button"
+              >
+                <span>{localize(TRANSLATION, locale()).add}</span>
+              </Button>
+              <DragDropProvider onDragEnd={reorderCharacters}>
+                <For each={filteredCharacters()}>
+                  {(character, index) =>
+                    <SortableCharacterListItem
+                      character={character}
+                      index={index()}
+                      isActive={character.id == appState.activePageParams.id}
+                      onClick={() => navigate('character', { id: character.id })}
+                      onViewClick={() => navigate('characterView', { id: character.id })}
+                      onDeleteCharacter={(e) => deleteCharacter(e, character.id)}
+                      onResetCharacter={(e) => resetCharacter(e, character.id)}
+                      onCopyCharacter={(e) => copyCharacter(e, character)}
+                      draggable={activeFilter() === 'allFilter'}
+                    />
+                  }
+                </For>
+              </DragDropProvider>
               <Show when={appState.isAdmin}>
                 <div class="w-full flex p-2">
                   <Button default size="small" classList="px-2" onClick={findAdminCharacter}>

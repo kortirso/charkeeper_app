@@ -2,8 +2,7 @@ import { createSignal, createMemo, Show } from 'solid-js';
 import * as i18n from '@solid-primitives/i18n';
 
 import { IconButton } from '../../../components';
-import { Dots, Avatar } from '../../../assets';
-import pathfinder2Config from '../../../data/pathfinder2.json';
+import { Dots, DragHandle, Avatar } from '../../../assets';
 import dnd5Config from '../../../data/dnd5.json';
 import dc20Config from '../../../data/dc20.json';
 import falloutConfig from '../../../data/fallout.json';
@@ -19,17 +18,20 @@ const TRANSLATION = {
   en: {
     delete: 'Delete',
     reset: 'Reset',
-    copy: 'Copy'
+    copy: 'Copy',
+    reorder: 'Change character order'
   },
   ru: {
     delete: 'Удалить',
     reset: 'Сбросить',
-    copy: 'Копировать'
+    copy: 'Копировать',
+    reorder: 'Изменить порядок персонажа'
   },
   es: {
     delete: 'Eliminar',
     reset: 'Restablecer',
-    copy: 'Copy'
+    copy: 'Copy',
+    reorder: 'Cambiar el orden del personaje'
   }
 }
 
@@ -88,7 +90,7 @@ export const CharactersListItem = (props) => {
       return `${t('charactersPage.level')} ${character().level} | ${character().legacy ? character().names.legacy_name : character().names.species_name}`;
     }
     if (character().provider === 'pathfinder2') {
-      return `${t('charactersPage.level')} ${character().level} | ${character().subrace ? localize(pathfinder2Config.races[character().race].subraces[character().subrace].name, locale()) : localize(pathfinder2Config.races[character().race].name, locale())}`;
+      return `${t('charactersPage.level')} ${character().level} | ${character().names.race_name}`;
     }
     if (character().provider === 'fallout') {
       return `${t('charactersPage.level')} ${character().level} | ${localize(falloutConfig.origins[character().origin].name, locale())}`;
@@ -127,10 +129,26 @@ export const CharactersListItem = (props) => {
 
   return (
     <div
+      ref={props.sortableRef}
       class="character-item"
-      classList={{ 'character-item-not-active': !props.isActive, 'character-item-active': props.isActive }}
+      classList={{
+        'character-item-not-active': !props.isActive,
+        'character-item-active': props.isActive,
+        'character-item-dragging': props.isDragging
+      }}
       onClick={props.onClick} // eslint-disable-line solid/reactivity
     >
+      <Show when={props.draggable}>
+        <button
+          ref={props.dragHandleRef}
+          type="button"
+          class="character-item-drag-handle"
+          aria-label={localize(TRANSLATION, locale()).reorder}
+          onClick={(event) => event.stopPropagation()}
+        >
+          <DragHandle />
+        </button>
+      </Show>
       <div class="avatar-block">
         <Show when={character().avatar} fallback={<Avatar width={64} height={64} />}>
           <img src={character().avatar} class="avatar" />
