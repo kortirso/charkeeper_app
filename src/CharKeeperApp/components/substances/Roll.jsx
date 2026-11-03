@@ -77,24 +77,24 @@ const TRANSLATION = {
     critFailure: 'Fallo crítico',
     attack: 'Ataque',
     damage: 'Daño',
-    critDamage: 'Crit strike',
-    plotDice: 'Raising the stakes',
+    critDamage: 'Golpe crítico',
+    plotDice: 'Subir la apuesta',
     cthulhuStatuses: {
-      fumble: 'Fumble',
-      crit: 'Crit success',
-      extreme_success: 'Extreme success',
-      hard_success: 'Hard success',
-      regular_success: 'Success',
-      failure: 'Failure'
+      fumble: 'Pifia',
+      crit: 'Éxito crítico',
+      extreme_success: 'Éxito extremo',
+      hard_success: 'Éxito difícil',
+      regular_success: 'Éxito',
+      failure: 'Fallo'
     },
-    miss: 'Miss',
-    nimbleCritable: 'Can crit',
-    nimbleMissable: 'Can miss',
-    bonus: 'Bonus',
-    critbonus: 'Crit bonus',
-    primarybonus: 'Primary roll bonus',
-    diceAmount: 'Dice amount',
-    critRoll: 'Separate rolls for crit'
+    miss: 'Fallo',
+    nimbleCritable: 'Puede ser crítico',
+    nimbleMissable: 'Puede fallar',
+    bonus: 'Bonificador',
+    critbonus: 'Bonificador de crítico',
+    primarybonus: 'Bonificador de la tirada principal',
+    diceAmount: 'Cantidad de dados',
+    critRoll: 'Tiradas separadas para el crítico'
   }
 }
 const SINGLE_ADVANTAGE_PROVIDERS = ['dnd', 'cosmere', 'pathfinder'];
