@@ -989,3 +989,23 @@ body.dark-theme {
 .spell-toggle.active {
   @apply dark:text-snow border-b;
 }
+
+.pf-ability-title {
+  @apply flex items-center justify-center gap-1 mb-2;
+}
+
+.pf-ability-name {
+  @apply text-sm uppercase;
+}
+
+.pf-ability-value {
+  @apply mx-auto flex items-center justify-center;
+}
+
+.pf-ability-boost {
+  @apply absolute -top-1 -right-3;
+}
+
+.pf-ability-actions {
+  @apply mt-2 flex justify-center gap-2;
+}
